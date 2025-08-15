@@ -10,18 +10,6 @@ export const demoUsers: InsertUser[] = [
     email: "marie@redweyne.fr"
   },
   {
-    username: "agent1",
-    password: "demo123",
-    name: "Pierre Martin",
-    email: "pierre@redweyne.fr"
-  },
-  {
-    username: "agent2", 
-    password: "demo123",
-    name: "Sophie Laurent",
-    email: "sophie@redweyne.fr"
-  },
-  {
     username: "alice.martin",
     password: "demo123",
     name: "Alice Martin",
@@ -206,7 +194,7 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     estimatedClosingDays: 45,
     dernierContact: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000) // 10 days ago
   },
-  // Additional prospects for comprehensive testing
+  // Additional prospects for comprehensive testing - distributed across 3 agents
   {
     id: nanoid(),
     nomComplet: "Antoine Rousseau",
@@ -228,10 +216,14 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     statut: "Nouveau",
     adresse: "25 boulevard de la Défense, 92400 Courbevoie",
     notes: "Appartement moderne avec vue sur la Défense",
+    score: 85,
+    isHotLead: true,
+    agentOutcome: "interested",
     leadCost: 0,
     estimatedClosingDays: 90,
     prochaineAction: new Date(), // Today
-    dernierContact: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
+    dernierContact: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
+    creeLe: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
   },
   {
     id: nanoid(),
@@ -254,10 +246,14 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     statut: "RDV fixé",
     adresse: "",
     notes: "Jeune cadre, dossier solide, recherche transport proche",
+    score: 92,
+    isHotLead: true,
+    agentOutcome: "interested",
     leadCost: 42,
     estimatedClosingDays: 75,
     prochaineAction: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // Tomorrow
-    dernierContact: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
+    dernierContact: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+    creeLe: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
   },
   {
     id: nanoid(),

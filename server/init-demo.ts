@@ -59,8 +59,6 @@ export async function initializeDemoData() {
     console.log(`📊 Created ${createdUsers.length} users and ${demoProspects.length} prospects`);
     console.log(`🔑 Demo login credentials:`);
     console.log(`   Admin: admin / demo123`);
-    console.log(`   Agent 1: agent1 / demo123`);
-    console.log(`   Agent 2: agent2 / demo123`);
     console.log(`   Alice Martin: alice.martin / demo123`);
     console.log(`   Ben Leroy: ben.leroy / demo123`);
 

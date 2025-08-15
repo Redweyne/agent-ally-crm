@@ -53,6 +53,8 @@ export default function CrmDashboard() {
   const { data: prospects = [], isLoading } = useQuery<Prospect[]>({
     queryKey: ["/api/prospects", selectedAgentId],
     queryFn: getQueryFn({ on401: "throw" }),
+    staleTime: 0, // Always refetch to ensure fresh data
+    refetchOnMount: true,
   });
 
   // Mutations
