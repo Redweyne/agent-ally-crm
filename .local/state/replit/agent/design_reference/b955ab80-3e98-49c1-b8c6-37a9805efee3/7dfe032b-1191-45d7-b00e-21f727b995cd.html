@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redweyne - CRM Immobilier Professionnel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/recharts@2.8.0/lib/index.js"></script>
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .kanban-column { min-height: 400px; }
+        .prospect-card { transition: all 0.2s ease; }
+        .prospect-card:hover { box-shadow: 0 8px 25px -5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Landing Page Section -->
+    <div id="landing-page" class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-sm border-b border-gray-200 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <h1 class="text-2xl font-bold text-primary-700">Redweyne</h1>
+                        </div>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-8">
+                            <a href="#services" class="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors">Services</a>
+                            <a href="#avantages" class="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors">Avantages</a>
+                            <a href="#contact" class="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors">Contact</a>
+                            <button onclick="showLoginModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Connexion Agent
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="pt-16 pb-20 hero-gradient text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
+                <div class="text-center">
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+                        CRM Immobilier
+                        <span class="block text-blue-200">Nouvelle Génération</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-blue-100">
+                        Gérez vos prospects, optimisez vos mandats et boostez vos performances commerciales avec notre solution 100% française
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="showLoginModal()" class="bg-white text-primary-700 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-50 transition-colors card-hover">
+                            Voir mon tableau de bord
+                        </button>
+                        <a href="#services" class="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-primary-700 transition-colors">
+                            Découvrir nos services
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Nos Services</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">Des outils professionnels pour optimiser votre activité immobilière</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-gray-50 rounded-2xl p-8 card-hover">
+                        <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-6">
+                            <i data-lucide="users" class="w-6 h-6 text-primary-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Gestion des Prospects</h3>
+                        <p class="text-gray-600 mb-6">Centralisez tous vos contacts et suivez leur progression dans votre pipeline commercial avec notre système de scoring automatique.</p>
+                        <ul class="text-sm text-gray-600 space-y-2">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>Scoring automatique</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>Suivi des interactions</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>Alertes de relance</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-2xl p-8 card-hover">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                            <i data-lucide="trending-up" class="w-6 h-6 text-green-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">KPI & Analytics</h3>
+                        <p class="text-gray-600 mb-6">Suivez vos performances en temps réel avec des indicateurs métier adaptés à l'immobilier français.</p>
+                        <ul class="text-sm text-gray-600 space-y-2">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>Valeur du pipeline</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>Taux de conversion</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>SLA de réponse</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-2xl p-8 card-hover">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                            <i data-lucide="calendar" class="w-6 h-6 text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Automatisation</h3>
+                        <p class="text-gray-600 mb-6">Automatisez vos tâches répétitives et ne ratez plus aucune opportunité commerciale.</p>
+                        <ul class="text-sm text-gray-600 space-y-2">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>Relances automatiques</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>Export PDF/CSV</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>Création RDV (.ics)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advantages Section -->
+        <section id="avantages" class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="text-4xl font-bold text-gray-900 mb-6">Pourquoi choisir Redweyne ?</h2>
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-primary-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">100% Français & RGPD</h3>
+                                    <p class="text-gray-600">Solution développée en France, conforme RGPD avec hébergement sécurisé de vos données clients.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                    <i data-lucide="zap" class="w-4 h-4 text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Interface Intuitive</h3>
+                                    <p class="text-gray-600">Design moderne et ergonomique pensé pour les professionnels de l'immobilier en France.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                    <i data-lucide="smartphone" class="w-4 h-4 text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Mobile-First</h3>
+                                    <p class="text-gray-600">Accédez à vos prospects et KPI depuis n'importe quel appareil, même en déplacement.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <!-- Modern dashboard preview mockup -->
+                        <div class="bg-white rounded-2xl shadow-2xl p-6 transform rotate-2">
+                            <div class="bg-gray-100 rounded-lg h-48 mb-4 flex items-center justify-center">
+                                <i data-lucide="bar-chart-3" class="w-16 h-16 text-gray-400"></i>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                                <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                                <div class="flex space-x-2">
+                                    <div class="h-8 bg-primary-100 rounded flex-1"></div>
+                                    <div class="h-8 bg-green-100 rounded flex-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 bg-white rounded-2xl shadow-xl p-6 transform -rotate-1 -z-10">
+                            <div class="bg-gray-100 rounded-lg h-48 mb-4"></div>
+                            <div class="space-y-3">
+                                <div class="h-4 bg-gray-200 rounded w-2/3"></div>
+                                <div class="h-4 bg-gray-200 rounded w-4/5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 bg-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-bold text-gray-900 mb-6">Prêt à booster vos ventes ?</h2>
+                <p class="text-xl text-gray-600 mb-8">Rejoignez les agents immobiliers qui nous font confiance</p>
+                <button onclick="showLoginModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-xl text-lg font-semibold card-hover transition-colors">
+                    Accéder à mon CRM
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">Redweyne</h3>
+                        <p class="text-gray-300">CRM immobilier français pour les professionnels exigeants.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-4">Fonctionnalités</h4>
+                        <ul class="space-y-2 text-gray-300">
+                            <li>Gestion des prospects</li>
+                            <li>Pipeline commercial</li>
+                            <li>KPI & Analytics</li>
+                            <li>Export & Automatisation</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-4">Contact</h4>
+                        <p class="text-gray-300">support@redweyne.fr</p>
+                        <p class="text-gray-300">+33 1 23 45 67 89</p>
+                    </div>
+                </div>
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                    <p>&copy; 2024 Redweyne. Tous droits réservés. Conforme RGPD.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Connexion Agent</h2>
+                <p class="text-gray-600">Accédez à votre tableau de bord CRM</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Identifiant</label>
+                    <input type="text" id="username" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Votre identifiant" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                    <input type="password" id="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Votre mot de passe" required>
+                </div>
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                        Se connecter
+                    </button>
+                </div>
+            </form>
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-800 font-medium mb-2">Identifiants de démonstration :</p>
+                <p class="text-sm text-blue-700">👤 <strong>alice.martin</strong> / 🔑 <strong>demo123</strong></p>
+                <p class="text-sm text-blue-700">👤 <strong>ben.leroy</strong> / 🔑 <strong>demo123</strong></p>
+            </div>
+            <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- CRM Dashboard Section -->
+    <div id="crm-dashboard" class="hidden min-h-screen bg-gray-50">
+        <!-- CRM Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4">
+                        <h1 class="text-2xl font-bold text-primary-700">Redweyne CRM</h1>
+                        <span class="text-sm text-gray-500" id="current-agent">Agent: Alice Martin</span>
+                    </div>
+                    
+                    <!-- Agent Selector -->
+                    <div class="flex items-center space-x-4">
+                        <select id="agent-selector" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500">
+                            <option value="ag1">Alice Martin</option>
+                            <option value="ag2">Benjamin Leroy</option>
+                            <option value="rwd">Redweyne (Global)</option>
+                        </select>
+                        
+                        <button onclick="showLandingPage()" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm transition-colors">
+                            Retour au site
+                        </button>
+                        
+                        <button onclick="logout()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            Déconnexion
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CRM Navigation Tabs -->
+        <nav class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-8">
+                    <button onclick="setActiveTab('tableau')" class="tab-button active border-b-2 border-primary-600 text-primary-600 py-4 px-1 text-sm font-medium">
+                        Tableau Agent
+                    </button>
+                    <button onclick="setActiveTab('opportunites')" class="tab-button text-gray-500 hover:text-gray-700 py-4 px-1 text-sm font-medium border-b-2 border-transparent">
+                        Opportunités
+                    </button>
+                    <button onclick="setActiveTab('pipeline')" class="tab-button text-gray-500 hover:text-gray-700 py-4 px-1 text-sm font-medium border-b-2 border-transparent">
+                        Pipeline
+                    </button>
+                    <button onclick="setActiveTab('prospects')" class="tab-button text-gray-500 hover:text-gray-700 py-4 px-1 text-sm font-medium border-b-2 border-transparent">
+                        Prospects
+                    </button>
+                    <button onclick="setActiveTab('scripts')" class="tab-button text-gray-500 hover:text-gray-700 py-4 px-1 text-sm font-medium border-b-2 border-transparent">
+                        Scripts
+                    </button>
+                    <button onclick="setActiveTab('parametres')" class="tab-button text-gray-500 hover:text-gray-700 py-4 px-1 text-sm font-medium border-b-2 border-transparent">
+                        Paramètres
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- CRM Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- Tableau Agent Tab -->
+            <div id="tab-tableau" class="tab-content">
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">SLA Moyen</p>
+                                <p class="text-2xl font-bold text-gray-900" id="kpi-sla">24 min</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i data-lucide="clock" class="w-6 h-6 text-blue-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm">
+                                <i data-lucide="trending-down" class="w-4 h-4 text-green-500 mr-1"></i>
+                                <span class="text-green-600 font-medium">-12%</span>
+                                <span class="text-gray-500 ml-1">vs. mois dernier</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Valeur Pipeline</p>
+                                <p class="text-2xl font-bold text-gray-900" id="kpi-pipeline">€42 500</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i data-lucide="euro" class="w-6 h-6 text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mr-1"></i>
+                                <span class="text-green-600 font-medium">+18%</span>
+                                <span class="text-gray-500 ml-1">vs. mois dernier</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Exclusivités</p>
+                                <p class="text-2xl font-bold text-gray-900" id="kpi-exclusifs">3</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i data-lucide="crown" class="w-6 h-6 text-purple-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mr-1"></i>
+                                <span class="text-green-600 font-medium">+1</span>
+                                <span class="text-gray-500 ml-1">cette semaine</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">RDV (7j)</p>
+                                <p class="text-2xl font-bold text-gray-900" id="kpi-rdv">5</p>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <i data-lucide="calendar" class="w-6 h-6 text-orange-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm">
+                                <i data-lucide="calendar-check" class="w-4 h-4 text-blue-500 mr-1"></i>
+                                <span class="text-blue-600 font-medium">2 aujourd'hui</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Chart -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-6">Évolution des Prospects (30 jours)</h3>
+                    <div class="h-80 bg-gray-50 rounded-lg flex items-center justify-center">
+                        <!-- TODO: Implement chart with Recharts -->
+                        <div class="text-center text-gray-500">
+                            <i data-lucide="bar-chart-3" class="w-12 h-12 mx-auto mb-2"></i>
+                            <p>Graphique des performances</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-6">Activité Récente</h3>
+                    <div class="space-y-4" id="recent-activity">
+                        <div class="flex items-start space-x-3 p-3 rounded-lg bg-blue-50">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i data-lucide="phone" class="w-4 h-4 text-blue-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Appel avec Sophie Bernard</p>
+                                <p class="text-sm text-gray-500">Il y a 2 heures • Durée: 15 min</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3 p-3 rounded-lg bg-green-50">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <i data-lucide="file-text" class="w-4 h-4 text-green-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Mandat signé - Claire Dupuis</p>
+                                <p class="text-sm text-gray-500">Il y a 1 jour • Valeur: €19 000</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3 p-3 rounded-lg bg-purple-50">
+                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i data-lucide="calendar-plus" class="w-4 h-4 text-purple-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">RDV planifié - Karim Haddad</p>
+                                <p class="text-sm text-gray-500">Il y a 3 jours • Demain 14h30</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Opportunités Tab -->
+            <div id="tab-opportunites" class="tab-content hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Opportunités Prioritaires</h2>
+                    <p class="text-gray-600">Prospects avec valeur attendue > €3 000 ou RDV imminent</p>
+                </div>
+                
+                <!-- Opportunités Cards -->
+                <div class="grid gap-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 prospect-card">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+                                    <i data-lucide="user" class="w-5 h-5 text-primary-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">Sophie Bernard</h3>
+                                    <p class="text-sm text-gray-500">Vendeur • Appartement • Nantes</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-green-600">€12 800</div>
+                                <div class="text-sm text-gray-500">Valeur attendue</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Qualifié
+                            </span>
+                            <span class="flex items-center">
+                                <i data-lucide="crown" class="w-4 h-4 mr-1 text-purple-500"></i>
+                                Exclusif
+                            </span>
+                            <span>Score: 78</span>
+                        </div>
+                        
+                        <p class="text-sm text-gray-600 mb-4">Déménagement professionnel en septembre. Très réactive, préfère appel le midi.</p>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm text-gray-500">
+                                Prochaine action: <span class="font-medium">Dans 2 jours</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Appeler">
+                                    <i data-lucide="phone" class="w-4 h-4"></i>
+                                </button>
+                                <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="SMS">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                </button>
+                                <button class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="RDV">
+                                    <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 prospect-card">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i data-lucide="user" class="w-5 h-5 text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">Karim Haddad</h3>
+                                    <p class="text-sm text-gray-500">Acheteur • Maison • Rezé</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-green-600">€4 500</div>
+                                <div class="text-sm text-gray-500">Valeur attendue</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                Contacté
+                            </span>
+                            <span>Budget: €450k</span>
+                            <span>Score: 65</span>
+                        </div>
+                        
+                        <p class="text-sm text-gray-600 mb-4">Nouveau bébé, besoin d'une chambre en plus. Ok pour visio.</p>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                    <i data-lucide="calendar" class="w-3 h-3 mr-1"></i>
+                                    RDV Demain 14h30
+                                </span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Appeler">
+                                    <i data-lucide="phone" class="w-4 h-4"></i>
+                                </button>
+                                <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="SMS">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                </button>
+                                <button class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="RDV">
+                                    <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pipeline Tab -->
+            <div id="tab-pipeline" class="tab-content hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Pipeline Commercial</h2>
+                    <p class="text-gray-600">Vue Kanban de vos prospects par statut</p>
+                </div>
+                
+                <!-- Kanban Board -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Nouveau Column -->
+                    <div class="bg-gray-100 rounded-xl p-4 kanban-column">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-900">Nouveau</h3>
+                            <span class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">1</span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200 cursor-pointer prospect-card">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-gray-900 text-sm">Claire Dupuis</h4>
+                                    <span class="text-xs text-gray-500">78</span>
+                                </div>
+                                <p class="text-xs text-gray-600 mb-3">Succession, vente discrète</p>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-green-600 font-medium">€19 000</span>
+                                    <span class="flex items-center text-purple-600">
+                                        <i data-lucide="crown" class="w-3 h-3 mr-1"></i>
+                                        Excl.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contacté Column -->
+                    <div class="bg-blue-50 rounded-xl p-4 kanban-column">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-900">Contacté</h3>
+                            <span class="bg-blue-200 text-blue-700 text-xs px-2 py-1 rounded-full">1</span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white rounded-lg p-4 shadow-sm border border-blue-200 cursor-pointer prospect-card">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-gray-900 text-sm">Karim Haddad</h4>
+                                    <span class="text-xs text-gray-500">65</span>
+                                </div>
+                                <p class="text-xs text-gray-600 mb-3">Recherche maison - nouveau bébé</p>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-green-600 font-medium">€4 500</span>
+                                    <span class="text-blue-600">€450k budget</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Qualifié Column -->
+                    <div class="bg-green-50 rounded-xl p-4 kanban-column">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-900">Qualifié</h3>
+                            <span class="bg-green-200 text-green-700 text-xs px-2 py-1 rounded-full">1</span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white rounded-lg p-4 shadow-sm border border-green-200 cursor-pointer prospect-card">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-gray-900 text-sm">Sophie Bernard</h4>
+                                    <span class="text-xs text-gray-500">78</span>
+                                </div>
+                                <p class="text-xs text-gray-600 mb-3">Déménagement professionnel</p>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-green-600 font-medium">€12 800</span>
+                                    <span class="flex items-center text-purple-600">
+                                        <i data-lucide="crown" class="w-3 h-3 mr-1"></i>
+                                        Excl.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- RDV Fixé Column -->
+                    <div class="bg-orange-50 rounded-xl p-4 kanban-column">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-900">RDV Fixé</h3>
+                            <span class="bg-orange-200 text-orange-700 text-xs px-2 py-1 rounded-full">0</span>
+                        </div>
+                        
+                        <div class="text-center text-gray-400 mt-12">
+                            <i data-lucide="calendar" class="w-8 h-8 mx-auto mb-2"></i>
+                            <p class="text-sm">Aucun RDV fixé</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prospects Tab -->
+            <div id="tab-prospects" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Gestion des Prospects</h2>
+                        <p class="text-gray-600">Tous vos contacts et leads centralisés</p>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="flex space-x-3">
+                        <button onclick="exportCSV()" class="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Export CSV</span>
+                        </button>
+                        
+                        <label class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            <span>Import CSV</span>
+                            <input type="file" accept=".csv" class="hidden" onchange="handleCSVImport(event)">
+                        </label>
+                        
+                        <button onclick="exportPDF()" class="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                            <span>Export PDF</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Filters and Search -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+                                </div>
+                                <input type="text" id="search-prospects" placeholder="Rechercher par nom, email, téléphone..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <select id="filter-type" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                            <option value="Tous">Tous types</option>
+                            <option value="Vendeur">Vendeurs</option>
+                            <option value="Acheteur">Acheteurs</option>
+                        </select>
+                        
+                        <select id="filter-status" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                            <option value="Tous">Tous statuts</option>
+                            <option value="Nouveau">Nouveau</option>
+                            <option value="Contacté">Contacté</option>
+                            <option value="Qualifié">Qualifié</option>
+                            <option value="RDV fixé">RDV fixé</option>
+                            <option value="Mandat signé">Mandat signé</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Prospects Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valeur</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="prospects-table-body">
+                                <!-- Sample Row -->
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+                                                <i data-lucide="user" class="w-5 h-5 text-primary-600"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Sophie Bernard</div>
+                                                <div class="text-sm text-gray-500">sophie.bernard@example.com</div>
+                                                <div class="text-sm text-gray-500">+33 6 12 34 56 78</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            Vendeur
+                                        </span>
+                                        <div class="text-sm text-gray-500 mt-1">Appartement • Nantes</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            Qualifié
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">€12 800</div>
+                                        <div class="text-sm text-gray-500">Prix: €320k</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-medium text-gray-900 mr-2">78</span>
+                                            <div class="w-16 bg-gray-200 rounded-full h-2">
+                                                <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Appeler">
+                                                <i data-lucide="phone" class="w-4 h-4"></i>
+                                            </button>
+                                            <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="SMS">
+                                                <i data-lucide="message-square" class="w-4 h-4"></i>
+                                            </button>
+                                            <button class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="WhatsApp">
+                                                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                                            </button>
+                                            <button class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors" title="RDV">
+                                                <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <i data-lucide="user" class="w-5 h-5 text-blue-600"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Karim Haddad</div>
+                                                <div class="text-sm text-gray-500">karim.haddad@example.com</div>
+                                                <div class="text-sm text-gray-500">+33 7 98 76 54 32</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            Acheteur
+                                        </span>
+                                        <div class="text-sm text-gray-500 mt-1">Maison • Rezé</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            Contacté
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">€4 500</div>
+                                        <div class="text-sm text-gray-500">Budget: €450k</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-medium text-gray-900 mr-2">65</span>
+                                            <div class="w-16 bg-gray-200 rounded-full h-2">
+                                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 65%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Appeler">
+                                                <i data-lucide="phone" class="w-4 h-4"></i>
+                                            </button>
+                                            <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="SMS">
+                                                <i data-lucide="message-square" class="w-4 h-4"></i>
+                                            </button>
+                                            <button class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="WhatsApp">
+                                                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                                            </button>
+                                            <button class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors" title="RDV">
+                                                <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scripts Tab -->
+            <div id="tab-scripts" class="tab-content hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Scripts d'Appel</h2>
+                    <p class="text-gray-600">Templates et guides pour vos conversations commerciales</p>
+                </div>
+                
+                <div class="grid gap-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Premier Contact Vendeur</h3>
+                        <div class="bg-gray-50 rounded-lg p-4 font-mono text-sm">
+                            <p class="mb-2">"Bonjour [Nom], c'est [Votre nom] de l'agence Redweyne."</p>
+                            <p class="mb-2">"Vous avez récemment fait une demande d'estimation pour votre [type de bien] à [ville]."</p>
+                            <p class="mb-2">"Je vous appelle car nous avons actuellement une forte demande sur ce secteur..."</p>
+                            <p class="text-gray-600 italic">→ Objectif: Fixer un RDV d'estimation</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Premier Contact Acheteur</h3>
+                        <div class="bg-gray-50 rounded-lg p-4 font-mono text-sm">
+                            <p class="mb-2">"Bonjour [Nom], c'est [Votre nom] de l'agence Redweyne."</p>
+                            <p class="mb-2">"Vous recherchez un [type de bien] secteur [zone] dans un budget de [budget]€."</p>
+                            <p class="mb-2">"J'ai peut-être quelque chose qui va vous intéresser..."</p>
+                            <p class="text-gray-600 italic">→ Objectif: Qualifier le besoin et fixer une visite</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Relance Après RDV</h3>
+                        <div class="bg-gray-50 rounded-lg p-4 font-mono text-sm">
+                            <p class="mb-2">"Bonjour [Nom], suite à notre rendez-vous de [date]..."</p>
+                            <p class="mb-2">"Avez-vous eu le temps de réfléchir à notre proposition ?"</p>
+                            <p class="mb-2">"Je suis à votre disposition pour répondre à vos questions..."</p>
+                            <p class="text-gray-600 italic">→ Objectif: Lever les objections et conclure</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paramètres Tab -->
+            <div id="tab-parametres" class="tab-content hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Paramètres</h2>
+                    <p class="text-gray-600">Configuration de votre CRM</p>
+                </div>
+                
+                <div class="grid gap-6">
+                    <!-- Relances automatiques -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Relances Automatiques</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Délais de relance (en jours)</label>
+                                <div class="flex space-x-2">
+                                    <input type="number" value="2" class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                                    <input type="number" value="5" class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                                    <input type="number" value="10" class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">Exemple: J+2, J+5, J+10</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Agents -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Gestion des Agents</h3>
+                        <div class="space-y-4">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Alice Martin</h4>
+                                        <p class="text-sm text-gray-500">alice.martin@agence.fr</p>
+                                    </div>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Benjamin Leroy</h4>
+                                        <p class="text-sm text-gray-500">ben.leroy@agence.fr</p>
+                                    </div>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- RGPD -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Conformité RGPD</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <i data-lucide="shield-check" class="w-5 h-5 text-green-600 mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-green-900">Données sécurisées</p>
+                                        <p class="text-sm text-green-700">Hébergement français, chiffrement SSL</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <i data-lucide="user-check" class="w-5 h-5 text-blue-600 mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-blue-900">Consentements</p>
+                                        <p class="text-sm text-blue-700">Suivi automatique des consentements clients</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 rounded-lg text-sm font-medium transition-colors">
+                                Exporter les données (format RGPD)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+        
+        // Global State
+        let currentAgent = 'ag1';
+        let activeTab = 'tableau';
+        let isLoggedIn = false;
+        
+        // Sample data matching the original React component structure
+        const SAMPLE_PROSPECTS = [
+            {
+                id: "P-1001",
+                nomComplet: "Sophie Bernard",
+                telephone: "+33 6 12 34 56 78",
+                email: "sophie.bernard@example.com",
+                type: "Vendeur",
+                ville: "Nantes",
+                typeBien: "Appartement",
+                budget: 0,
+                prixEstime: 320000,
+                tauxHonoraires: 0.04,
+                exclusif: false,
+                motivation: "Déménagement professionnel en septembre",
+                timeline: "< 3 mois",
+                statut: "Qualifié",
+                score: 78,
+                agentId: "ag1",
+                notes: "Très réactive, préfère appel le midi."
+            },
+            {
+                id: "P-1002", 
+                nomComplet: "Karim Haddad",
+                telephone: "+33 7 98 76 54 32",
+                email: "karim.haddad@example.com",
+                type: "Acheteur",
+                ville: "Rezé",
+                typeBien: "Maison",
+                budget: 450000,
+                prixEstime: 0,
+                tauxHonoraires: 0.03,
+                exclusif: false,
+                motivation: "Nouveau bébé, besoin d'une chambre en plus",
+                timeline: "3–6 mois",
+                statut: "Contacté",
+                score: 65,
+                agentId: "ag2",
+                notes: "Ok pour visio."
+            },
+            {
+                id: "P-1003",
+                nomComplet: "Claire Dupuis",
+                telephone: "+33 6 22 33 44 55",
+                email: "",
+                type: "Vendeur",
+                ville: "Saint-Herblain",
+                typeBien: "Maison",
+                budget: 0,
+                prixEstime: 380000,
+                tauxHonoraires: 0.05,
+                exclusif: true,
+                motivation: "Succession, souhaite vendre discrètement",
+                timeline: "< 1 mois",
+                statut: "Nouveau",
+                score: 78,
+                agentId: "rwd",
+                notes: "Ne pas laisser de message vocal."
+            }
+        ];
+        
+        // Authentication
+        function showLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+        
+        function hideLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+        
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Simple demo authentication
+            const validCredentials = [
+                { username: 'alice.martin', password: 'demo123', agentId: 'ag1', name: 'Alice Martin' },
+                { username: 'ben.leroy', password: 'demo123', agentId: 'ag2', name: 'Benjamin Leroy' },
+                { username: 'admin', password: 'admin123', agentId: 'rwd', name: 'Redweyne (Global)' }
+            ];
+            
+            const user = validCredentials.find(cred => 
+                cred.username === username && cred.password === password
+            );
+            
+            if (user) {
+                isLoggedIn = true;
+                currentAgent = user.agentId;
+                
+                // Update current agent display
+                document.getElementById('current-agent').textContent = `Agent: ${user.name}`;
+                document.getElementById('agent-selector').value = user.agentId;
+                
+                // Hide landing page and show CRM
+                document.getElementById('landing-page').classList.add('hidden');
+                document.getElementById('crm-dashboard').classList.remove('hidden');
+                hideLoginModal();
+                
+                // Reset form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            } else {
+                alert('Identifiants incorrects. Utilisez les identifiants de démonstration fournis.');
+            }
+        }
+        
+        function logout() {
+            isLoggedIn = false;
+            currentAgent = null;
+            showLandingPage();
+        }
+        
+        function showLandingPage() {
+            document.getElementById('crm-dashboard').classList.add('hidden');
+            document.getElementById('landing-page').classList.remove('hidden');
+        }
+        
+        // Tab Management
+        function setActiveTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.add('hidden'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active', 'border-primary-600', 'text-primary-600');
+                button.classList.add('text-gray-500', 'border-transparent');
+            });
+            
+            // Show selected tab content
+            const selectedTab = document.getElementById(`tab-${tabName}`);
+            if (selectedTab) {
+                selectedTab.classList.remove('hidden');
+            }
+            
+            // Update active tab button
+            const activeButton = document.querySelector(`button[onclick="setActiveTab('${tabName}')"]`);
+            if (activeButton) {
+                activeButton.classList.remove('text-gray-500', 'border-transparent');
+                activeButton.classList.add('active', 'border-primary-600', 'text-primary-600');
+            }
+            
+            activeTab = tabName;
+        }
+        
+        // Agent Selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const agentSelector = document.getElementById('agent-selector');
+            if (agentSelector) {
+                agentSelector.addEventListener('change', function(e) {
+                    currentAgent = e.target.value;
+                    const agentNames = {
+                        'ag1': 'Alice Martin',
+                        'ag2': 'Benjamin Leroy', 
+                        'rwd': 'Redweyne (Global)'
+                    };
+                    document.getElementById('current-agent').textContent = `Agent: ${agentNames[currentAgent]}`;
+                    
+                    // TODO: Update dashboard data based on selected agent
+                    updateDashboardForAgent(currentAgent);
+                });
+            }
+        });
+        
+        function updateDashboardForAgent(agentId) {
+            // TODO: Filter prospects by agent and update KPIs
+            console.log('Updating dashboard for agent:', agentId);
+        }
+        
+        // Export Functions  
+        function exportCSV() {
+            // TODO: Implement CSV export functionality
+            alert('Export CSV - Fonctionnalité en cours d\'implémentation');
+        }
+        
+        function exportPDF() {
+            // TODO: Implement PDF export using jsPDF
+            alert('Export PDF - Fonctionnalité en cours d\'implémentation');
+        }
+        
+        function handleCSVImport(event) {
+            // TODO: Implement CSV import functionality
+            alert('Import CSV - Fonctionnalité en cours d\'implémentation');
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('login-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideLoginModal();
+            }
+        });
+        
+        // Initialize icons on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

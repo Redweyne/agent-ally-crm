@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redweyne - CRM Immobilier Professionnel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe', 
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669'
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'ui-sans-serif', 'system-ui']
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- @COMPONENT: Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <div class="bg-primary-600 text-white p-2 rounded-lg mr-3">
+                        <i data-lucide="home" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">Redweyne</span>
+                    <span class="ml-2 text-sm text-gray-500">CRM Immobilier</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <button data-tab="landing" class="nav-btn bg-primary-50 text-primary-700 px-3 py-2 rounded-md text-sm font-medium">
+                            Accueil
+                        </button>
+                        <button data-tab="dashboard" class="nav-btn text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                            Tableau de Bord
+                        </button>
+                        <button data-tab="opportunities" class="nav-btn text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                            Opportunités
+                        </button>
+                        <button data-tab="pipeline" class="nav-btn text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                            Pipeline
+                        </button>
+                        <button data-tab="prospects" class="nav-btn text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                            Prospects
+                        </button>
+                    </div>
+                </div>
+
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <button class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700">
+                        <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
+                        Nouveau Lead
+                    </button>
+                    <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                        <i data-lucide="user" class="w-4 h-4 text-gray-600"></i>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button class="mobile-menu-btn text-gray-500 hover:text-gray-700">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <!-- @COMPONENT: MobileMenu -->
+    <div class="mobile-menu hidden md:hidden bg-white border-b border-gray-200">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            <button data-tab="landing" class="mobile-nav-btn block px-3 py-2 text-base font-medium text-primary-700 bg-primary-50 rounded-md w-full text-left">
+                Accueil
+            </button>
+            <button data-tab="dashboard" class="mobile-nav-btn block px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-700 rounded-md w-full text-left">
+                Tableau de Bord
+            </button>
+            <button data-tab="opportunities" class="mobile-nav-btn block px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-700 rounded-md w-full text-left">
+                Opportunités
+            </button>
+            <button data-tab="pipeline" class="mobile-nav-btn block px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-700 rounded-md w-full text-left">
+                Pipeline
+            </button>
+            <button data-tab="prospects" class="mobile-nav-btn block px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-700 rounded-md w-full text-left">
+                Prospects
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MobileMenu -->
+
+    <!-- @COMPONENT: LandingPage -->
+    <div id="landing-content" class="tab-content">
+        <!-- Hero Section -->
+        <section class="relative bg-gradient-to-r from-primary-600 to-primary-700 overflow-hidden">
+            <!-- Modern cityscape with high-rise buildings at sunset -->
+            <div class="absolute inset-0 bg-black opacity-20"></div>
+            <div class="absolute inset-0" style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080'); background-size: cover; background-position: center; opacity: 0.3;"></div>
+            
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+                <div class="text-center">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+                        Le CRM qui fait <span class="text-yellow-400">vendre plus</span>
+                    </h1>
+                    <p class="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
+                        Gérez vos prospects, suivez votre pipeline et boostez vos commissions avec l'outil préféré des agents immobiliers français.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button data-tab="dashboard" class="bg-white text-primary-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
+                            Voir mon Tableau de Bord
+                        </button>
+                        <button class="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors">
+                            Démo Gratuite
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI Preview Section -->
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Vos KPI en un coup d'œil</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Pilotez votre activité avec des métriques qui comptent vraiment</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="bg-blue-500 p-3 rounded-lg">
+                                <i data-lucide="clock" class="w-6 h-6 text-white"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-blue-600">18 min</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900">SLA Moyen</h3>
+                        <p class="text-sm text-gray-600">Temps de première réponse</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="bg-green-500 p-3 rounded-lg">
+                                <i data-lucide="euro" class="w-6 h-6 text-white"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-green-600">127K€</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900">Pipeline</h3>
+                        <p class="text-sm text-gray-600">Valeur totale attendue</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="bg-purple-500 p-3 rounded-lg">
+                                <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-purple-600">12</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900">Exclusivités</h3>
+                        <p class="text-sm text-gray-600">Mandats exclusifs actifs</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="bg-yellow-500 p-3 rounded-lg">
+                                <i data-lucide="calendar" class="w-6 h-6 text-white"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-yellow-600">8</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900">RDV 7 jours</h3>
+                        <p class="text-sm text-gray-600">Rendez-vous programmés</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Tout ce dont vous avez besoin</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Un CRM complet pensé spécialement pour l'immobilier français</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-primary-100 p-3 rounded-lg w-fit mb-4">
+                            <i data-lucide="users" class="w-6 h-6 text-primary-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Gestion Prospects</h3>
+                        <p class="text-gray-600 mb-4">Centralisez tous vos contacts avec scoring automatique et historique complet.</p>
+                        <ul class="text-sm text-gray-500 space-y-1">
+                            <li>• Import/Export CSV</li>
+                            <li>• Scoring intelligence</li>
+                            <li>• Historique des interactions</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-green-100 p-3 rounded-lg w-fit mb-4">
+                            <i data-lucide="phone" class="w-6 h-6 text-green-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Contact Multi-canal</h3>
+                        <p class="text-gray-600 mb-4">Appelez, SMS et WhatsApp directement depuis l'interface.</p>
+                        <ul class="text-sm text-gray-500 space-y-1">
+                            <li>• Liens téléphone automatiques</li>
+                            <li>• Messages SMS pré-remplis</li>
+                            <li>• Integration WhatsApp</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-yellow-100 p-3 rounded-lg w-fit mb-4">
+                            <i data-lucide="trending-up" class="w-6 h-6 text-yellow-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Pipeline Visuel</h3>
+                        <p class="text-gray-600 mb-4">Suivez l'avancement de vos affaires en temps réel.</p>
+                        <ul class="text-sm text-gray-500 space-y-1">
+                            <li>• Vue Kanban intuitive</li>
+                            <li>• Calcul probabilités</li>
+                            <li>• Prévisions de CA</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-purple-100 p-3 rounded-lg w-fit mb-4">
+                            <i data-lucide="calendar-days" class="w-6 h-6 text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Agenda Intégré</h3>
+                        <p class="text-gray-600 mb-4">Créez des RDV et synchronisez avec votre calendrier.</p>
+                        <ul class="text-sm text-gray-500 space-y-1">
+                            <li>• Export .ICS automatique</li>
+                            <li>• Rappels personnalisés</li>
+                            <li>• Planning de relance</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-red-100 p-3 rounded-lg w-fit mb-4">
+                            <i data-lucide="file-text" class="w-6 h-6 text-red-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Reporting Avancé</h3>
+                        <p class="text-gray-600 mb-4">Exportez vos données et générez des rapports PDF.</p>
+                        <ul class="text-sm text-gray-500 space-y-1">
+                            <li>• Rapports PDF automatiques</li>
+                            <li>• Statistiques détaillées</li>
+                            <li>• Analyse de performance</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-indigo-100 p-3 rounded-lg w-fit mb-4">
+                            <i data-lucide="smartphone" class="w-6 h-6 text-indigo-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Mobile First</h3>
+                        <p class="text-gray-600 mb-4">Accédez à votre CRM partout, sur tous vos appareils.</p>
+                        <ul class="text-sm text-gray-500 space-y-1">
+                            <li>• Interface responsive</li>
+                            <li>• Optimisé tactile</li>
+                            <li>• Hors-ligne partiel</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lead Capture Form -->
+        <section class="py-16 bg-primary-600">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-2xl p-8 shadow-xl">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-4">Vous cherchez à vendre ou acheter ?</h2>
+                        <p class="text-gray-600">Laissez-nous vos coordonnées, notre équipe vous rappelle sous 24h</p>
+                    </div>
+
+                    <form class="space-y-6" data-mock="true">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Nom complet *</label>
+                                <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Jean Dupont">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone *</label>
+                                <input type="tel" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="+33 6 12 34 56 78">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="jean.dupont@email.com">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Type de projet</label>
+                                <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                    <option>Vendre un bien</option>
+                                    <option>Acheter un bien</option>
+                                    <option>Investissement locatif</option>
+                                    <option>Estimation gratuite</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
+                                <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Nantes, Loire-Atlantique">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Votre projet en quelques mots</label>
+                            <textarea rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Décrivez-nous votre projet immobilier..."></textarea>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" required class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                            <label class="ml-2 text-sm text-gray-600">
+                                J'accepte d'être recontacté par Redweyne dans le cadre de ma demande *
+                            </label>
+                        </div>
+
+                        <button type="submit" class="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+                            Envoyer ma demande
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Ce qu'en disent nos agents</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Plus de 1000 agents immobiliers nous font confiance</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400">
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">"Redweyne a révolutionné ma façon de travailler. Je suis passé de 15 ventes par an à 25, tout simplement parce que je ne perds plus aucun prospect."</p>
+                        <div class="flex items-center">
+                            <!-- Professional headshot of a real estate agent in business attire -->
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100" alt="Agent immobilier souriant" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <div class="font-semibold text-gray-900">Marc Dubois</div>
+                                <div class="text-sm text-gray-500">Agent indépendant, Lyon</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400">
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">"Interface intuitive, scoring des prospects au top. En 6 mois j'ai doublé mon chiffre d'affaires. L'outil indispensable !"</p>
+                        <div class="flex items-center">
+                            <!-- Professional woman real estate agent with confident smile -->
+                            <img src="https://pixabay.com/get/gb0893e9f8751d56301aec94eca85196210e31a8d2bccffba0ce048d72370b2bf3093edeaad99151e9d736a506cd286a54a3cf91cf285a4778f85e0e36ac23edd_1280.jpg" alt="Agente immobilière professionnelle" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <div class="font-semibold text-gray-900">Sarah Lemaire</div>
+                                <div class="text-sm text-gray-500">Directrice d'agence, Bordeaux</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400">
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">"Le suivi automatique des relances et les KPI en temps réel m'ont fait gagner 2h par jour. Plus de stress, tout est sous contrôle."</p>
+                        <div class="flex items-center">
+                            <!-- Mature professional real estate broker in suit -->
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100" alt="Courtier immobilier expérimenté" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <div class="font-semibold text-gray-900">Pierre Moreau</div>
+                                <div class="text-sm text-gray-500">Courtier, Marseille</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- @END_COMPONENT: LandingPage -->
+
+    <!-- @COMPONENT: Dashboard -->
+    <div id="dashboard-content" class="tab-content hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header with Agent Selection -->
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Tableau de Bord Agent</h1>
+                        <p class="text-gray-600 mt-1">Vue d'ensemble de votre activité commerciale</p>
+                    </div>
+                    <div class="mt-4 sm:mt-0">
+                        <select id="agent-selector" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="rwd">Redweyne (Global)</option>
+                            <option value="ag1">Alice Martin</option>
+                            <option value="ag2">Benjamin Leroy</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">SLA Moyen</p>
+                            <p class="text-2xl font-bold text-gray-900">18 min</p>
+                            <p class="text-sm text-green-600">↓ 12% vs mois dernier</p>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-lg">
+                            <i data-lucide="clock" class="w-6 h-6 text-blue-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Valeur Pipeline</p>
+                            <p class="text-2xl font-bold text-gray-900">127 340€</p>
+                            <p class="text-sm text-green-600">↑ 23% vs mois dernier</p>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-lg">
+                            <i data-lucide="euro" class="w-6 h-6 text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Exclusivités</p>
+                            <p class="text-2xl font-bold text-gray-900">12</p>
+                            <p class="text-sm text-blue-600">2 signatures cette semaine</p>
+                        </div>
+                        <div class="bg-purple-100 p-3 rounded-lg">
+                            <i data-lucide="shield-check" class="w-6 h-6 text-purple-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">RDV 7 jours</p>
+                            <p class="text-2xl font-bold text-gray-900">8</p>
+                            <p class="text-sm text-yellow-600">3 RDV aujourd'hui</p>
+                        </div>
+                        <div class="bg-yellow-100 p-3 rounded-lg">
+                            <i data-lucide="calendar" class="w-6 h-6 text-yellow-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Pipeline Chart -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Évolution Pipeline (30j)</h3>
+                    <div class="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+                        <!-- TODO: Implement chart with Recharts or similar library -->
+                        <div class="text-center">
+                            <i data-lucide="trending-up" class="w-12 h-12 text-gray-400 mx-auto mb-2"></i>
+                            <p class="text-gray-500">Graphique évolution pipeline</p>
+                            <p class="text-sm text-gray-400">Recharts integration needed</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conversion Funnel -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Entonnoir de Conversion</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Prospects</span>
+                            <span class="text-sm font-semibold">156</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: 100%"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Qualifiés</span>
+                            <span class="text-sm font-semibold">89</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 57%"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">RDV Fixés</span>
+                            <span class="text-sm font-semibold">34</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 22%"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Mandats Signés</span>
+                            <span class="text-sm font-semibold">12</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-500 h-2 rounded-full" style="width: 8%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Activité Récente</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3" data-mock="true">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-900">RDV confirmé avec Sophie Bernard</p>
+                            <p class="text-xs text-gray-500">Il y a 15 minutes</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3" data-mock="true">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-900">Nouveau prospect: Karim Haddad</p>
+                            <p class="text-xs text-gray-500">Il y a 1 heure</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3" data-mock="true">
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-900">Relance automatique envoyée</p>
+                            <p class="text-xs text-gray-500">Il y a 2 heures</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: Dashboard -->
+
+    <!-- @COMPONENT: Opportunities -->
+    <div id="opportunities-content" class="tab-content hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Opportunités</h1>
+                        <p class="text-gray-600 mt-1">Prospects à forte valeur et RDV imminents</p>
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex space-x-3">
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">
+                            <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>
+                            Export PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- High-Value Prospects -->
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Prospects Haute Valeur (>3000€)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- @MAP: highValueProspects.map(prospect => ( -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-semibold text-gray-900" data-bind="prospect.nomComplet">Sophie Bernard</h3>
+                                <p class="text-sm text-gray-600" data-bind="prospect.ville">Nantes</p>
+                            </div>
+                            <div class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                                Qualifié
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Valeur attendue:</span>
+                                <span class="font-semibold text-green-600" data-bind="prospect.expectedValue">12 800€</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Prix estimé:</span>
+                                <span class="font-medium" data-bind="prospect.prixEstime">320 000€</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Score:</span>
+                                <span class="font-medium" data-bind="prospect.score">78/100</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex space-x-2">
+                                <button class="text-blue-600 hover:text-blue-800">
+                                    <i data-lucide="phone" class="w-4 h-4"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-800">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <button class="text-xs text-gray-500 hover:text-gray-700">
+                                Voir détails
+                            </button>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+
+                    <!-- Additional mock cards -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Claire Dupuis</h3>
+                                <p class="text-sm text-gray-600">Saint-Herblain</p>
+                            </div>
+                            <div class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                                Nouveau
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Valeur attendue:</span>
+                                <span class="font-semibold text-green-600">9 500€</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Prix estimé:</span>
+                                <span class="font-medium">380 000€</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Score:</span>
+                                <span class="font-medium">65/100</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex space-x-2">
+                                <button class="text-blue-600 hover:text-blue-800">
+                                    <i data-lucide="phone" class="w-4 h-4"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-800">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <button class="text-xs text-gray-500 hover:text-gray-700">
+                                Voir détails
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Antoine Moreau</h3>
+                                <p class="text-sm text-gray-600">Rezé</p>
+                            </div>
+                            <div class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                                RDV fixé
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Valeur attendue:</span>
+                                <span class="font-semibold text-green-600">6 750€</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Prix estimé:</span>
+                                <span class="font-medium">450 000€</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Score:</span>
+                                <span class="font-medium">82/100</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex space-x-2">
+                                <button class="text-blue-600 hover:text-blue-800">
+                                    <i data-lucide="phone" class="w-4 h-4"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-800">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <button class="text-xs text-gray-500 hover:text-gray-700">
+                                Voir détails
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Appointments -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">RDV Imminents (7 jours)</h2>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date RDV</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valeur</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200" data-mock="true">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                                <span class="text-sm font-medium text-primary-700">SB</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Sophie Bernard</div>
+                                                <div class="text-sm text-gray-500">+33 6 12 34 56 78</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Demain 14h30</div>
+                                        <div class="text-sm text-gray-500">Estimation</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">
+                                            Vendeur
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        12 800€
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i data-lucide="phone" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-800">
+                                            <i data-lucide="calendar" class="w-4 h-4"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                                <span class="text-sm font-medium text-green-700">AM</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Antoine Moreau</div>
+                                                <div class="text-sm text-gray-500">+33 6 98 76 54 32</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Vendredi 10h00</div>
+                                        <div class="text-sm text-gray-500">Visite</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                            Acheteur
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        6 750€
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i data-lucide="phone" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-800">
+                                            <i data-lucide="calendar" class="w-4 h-4"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: Opportunities -->
+
+    <!-- @COMPONENT: Pipeline -->
+    <div id="pipeline-content" class="tab-content hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Pipeline Commercial</h1>
+                        <p class="text-gray-600 mt-1">Vue Kanban de vos prospects par statut</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kanban Board -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- @MAP: STATUTS.map(statut => ( -->
+                
+                <!-- Column: Nouveau -->
+                <div class="bg-gray-50 rounded-xl p-4" data-status="nouveau">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900">Nouveau</h3>
+                        <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">2</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-mock="true">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-medium text-gray-900 text-sm">Claire Dupuis</h4>
+                                <span class="text-xs text-gray-500">5%</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">Saint-Herblain • Maison</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold text-green-600">9 500€</span>
+                                <div class="flex space-x-1">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="phone" class="w-3 h-3"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i data-lucide="message-square" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-mock="true">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-medium text-gray-900 text-sm">Michel Dubois</h4>
+                                <span class="text-xs text-gray-500">5%</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">Orvault • Appartement</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold text-green-600">4 200€</span>
+                                <div class="flex space-x-1">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="phone" class="w-3 h-3"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i data-lucide="message-square" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column: Contacté -->
+                <div class="bg-blue-50 rounded-xl p-4" data-status="contacte">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900">Contacté</h3>
+                        <span class="bg-blue-200 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">3</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-mock="true">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-medium text-gray-900 text-sm">Karim Haddad</h4>
+                                <span class="text-xs text-gray-500">10%</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">Rezé • Maison</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold text-green-600">6 750€</span>
+                                <div class="flex space-x-1">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="phone" class="w-3 h-3"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i data-lucide="message-square" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-mock="true">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-medium text-gray-900 text-sm">Lucie Martin</h4>
+                                <span class="text-xs text-gray-500">10%</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">Nantes • Appartement</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold text-green-600">3 900€</span>
+                                <div class="flex space-x-1">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="phone" class="w-3 h-3"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i data-lucide="message-square" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column: Qualifié -->
+                <div class="bg-yellow-50 rounded-xl p-4" data-status="qualifie">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900">Qualifié</h3>
+                        <span class="bg-yellow-200 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">4</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-mock="true">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-medium text-gray-900 text-sm">Sophie Bernard</h4>
+                                <span class="text-xs text-gray-500">25%</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">Nantes • Appartement</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold text-green-600">12 800€</span>
+                                <div class="flex space-x-1">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="phone" class="w-3 h-3"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i data-lucide="message-square" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-mock="true">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-medium text-gray-900 text-sm">Paul Leclerc</h4>
+                                <span class="text-xs text-gray-500">25%</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">Bouguenais • Maison</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold text-green-600">8 400€</span>
+                                <div class="flex space-x-1">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="phone" class="w-3 h-3"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i data-lucide="message-square" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column: RDV fixé -->
+                <div class="bg-green-50 rounded-xl p-4" data-status="rdv">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900">RDV fixé</h3>
+                        <span class="bg-green-200 text-green-700 px-2 py-1 rounded-full text-xs font-medium">3</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-mock="true">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-medium text-gray-900 text-sm">Antoine Moreau</h4>
+                                <span class="text-xs text-gray-500">50%</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">Rezé • Maison</p>
+                            <p class="text-xs text-blue-600 mb-2">RDV: Vendredi 10h</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold text-green-600">6 750€</span>
+                                <div class="flex space-x-1">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="calendar" class="w-3 h-3"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i data-lucide="message-square" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-mock="true">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-medium text-gray-900 text-sm">Emma Dubois</h4>
+                                <span class="text-xs text-gray-500">50%</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">Carquefou • Appartement</p>
+                            <p class="text-xs text-blue-600 mb-2">RDV: Samedi 15h</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold text-green-600">5 600€</span>
+                                <div class="flex space-x-1">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="calendar" class="w-3 h-3"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i data-lucide="message-square" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- @END_MAP )) -->
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: Pipeline -->
+
+    <!-- @COMPONENT: Prospects -->
+    <div id="prospects-content" class="tab-content hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header with filters and actions -->
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Tous les Prospects</h1>
+                        <p class="text-gray-600 mt-1">Gérez votre base de contacts</p>
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex space-x-3">
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">
+                            <i data-lucide="upload" class="w-4 h-4 inline mr-2"></i>
+                            Import CSV
+                        </button>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                            <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>
+                            Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters and Search -->
+                <div class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <i data-lucide="search" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                            <input type="text" placeholder="Rechercher un prospect..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    <select class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option>Tous les types</option>
+                        <option>Vendeur</option>
+                        <option>Acheteur</option>
+                    </select>
+                    <select class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option>Tous les statuts</option>
+                        <option>Nouveau</option>
+                        <option>Contacté</option>
+                        <option>Qualifié</option>
+                        <option>RDV fixé</option>
+                        <option>Mandat signé</option>
+                        <option>Gagné</option>
+                        <option>Perdu</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Prospects Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ville</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valeur</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200" data-mock="true">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-sm font-medium text-primary-700">SB</span>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Sophie Bernard</div>
+                                            <div class="text-sm text-gray-500">sophie.bernard@example.com</div>
+                                            <div class="text-sm text-gray-500">+33 6 12 34 56 78</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">
+                                        Vendeur
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                                        Qualifié
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    Nantes
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">12 800€</div>
+                                    <div class="text-sm text-gray-500">320k€ (4%)</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+                                        </div>
+                                        <span class="text-sm text-gray-700">78</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                    <button class="text-blue-600 hover:text-blue-800" data-event="click:handleCall">
+                                        <i data-lucide="phone" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800" data-event="click:handleSMS">
+                                        <i data-lucide="message-square" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="text-purple-600 hover:text-purple-800" data-event="click:handleCalendar">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="text-gray-600 hover:text-gray-800" data-event="click:handleEdit">
+                                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-sm font-medium text-green-700">KH</span>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Karim Haddad</div>
+                                            <div class="text-sm text-gray-500">karim.haddad@example.com</div>
+                                            <div class="text-sm text-gray-500">+33 7 98 76 54 32</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                        Acheteur
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                        Contacté
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    Rezé
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">6 750€</div>
+                                    <div class="text-sm text-gray-500">450k€ (3%)</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 65%"></div>
+                                        </div>
+                                        <span class="text-sm text-gray-700">65</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="phone" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i data-lucide="message-square" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="text-purple-600 hover:text-purple-800">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="text-gray-600 hover:text-gray-800">
+                                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-sm font-medium text-purple-700">CD</span>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Claire Dupuis</div>
+                                            <div class="text-sm text-gray-500">-</div>
+                                            <div class="text-sm text-gray-500">+33 6 22 33 44 55</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">
+                                        Vendeur
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                                        Nouveau
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    Saint-Herblain
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">9 500€</div>
+                                    <div class="text-sm text-gray-500">380k€ (5%)</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 82%"></div>
+                                        </div>
+                                        <span class="text-sm text-gray-700">82</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="phone" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i data-lucide="message-square" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="text-purple-600 hover:text-purple-800">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="text-gray-600 hover:text-gray-800">
+                                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="bg-white px-6 py-3 border-t border-gray-200 sm:flex sm:items-center sm:justify-between">
+                    <div class="text-sm text-gray-700">
+                        Affichage <span class="font-medium">1</span> à <span class="font-medium">10</span> sur <span class="font-medium">156</span> résultats
+                    </div>
+                    <div class="mt-3 sm:mt-0">
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                            <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                            </button>
+                            <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary-50 text-sm font-medium text-primary-600">1</button>
+                            <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</button>
+                            <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</button>
+                            <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: Prospects -->
+
+    <!-- Prospect Detail Modal -->
+    <div id="prospect-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-900" data-bind="prospect.nomComplet">Sophie Bernard</h2>
+                        <button class="text-gray-400 hover:text-gray-600" onclick="closeModal()">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-3">Informations Contact</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Téléphone:</span>
+                                    <span class="font-medium" data-bind="prospect.telephone">+33 6 12 34 56 78</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Email:</span>
+                                    <span class="font-medium" data-bind="prospect.email">sophie.bernard@example.com</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Ville:</span>
+                                    <span class="font-medium" data-bind="prospect.ville">Nantes</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-3">Projet Immobilier</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Type:</span>
+                                    <span class="font-medium" data-bind="prospect.type">Vendeur</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Bien:</span>
+                                    <span class="font-medium" data-bind="prospect.typeBien">Appartement</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Prix estimé:</span>
+                                    <span class="font-medium" data-bind="prospect.prixEstime">320 000€</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Timeline:</span>
+                                    <span class="font-medium" data-bind="prospect.timeline">< 3 mois</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex space-x-3 pt-4 border-t border-gray-200">
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center">
+                            <i data-lucide="phone" class="w-4 h-4 mr-2"></i>
+                            Appeler
+                        </button>
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 flex items-center">
+                            <i data-lucide="message-square" class="w-4 h-4 mr-2"></i>
+                            SMS
+                        </button>
+                        <button class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 flex items-center">
+                            <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
+                            RDV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Tab Navigation
+        (function() {
+            const navButtons = document.querySelectorAll('.nav-btn, .mobile-nav-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+
+            function showTab(tabName) {
+                // Hide all tabs
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+
+                // Show selected tab
+                const targetContent = document.getElementById(tabName + '-content');
+                if (targetContent) {
+                    targetContent.classList.remove('hidden');
+                }
+
+                // Update active states
+                navButtons.forEach(btn => {
+                    btn.classList.remove('bg-primary-50', 'text-primary-700');
+                    btn.classList.add('text-gray-500', 'hover:text-gray-700');
+                });
+
+                // Set active button
+                const activeButtons = document.querySelectorAll(`[data-tab="${tabName}"]`);
+                activeButtons.forEach(btn => {
+                    btn.classList.remove('text-gray-500', 'hover:text-gray-700');
+                    btn.classList.add('bg-primary-50', 'text-primary-700');
+                });
+
+                // Hide mobile menu
+                if (mobileMenu) {
+                    mobileMenu.classList.add('hidden');
+                }
+            }
+
+            // Add click listeners
+            navButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabName = button.getAttribute('data-tab');
+                    if (tabName) {
+                        showTab(tabName);
+                    }
+                });
+            });
+
+            // Mobile menu toggle
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Initialize with landing page
+            showTab('landing');
+        })();
+
+        // Modal functions
+        function openModal() {
+            document.getElementById('prospect-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('prospect-modal').classList.add('hidden');
+        }
+
+        // TODO: Implement business logic for:
+        // - Form submissions and lead capture
+        // - CRM data management and storage
+        // - Export/import functionality
+        // - Phone/SMS/WhatsApp integration
+        // - Calendar event creation
+        // - Real-time data updates
+        // - Agent performance tracking
+        // - Prospect scoring algorithms
+        // - Automated follow-up systems
+    </script>
+</body>
+</html>
