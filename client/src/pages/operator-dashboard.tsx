@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +27,7 @@ export default function OperatorDashboard() {
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
   const [deliveryDialogOpen, setDeliveryDialogOpen] = useState(false);
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   // Fetch data
   const { data: leads = [] } = useQuery({
@@ -126,6 +128,21 @@ export default function OperatorDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/deliveries"] });
+    },
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to logout");
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.clear();
+      setLocation("/");
     },
   });
 
@@ -468,13 +485,54 @@ export default function OperatorDashboard() {
               </Badge>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  // Export leads data as CSV
+                  const csvData = leads.map(lead => ({
+                    Name: lead.nomComplet,
+                    Phone: lead.telephone,
+                    Email: lead.email,
+                    Type: lead.type,
+                    City: lead.ville,
+                    Status: lead.statut,
+                    Source: lead.source,
+                    Score: lead.score,
+                  }));
+                  const csv = [Object.keys(csvData[0] || {}), ...csvData.map(row => Object.values(row))]
+                    .map(row => row.join(','))
+                    .join('\n');
+                  const blob = new Blob([csv], { type: 'text/csv' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `leads-export-${new Date().toISOString().split('T')[0]}.csv`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+              >
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  // Simple alert for settings - could be expanded to open a settings dialog
+                  alert('Settings functionality would open a configuration panel here.');
+                }}
+              >
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
+              </Button>
+              <Button 
+                variant="destructive" 
+                size="sm"
+                onClick={() => logoutMutation.mutate()}
+                disabled={logoutMutation.isPending}
+              >
+                {logoutMutation.isPending ? "Logging out..." : "Logout"}
               </Button>
             </div>
           </div>

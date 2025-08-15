@@ -1,9 +1,9 @@
 import { db } from "./db";
-import { users, prospects } from "@shared/schema";
+import { users, prospects, leads } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
-import { demoUsers, demoProspects } from "./demo-data";
+import { demoUsers, demoProspects, demoLeads } from "./demo-data";
 
 const scryptAsync = promisify(scrypt);
 
@@ -54,10 +54,32 @@ export async function initializeDemoData() {
       console.log(`✅ Created prospect: ${prospect.nomComplet} (assigned to ${assignedAgent.name})`);
     }
 
+    // Create demo leads for operator CRM
+    const operator = createdUsers.find(u => u.role === 'operator');
+    
+    if (operator) {
+      for (let i = 0; i < demoLeads.length; i++) {
+        const lead = demoLeads[i];
+        const assignedAgent = agents[i % agents.length]; // Distribute leads among agents for some of them
+        
+        await db.insert(leads).values({
+          ...lead,
+          ownerUserId: operator.id,
+          assignedAgentId: i % 3 === 0 ? assignedAgent.id : null, // Only assign some leads to agents
+          // Convert dates to timestamps for database
+          prochaineAction: lead.prochaineAction || null,
+          dernierContact: lead.dernierContact || null,
+          createdAt: lead.createdAt || new Date(),
+        });
+        
+        console.log(`✅ Created lead: ${lead.nomComplet} (owned by ${operator.name})`);
+      }
+    }
+
     console.log(`🎉 Demo data initialized successfully!`);
-    console.log(`📊 Created ${createdUsers.length} users and ${demoProspects.length} prospects`);
+    console.log(`📊 Created ${createdUsers.length} users, ${demoProspects.length} prospects, and ${demoLeads.length} leads`);
     console.log(`🔑 Demo login credentials:`);
-    console.log(`   Admin: admin / demo123`);
+    console.log(`   Admin/Operator: admin / demo123`);
     console.log(`   Alice Martin: alice.martin / demo123`);
     console.log(`   Ben Leroy: ben.leroy / demo123`);
 

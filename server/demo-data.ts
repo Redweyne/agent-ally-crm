@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import type { InsertUser, InsertProspect } from "@shared/schema";
+import type { InsertUser, InsertProspect, InsertLead } from "@shared/schema";
 
 // Demo users
 export const demoUsers: InsertUser[] = [
@@ -224,8 +224,7 @@ export const demoProspects: (Omit<InsertProspect, 'agentId' | 'score'> & {
     leadCost: 0,
     estimatedClosingDays: 90,
     prochaineAction: new Date(), // Today
-    dernierContact: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
-    creeLe: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
+    dernierContact: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
   },
   {
     id: nanoid(),
@@ -254,8 +253,7 @@ export const demoProspects: (Omit<InsertProspect, 'agentId' | 'score'> & {
     leadCost: 42,
     estimatedClosingDays: 75,
     prochaineAction: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // Tomorrow
-    dernierContact: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
-    creeLe: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
+    dernierContact: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
   },
   {
     id: nanoid(),
@@ -695,5 +693,305 @@ export const demoProspects: (Omit<InsertProspect, 'agentId' | 'score'> & {
     estimatedClosingDays: 60,
     prochaineAction: new Date(), // Today
     dernierContact: new Date(Date.now() - 45 * 60 * 1000) // 45 minutes ago
+  }
+];
+
+// Demo leads for operator CRM
+export const demoLeads: (Omit<InsertLead, 'ownerUserId' | 'assignedAgentId'> & { 
+  id: string;
+  prochaineAction?: Date;
+  dernierContact?: Date;
+  createdAt?: Date;
+})[] = [
+  {
+    id: nanoid(),
+    nomComplet: "Marc Dubois",
+    telephone: "06 12 34 56 78",
+    email: "marc.dubois@email.fr",
+    type: "Vendeur",
+    ville: "Paris 16ème",
+    typeBien: "Appartement",
+    budget: 0,
+    prixEstime: 580000,
+    motivation: "Mutation professionnelle",
+    timeline: "2 mois",
+    intention: "Vente rapide",
+    source: "Facebook",
+    exactSource: "Facebook Ads - Vente appartement Paris",
+    consentement: true,
+    statut: "New",
+    adresse: "25 avenue Foch, 75016 Paris",
+    notes: "Prospect très motivé, appartement bien situé",
+    score: 85,
+    isHotLead: true,
+    cost: 42,
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Sophie Lemaire",
+    telephone: "06 98 76 54 32",
+    email: "sophie.lemaire@email.fr",
+    type: "Acheteur",
+    ville: "Boulogne-Billancourt",
+    typeBien: "Maison",
+    budget: 750000,
+    prixEstime: 0,
+    motivation: "Agrandissement familial",
+    timeline: "3 mois",
+    intention: "Recherche active",
+    source: "Google",
+    exactSource: "Google Ads - Maison Boulogne",
+    consentement: true,
+    statut: "Contacted",
+    notes: "Famille avec 2 enfants, recherche jardin",
+    score: 70,
+    isHotLead: false,
+    cost: 35,
+    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+    dernierContact: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Pierre Martin",
+    telephone: "06 45 67 89 12",
+    email: "pierre.martin@email.fr",
+    type: "Vendeur",
+    ville: "Neuilly-sur-Seine",
+    typeBien: "Studio",
+    budget: 0,
+    prixEstime: 320000,
+    motivation: "Investissement",
+    timeline: "1 mois",
+    intention: "Vente urgente",
+    source: "Direct",
+    exactSource: "Appel direct agence",
+    consentement: true,
+    statut: "Follow-up",
+    notes: "Studio rénové, proche métro",
+    score: 60,
+    isHotLead: false,
+    cost: 0,
+    createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
+    prochaineAction: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
+    dernierContact: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Julie Moreau",
+    telephone: "06 11 22 33 44",
+    email: "julie.moreau@email.fr",
+    type: "Acheteur",
+    ville: "Levallois-Perret",
+    typeBien: "Appartement",
+    budget: 450000,
+    prixEstime: 0,
+    motivation: "Premier achat",
+    timeline: "4 mois",
+    intention: "Recherche méthodique",
+    source: "Referral",
+    exactSource: "Recommandation client Marc",
+    consentement: true,
+    statut: "Qualified",
+    notes: "Primo-accédante, dossier solide",
+    score: 75,
+    isHotLead: true,
+    cost: 0,
+    createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
+    prochaineAction: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // Day after tomorrow
+    dernierContact: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Antoine Rousseau",
+    telephone: "06 55 44 33 22",
+    email: "antoine.rousseau@email.fr",
+    type: "Vendeur",
+    ville: "Issy-les-Moulineaux",
+    typeBien: "Duplex",
+    budget: 0,
+    prixEstime: 680000,
+    motivation: "Déménagement",
+    timeline: "5 mois",
+    intention: "Vente standard",
+    source: "Facebook",
+    exactSource: "Facebook Ads - Duplex Issy",
+    consentement: true,
+    statut: "Booked",
+    notes: "RDV fixé pour mardi prochain",
+    score: 80,
+    isHotLead: false,
+    cost: 28,
+    createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+    prochaineAction: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // In 3 days
+    dernierContact: new Date(Date.now() - 45 * 60 * 1000), // 45 minutes ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Camille Bernard",
+    telephone: "06 77 88 99 00",
+    email: "camille.bernard@email.fr",
+    type: "Acheteur",
+    ville: "Saint-Cloud",
+    typeBien: "Maison",
+    budget: 950000,
+    prixEstime: 0,
+    motivation: "Résidence principale",
+    timeline: "6 mois",
+    intention: "Recherche sélective",
+    source: "Google",
+    exactSource: "Google Search - Maison Saint-Cloud",
+    consentement: true,
+    statut: "Sent to Agent",
+    notes: "Dossier transmis à Alice Martin",
+    score: 90,
+    isHotLead: true,
+    cost: 55,
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+    dernierContact: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Thomas Lefort",
+    telephone: "06 33 44 55 66",
+    email: "thomas.lefort@email.fr",
+    type: "Vendeur",
+    ville: "Puteaux",
+    typeBien: "Appartement",
+    budget: 0,
+    prixEstime: 420000,
+    motivation: "Achat résidence secondaire",
+    timeline: "3 mois",
+    intention: "Vente conditionnelle",
+    source: "Direct",
+    exactSource: "Panneau A Vendre - Appel direct",
+    consentement: true,
+    statut: "New",
+    notes: "T3 avec balcon, proche La Défense",
+    score: 65,
+    isHotLead: false,
+    cost: 0,
+    createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Élise Petit",
+    telephone: "06 12 13 14 15",
+    email: "elise.petit@email.fr",
+    type: "Acheteur",
+    ville: "Vincennes",
+    typeBien: "Appartement",
+    budget: 380000,
+    prixEstime: 0,
+    motivation: "Rapprochement travail",
+    timeline: "urgent",
+    intention: "Achat rapide",
+    source: "Facebook",
+    exactSource: "Facebook Ads - Appartement Vincennes",
+    consentement: true,
+    statut: "Sold",
+    notes: "Vente finalisée, très satisfaite",
+    score: 95,
+    isHotLead: false,
+    cost: 38,
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+    dernierContact: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Lucas Garcia",
+    telephone: "06 56 78 90 12",
+    email: "lucas.garcia@email.fr",
+    type: "Vendeur",
+    ville: "Courbevoie",
+    typeBien: "Studio",
+    budget: 0,
+    prixEstime: 250000,
+    motivation: "Liquidation patrimoine",
+    timeline: "2 mois",
+    intention: "Vente rapide",
+    source: "Google",
+    exactSource: "Google Ads - Vente rapide studio",
+    consentement: false,
+    statut: "Bad Contact",
+    notes: "Numéro incorrect, pas joignable",
+    score: 0,
+    isHotLead: false,
+    badNumber: true,
+    cost: 45,
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Marine Dubois",
+    telephone: "06 87 65 43 21",
+    email: "marine.dubois@email.fr",
+    type: "Acheteur",
+    ville: "Garches",
+    typeBien: "Maison",
+    budget: 850000,
+    prixEstime: 0,
+    motivation: "Agrandissement familial",
+    timeline: "4 mois",
+    intention: "Recherche ciblée",
+    source: "Referral",
+    exactSource: "Recommandation banquier",
+    consentement: true,
+    statut: "Do Not Contact",
+    notes: "A demandé à ne plus être contactée",
+    score: 0,
+    isHotLead: false,
+    dnc: true,
+    cost: 0,
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+    dernierContact: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 days ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Maxime Leroy",
+    telephone: "06 90 12 34 56",
+    email: "maxime.leroy@email.fr",
+    type: "Vendeur",
+    ville: "Rueil-Malmaison",
+    typeBien: "Appartement",
+    budget: 0,
+    prixEstime: 520000,
+    motivation: "Mutation professionnelle",
+    timeline: "1 mois",
+    intention: "Vente urgente",
+    source: "Direct",
+    exactSource: "Site web - Contact direct",
+    consentement: true,
+    statut: "Disqualified",
+    notes: "Pas propriétaire, perte de temps",
+    score: 10,
+    isHotLead: false,
+    cost: 0,
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+    dernierContact: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+  },
+  {
+    id: nanoid(),
+    nomComplet: "Stéphanie Martin",
+    telephone: "06 23 45 67 89",
+    email: "stephanie.martin@email.fr",
+    type: "Acheteur",
+    ville: "Meudon",
+    typeBien: "Maison",
+    budget: 720000,
+    prixEstime: 0,
+    motivation: "Résidence principale",
+    timeline: "6 mois",
+    intention: "Recherche patiente",
+    source: "Google",
+    exactSource: "Google Search - Maison Meudon",
+    consentement: true,
+    statut: "Refunded/Bad",
+    notes: "Commission remboursée, problème dossier",
+    score: 0,
+    isHotLead: false,
+    cost: 62,
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 1 week ago
+    dernierContact: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 days ago
   }
 ];
