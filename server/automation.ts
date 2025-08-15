@@ -218,14 +218,16 @@ class AutomationRunner {
     // Simulate SMS sending (in real implementation, integrate with SMS provider)
     console.log(`📱 SMS sent to ${lead.telephone}: ${message}`);
     
-    // Create interaction record
-    await storage.createInteraction({
-      leadId,
-      kind: "sms",
-      direction: "outbound",
-      summary: `Automated SMS (template ${template})`,
-      userId: "system" // Would use actual system user ID
-    });
+    // Create interaction record using the lead owner's ID for automated actions
+    if (lead.ownerUserId) {
+      await storage.createInteraction({
+        leadId,
+        kind: "sms",
+        direction: "outbound",
+        summary: `Automated SMS (template ${template})`,
+        userId: lead.ownerUserId
+      });
+    }
   }
 
   private async sendConfirmationSMS(leadId: string) {
