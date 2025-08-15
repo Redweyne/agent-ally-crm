@@ -31,6 +31,21 @@ import HotLeadBadge from "@/components/crm/hot-lead-badge";
 import DarkModeToggle from "@/components/crm/dark-mode-toggle";
 import NotificationsPanel from "@/components/crm/notifications-panel";
 
+// Helper functions
+const getStatusProbability = (status: string): number => {
+  const probabilities: Record<string, number> = {
+    "Nouveau": 0.05,
+    "Contacté": 0.1,
+    "Qualifié": 0.25,
+    "RDV fixé": 0.5,
+    "Mandat signé": 0.75,
+    "Mandate Pending": 0.65,
+    "Gagné": 1.0,
+    "Perdu": 0.0,
+  };
+  return probabilities[status] || 0.1;
+};
+
 export default function CrmDashboard() {
   const { user, logoutMutation } = useAuth();
   const [, navigate] = useLocation();
@@ -257,20 +272,7 @@ export default function CrmDashboard() {
     return days;
   }, [prospects]);
 
-  // Helper functions
-  const getStatusProbability = (status: string): number => {
-    const probabilities: Record<string, number> = {
-      "Nouveau": 0.05,
-      "Contacté": 0.1,
-      "Qualifié": 0.25,
-      "RDV fixé": 0.5,
-      "Mandat signé": 0.9,
-      "Gagné": 1,
-      "Perdu": 0,
-      "Pas de réponse": 0.02,
-    };
-    return probabilities[status] || 0;
-  };
+
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("fr-FR", {
