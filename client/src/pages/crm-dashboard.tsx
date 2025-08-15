@@ -51,8 +51,18 @@ export default function CrmDashboard() {
 
   // Fetch prospects
   const { data: prospects = [], isLoading } = useQuery<Prospect[]>({
-    queryKey: ["/api/prospects", selectedAgentId],
-    queryFn: getQueryFn({ on401: "throw" }),
+    queryKey: ["prospects", selectedAgentId],
+    queryFn: async () => {
+      const response = await fetch(`/api/prospects?agentId=${selectedAgentId}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        if (response.status === 401) throw new Error('Unauthorized');
+        throw new Error('Failed to fetch prospects');
+      }
+      return response.json();
+    },
+    enabled: !!selectedAgentId,
     staleTime: 0, // Always refetch to ensure fresh data
     refetchOnMount: true,
   });
@@ -64,7 +74,7 @@ export default function CrmDashboard() {
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/prospects"] });
+      queryClient.invalidateQueries({ queryKey: ["prospects"] });
       toast({ title: "Prospect créé avec succès" });
       setShowProspectForm(false);
     },
@@ -83,7 +93,7 @@ export default function CrmDashboard() {
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/prospects"] });
+      queryClient.invalidateQueries({ queryKey: ["prospects"] });
       toast({ title: "Prospect mis à jour" });
     },
     onError: (error: Error) => {
@@ -100,7 +110,7 @@ export default function CrmDashboard() {
       await apiRequest("DELETE", `/api/prospects/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/prospects"] });
+      queryClient.invalidateQueries({ queryKey: ["prospects"] });
       toast({ title: "Prospect supprimé" });
     },
     onError: (error: Error) => {
