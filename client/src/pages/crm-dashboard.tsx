@@ -24,6 +24,10 @@ import KpiCard from "@/components/crm/kpi-card";
 import ProspectTable from "@/components/crm/prospect-table";
 import PipelineBoard from "@/components/crm/pipeline-board";
 import ProspectForm from "@/components/crm/prospect-form";
+import DemoBanner from "@/components/crm/demo-banner";
+import ROICalculator from "@/components/crm/roi-calculator";
+import ContactTimeline from "@/components/crm/contact-timeline";
+import HotLeadBadge from "@/components/crm/hot-lead-badge";
 
 export default function CrmDashboard() {
   const { user, logoutMutation } = useAuth();
@@ -37,6 +41,11 @@ export default function CrmDashboard() {
   const [statusFilter, setStatusFilter] = useState("Tous");
   const [selectedProspect, setSelectedProspect] = useState<Prospect | null>(null);
   const [showProspectForm, setShowProspectForm] = useState(false);
+  const [sortBy, setSortBy] = useState("date");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [showCallToday, setShowCallToday] = useState(false);
+  const [minBudget, setMinBudget] = useState("");
+  const [maxBudget, setMaxBudget] = useState("");
 
   // Fetch prospects
   const { data: prospects = [], isLoading } = useQuery<Prospect[]>({
@@ -99,20 +108,70 @@ export default function CrmDashboard() {
     },
   });
 
-  // Filtered prospects
+  // Filtered and sorted prospects
   const filteredProspects = useMemo(() => {
-    return prospects.filter(prospect => {
+    let filtered = prospects.filter(prospect => {
       const matchesSearch = !searchQuery || 
-        [prospect.nomComplet, prospect.telephone, prospect.email, prospect.ville]
+        [prospect.nomComplet, prospect.telephone, prospect.email, prospect.ville, prospect.exactSource]
           .filter(Boolean)
           .some(field => field?.toLowerCase().includes(searchQuery.toLowerCase()));
       
       const matchesType = typeFilter === "Tous" || prospect.type === typeFilter;
       const matchesStatus = statusFilter === "Tous" || prospect.statut === statusFilter;
       
-      return matchesSearch && matchesType && matchesStatus;
+      // Budget filter
+      const prospectBudget = prospect.budget || prospect.prixEstime || 0;
+      const matchesMinBudget = !minBudget || prospectBudget >= parseInt(minBudget);
+      const matchesMaxBudget = !maxBudget || prospectBudget <= parseInt(maxBudget);
+      
+      // Call today filter - prospects that need to be contacted today
+      if (showCallToday) {
+        const today = new Date().toDateString();
+        const needsCall = prospect.prochaineAction && 
+          new Date(prospect.prochaineAction).toDateString() === today &&
+          !["Gagné", "Perdu", "Pas de réponse"].includes(prospect.statut || "");
+        
+        if (!needsCall) return false;
+      }
+      
+      return matchesSearch && matchesType && matchesStatus && matchesMinBudget && matchesMaxBudget;
     });
-  }, [prospects, searchQuery, typeFilter, statusFilter]);
+
+    // Sorting
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case "value":
+          aValue = (a.budget || a.prixEstime || 0) * (a.tauxHonoraires || 0.04);
+          bValue = (b.budget || b.prixEstime || 0) * (b.tauxHonoraires || 0.04);
+          break;
+        case "score":
+          aValue = a.score || 0;
+          bValue = b.score || 0;
+          break;
+        case "name":
+          aValue = a.nomComplet || "";
+          bValue = b.nomComplet || "";
+          break;
+        case "date":
+        default:
+          aValue = new Date(a.creeLe || 0).getTime();
+          bValue = new Date(b.creeLe || 0).getTime();
+          break;
+      }
+      
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        return sortOrder === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      }
+      
+      const numA = typeof aValue === "number" ? aValue : 0;
+      const numB = typeof bValue === "number" ? bValue : 0;
+      return sortOrder === "asc" ? numA - numB : numB - numA;
+    });
+
+    return filtered;
+  }, [prospects, searchQuery, typeFilter, statusFilter, minBudget, maxBudget, showCallToday, sortBy, sortOrder]);
 
   // KPI calculations
   const kpis = useMemo(() => {
@@ -317,6 +376,9 @@ export default function CrmDashboard() {
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 py-6">
+        {/* Demo Banner */}
+        <DemoBanner />
+        
         {/* KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <KpiCard
@@ -507,58 +569,194 @@ export default function CrmDashboard() {
 
           <TabsContent value="prospects">
             <div className="space-y-4">
-              {/* Search and Filters */}
+              {/* Enhanced Search and Filters */}
               <Card>
                 <CardContent className="pt-6">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1 relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <Input
-                        placeholder="Rechercher par nom, email, téléphone..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
-                        data-testid="input-search-prospects"
-                      />
+                  <div className="space-y-4">
+                    {/* Search and Quick Actions */}
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <div className="flex-1 relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="Rechercher par nom, téléphone, email, ville, source exacte..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                      
+                      <Button
+                        variant={showCallToday ? "default" : "outline"}
+                        onClick={() => setShowCallToday(!showCallToday)}
+                        className="gap-2"
+                      >
+                        <Phone className="w-4 h-4" />
+                        Appels du jour ({prospects.filter(p => {
+                          const today = new Date().toDateString();
+                          return p.prochaineAction && 
+                            new Date(p.prochaineAction).toDateString() === today &&
+                            !["Gagné", "Perdu", "Pas de réponse"].includes(p.statut || "");
+                        }).length})
+                      </Button>
                     </div>
-                    <Select value={typeFilter} onValueChange={setTypeFilter}>
-                      <SelectTrigger className="w-40" data-testid="filter-type">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Tous">Tous types</SelectItem>
-                        <SelectItem value="Vendeur">Vendeurs</SelectItem>
-                        <SelectItem value="Acheteur">Acheteurs</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-40" data-testid="filter-status">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Tous">Tous statuts</SelectItem>
-                        <SelectItem value="Nouveau">Nouveau</SelectItem>
-                        <SelectItem value="Contacté">Contacté</SelectItem>
-                        <SelectItem value="Qualifié">Qualifié</SelectItem>
-                        <SelectItem value="RDV fixé">RDV fixé</SelectItem>
-                        <SelectItem value="Mandat signé">Mandat signé</SelectItem>
-                        <SelectItem value="Gagné">Gagné</SelectItem>
-                        <SelectItem value="Perdu">Perdu</SelectItem>
-                      </SelectContent>
-                    </Select>
+
+                    {/* Advanced Filters */}
+                    <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                      <Select value={typeFilter} onValueChange={setTypeFilter}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Tous">Tous types</SelectItem>
+                          <SelectItem value="Vendeur">Vendeurs</SelectItem>
+                          <SelectItem value="Acheteur">Acheteurs</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Tous">Tous statuts</SelectItem>
+                          <SelectItem value="Nouveau">Nouveau</SelectItem>
+                          <SelectItem value="Contacté">Contacté</SelectItem>
+                          <SelectItem value="Qualifié">Qualifié</SelectItem>
+                          <SelectItem value="RDV fixé">RDV fixé</SelectItem>
+                          <SelectItem value="Mandate Pending">Mandat en attente</SelectItem>
+                          <SelectItem value="Mandat signé">Mandat signé</SelectItem>
+                          <SelectItem value="En négociation">En négociation</SelectItem>
+                          <SelectItem value="Gagné">Gagné</SelectItem>
+                          <SelectItem value="Perdu">Perdu</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Input
+                        type="number"
+                        placeholder="Budget min"
+                        value={minBudget}
+                        onChange={(e) => setMinBudget(e.target.value)}
+                      />
+
+                      <Input
+                        type="number"
+                        placeholder="Budget max"
+                        value={maxBudget}
+                        onChange={(e) => setMaxBudget(e.target.value)}
+                      />
+
+                      <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="date">Par date</SelectItem>
+                          <SelectItem value="value">Par valeur (€)</SelectItem>
+                          <SelectItem value="score">Par score</SelectItem>
+                          <SelectItem value="name">Par nom</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Select value={sortOrder} onValueChange={setSortOrder}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="desc">Décroissant</SelectItem>
+                          <SelectItem value="asc">Croissant</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Filter Results Summary */}
+                    <div className="flex items-center justify-between text-sm text-gray-600">
+                      <span>
+                        {filteredProspects.length} prospect{filteredProspects.length !== 1 ? 's' : ''} 
+                        {searchQuery || typeFilter !== "Tous" || statusFilter !== "Tous" || minBudget || maxBudget || showCallToday 
+                          ? ` (filtré${filteredProspects.length !== 1 ? 's' : ''} sur ${prospects.length})`
+                          : ''
+                        }
+                      </span>
+                      
+                      {(searchQuery || typeFilter !== "Tous" || statusFilter !== "Tous" || minBudget || maxBudget || showCallToday) && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSearchQuery("");
+                            setTypeFilter("Tous");
+                            setStatusFilter("Tous");
+                            setMinBudget("");
+                            setMaxBudget("");
+                            setShowCallToday(false);
+                          }}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          Réinitialiser filtres
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
+              {/* ROI Calculator */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ROICalculator prospects={filteredProspects} />
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Clock className="w-5 h-5" />
+                      Estimation de clôture
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {filteredProspects.filter(p => p.estimatedClosingDays && !["Gagné", "Perdu"].includes(p.statut || "")).slice(0, 5).map(prospect => (
+                        <div key={prospect.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                              <span className="text-sm font-medium text-blue-700">
+                                {prospect.nomComplet?.charAt(0) || "?"}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="font-medium">{prospect.nomComplet}</p>
+                              <p className="text-sm text-gray-500">{prospect.ville}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium">{prospect.estimatedClosingDays || 30} jours</p>
+                            <p className="text-sm text-gray-500">estimé</p>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {filteredProspects.filter(p => !["Gagné", "Perdu"].includes(p.statut || "")).length === 0 && (
+                        <p className="text-center text-gray-500 py-4">Aucun prospect en cours</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
               {/* Prospects Table */}
-              <ProspectTable 
-                prospects={filteredProspects}
-                onEdit={(prospect) => {
-                  setSelectedProspect(prospect);
-                  setShowProspectForm(true);
-                }}
-                onDelete={(id) => deleteProspectMutation.mutate(id)}
-              />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Liste des prospects</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ProspectTable 
+                    prospects={filteredProspects}
+                    onEdit={(prospect) => {
+                      setSelectedProspect(prospect);
+                      setShowProspectForm(true);
+                    }}
+                    onDelete={(id) => deleteProspectMutation.mutate(id)}
+                  />
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 

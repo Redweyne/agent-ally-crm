@@ -1,0 +1,77 @@
+1. Business value for agents
+
+Features that make the money potential and usefulness obvious.
+
+“Mandate Pending” status: an in-between status between “Mandate Signed” and “Won” for more realistic tracking.
+
+Contact history: small timeline (date + action) to track every interaction with the lead.
+
+“Exact Source” field: e.g., “Facebook Ads – House Form” → helps measure ad campaign profitability.
+
+Automatic “Hot Lead” badge: if score > 80 and timeline < 3 months → visible badge in all views.
+
+ROI per agent: total expected revenue / total cost of purchased leads.
+
+“Agent Outcome” field: signed, lost, in negotiation → included in stats.
+
+Estimated closing time: display “On average, X days from first contact to signature.”
+
+2. Automation & follow-up
+
+Makes the tool more “alive” and useful daily.
+
+Real-time alerts: visual (or sound) notification when a new lead arrives or follow-up is due.
+
+Automatic follow-up status: if no action in X days, lead moves to “Follow-up needed.”
+
+Pre-filled messages: SMS/email auto-insert first name, city, budget…
+
+Export PDF lead sheet: clean summary with all info, ready to send via email.
+
+Simplified import: drag-and-drop CSV files.
+
+Direct send to agent: “Send by email” button with complete lead sheet.
+
+3. User experience / UX
+
+Makes it easy for agents to use, even on mobile.
+
+Mobile “express” mode: simplified pipeline + direct call button → great for on-the-road usage.
+
+Improved Kanban view: bigger cards with quick actions (call, SMS, schedule).
+
+“Call today” filter: quick view of leads that need to be contacted today.
+
+Sort by value (€): to prioritize highest-value leads.
+
+Advanced search: filter by estimated amount, entry date, city.
+
+Dual pipeline/table view: instant switch without changing tabs.
+
+4. Visual impact / demo effect
+
+Makes the demo pop and creates desire to use it.
+
+Agency branding: logo, colors, custom fonts.
+
+Smooth animations: soft transitions between tabs, drag-and-drop for leads.
+
+More meaningful charts: green for won leads, red for lost, yellow for pending.
+
+Mini agent avatars: photo or initials on each assigned lead.
+
+“Demo” banner: subtle top banner stating it’s a test version.
+
+5. “Wow” bonus features
+
+Extra features to make it feel like a pro CRM.
+
+Google Calendar integration: add appointments to Google Calendar in one click.
+
+Pre-formatted WhatsApp link: message ready with key lead info.
+
+Property price history: for sellers, track changes in estimated price.
+
+Comparative table: pipeline value per agent / per month.
+
+Dark mode: toggle button to switch to dark theme.

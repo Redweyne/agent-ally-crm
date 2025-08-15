@@ -2,6 +2,16 @@
 
 Redweyne is a customer relationship management (CRM) system designed specifically for real estate agents. The application helps agents manage their prospects (both buyers and sellers), track interactions, manage property deals, and monitor sales performance through an intuitive dashboard interface.
 
+## Recent Enhancements (August 2025)
+
+The CRM has been significantly enhanced with business-focused features to maximize agent productivity and revenue tracking:
+
+- **Business Value Features**: Mandate Pending status, exact source tracking, ROI calculator, Hot Lead auto-detection
+- **Advanced Filtering**: Budget range filters, "Call Today" view, sorting by value/score/date
+- **Contact Management**: Timeline tracking, WhatsApp integration, pre-filled messages, PDF export capabilities
+- **Professional UI**: Demo banner, enhanced status indicators, mini agent avatars, smooth animations
+- **Revenue Tracking**: Lead cost analysis, estimated closing times, pipeline value calculations
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.

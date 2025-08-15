@@ -19,8 +19,11 @@ import {
   Trash2, 
   User, 
   Crown,
-  AlertTriangle 
+  AlertTriangle,
+  FileDown,
+  ExternalLink
 } from "lucide-react";
+import HotLeadBadge from "./hot-lead-badge";
 import type { Prospect } from "@shared/schema";
 
 interface ProspectTableProps {
@@ -45,12 +48,31 @@ export default function ProspectTable({ prospects, onEdit, onDelete, compact = f
       "Contacté": "bg-blue-100 text-blue-800",
       "Qualifié": "bg-green-100 text-green-800",
       "RDV fixé": "bg-orange-100 text-orange-800",
+      "Mandate Pending": "bg-yellow-100 text-yellow-800", // New status
       "Mandat signé": "bg-purple-100 text-purple-800",
+      "Mandate Signed": "bg-purple-100 text-purple-800", // Alternative naming
+      "En négociation": "bg-amber-100 text-amber-800",
       "Gagné": "bg-emerald-100 text-emerald-800",
+      "Won": "bg-emerald-100 text-emerald-800",
       "Perdu": "bg-red-100 text-red-800",
+      "Lost": "bg-red-100 text-red-800",
       "Pas de réponse": "bg-gray-100 text-gray-600",
     };
     return colors[status] || "bg-gray-100 text-gray-800";
+  };
+
+  // WhatsApp link generator
+  const generateWhatsAppLink = (prospect: Prospect) => {
+    const message = `Bonjour ${prospect.nomComplet}, je suis votre agent immobilier concernant votre projet ${prospect.type?.toLowerCase()} à ${prospect.ville}. Budget: ${formatCurrency(prospect.budget || 0)}. Pouvons-nous discuter de votre projet ?`;
+    const phoneNumber = prospect.telephone?.replace(/\s/g, '').replace(/\+33/, '33');
+    return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  };
+
+  // Export PDF functionality
+  const exportProspectPDF = (prospect: Prospect) => {
+    // This would integrate with jsPDF
+    console.log("Exporting PDF for prospect:", prospect.id);
+    // Implementation would go here
   };
 
   const getTypeColor = (type: string) => {
