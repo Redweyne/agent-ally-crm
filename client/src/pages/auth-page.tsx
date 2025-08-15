@@ -140,7 +140,7 @@ export default function AuthPage() {
                 <CardHeader>
                   <CardTitle data-testid="register-title">Créer un compte</CardTitle>
                   <CardDescription data-testid="register-description">
-                    Inscrivez-vous pour accéder au CRM Redweyne
+                    Inscrivez-vous pour accéder au CRM RedLead2Guide
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

@@ -19,11 +19,11 @@ export interface IStorage {
   updateProspect(id: string, updates: Partial<InsertProspect>): Promise<Prospect | undefined>;
   deleteProspect(id: string): Promise<boolean>;
   
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 }
 
 export class DatabaseStorage implements IStorage {
-  public sessionStore: session.SessionStore;
+  public sessionStore: session.Store;
 
   constructor() {
     this.sessionStore = new PostgresSessionStore({ 
@@ -90,7 +90,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteProspect(id: string): Promise<boolean> {
     const result = await db.delete(prospects).where(eq(prospects.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   private calculateScore(prospect: Partial<InsertProspect>): number {

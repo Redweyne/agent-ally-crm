@@ -31,7 +31,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-primary-700" data-testid="logo">Redweyne</h1>
+              <h1 className="text-2xl font-bold text-primary-700" data-testid="logo">RedLead2Guide</h1>
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-8">
@@ -93,7 +93,7 @@ export default function LandingPage() {
               <Button 
                 onClick={() => scrollToSection("services")} 
                 variant="outline"
-                className="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-primary-700 transition-colors"
+                className="border-2 border-white/80 text-white bg-transparent px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-primary-700 transition-all duration-300 backdrop-blur-sm"
                 size="lg"
                 data-testid="button-services"
               >
@@ -284,7 +284,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-2xl font-bold mb-4" data-testid="footer-brand">Redweyne</h3>
+              <h3 className="text-2xl font-bold mb-4" data-testid="footer-brand">RedLead2Guide</h3>
               <p className="text-gray-300" data-testid="footer-tagline">
                 CRM immobilier français pour les professionnels exigeants.
               </p>
@@ -313,7 +313,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p data-testid="footer-copyright">&copy; 2024 Redweyne. Tous droits réservés. Conforme RGPD.</p>
+            <p data-testid="footer-copyright">&copy; 2024 RedLead2Guide. Tous droits réservés. Conforme RGPD.</p>
           </div>
         </div>
       </footer>

@@ -253,11 +253,11 @@ export default function CrmDashboard() {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-2xl bg-primary text-white grid place-items-center font-bold">
-              RW
+              RL
             </div>
             <div>
               <div className="font-semibold leading-tight" data-testid="header-title">
-                Redweyne CRM — Leads Immobiliers
+                RedLead2Guide CRM — Leads Immobiliers
               </div>
               <div className="text-xs text-gray-500" data-testid="header-subtitle">
                 CRM moderne • Orienté mandat
