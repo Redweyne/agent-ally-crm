@@ -64,6 +64,26 @@ export interface IStorage {
   createTemplate(template: InsertTemplate): Promise<Template>;
   updateTemplate(id: string, updates: Partial<InsertTemplate>): Promise<Template | undefined>;
   
+  // Queue and Outcomes
+  getLeadsQueue(operatorId?: string): Promise<Lead[]>;
+  processOutcome(leadId: string, outcome: string, userId: string): Promise<{ lead: Lead; interaction: Interaction; tasks?: any[] }>;
+  
+  // Appointment .ics generation
+  generateIcsFile(appointment: Appointment, lead: Lead): Promise<string>;
+  
+  // Deliveries with PDF and share links
+  createDeliveryWithAssets(leadId: string, agentId: string, price: number, extras: any): Promise<{ delivery: Delivery; deliveryUrl: string; pdfUrl: string }>;
+  getDeliveryByToken(token: string): Promise<Delivery | undefined>;
+  acceptDelivery(deliveryId: string): Promise<Delivery | undefined>;
+  
+  // Metrics and Analytics
+  getOperatorStats(operatorId: string, range: string): Promise<any>;
+  
+  // Data hygiene
+  checkDuplicateLeads(phone?: string, email?: string): Promise<Lead[]>;
+  isContactBlocked(leadId: string): Promise<{ blocked: boolean; reason?: string }>;
+  isReadyToSell(leadId: string): Promise<boolean>;
+  
   sessionStore: session.Store;
 }
 
@@ -310,6 +330,238 @@ export class DatabaseStorage implements IStorage {
   async deleteProspect(id: string): Promise<boolean> {
     const result = await db.delete(prospects).where(eq(prospects.id, id));
     return (result.rowCount ?? 0) > 0;
+  }
+
+  // Queue and Outcomes
+  async getLeadsQueue(operatorId?: string): Promise<Lead[]> {
+    const query = db.select().from(leads);
+    if (operatorId) {
+      query.where(eq(leads.ownerUserId, operatorId));
+    }
+    // Sort by hotScore DESC, hoursSinceCreated DESC, sourceWeight DESC, localWindowFit DESC
+    const leadsData = await query;
+    return leadsData.sort((a, b) => {
+      const aHot = a.isHotLead ? 100 : a.score || 50;
+      const bHot = b.isHotLead ? 100 : b.score || 50;
+      if (aHot !== bHot) return bHot - aHot;
+      
+      const aHours = a.createdAt ? (Date.now() - new Date(a.createdAt).getTime()) / (1000 * 60 * 60) : 0;
+      const bHours = b.createdAt ? (Date.now() - new Date(b.createdAt).getTime()) / (1000 * 60 * 60) : 0;
+      if (Math.abs(aHours - bHours) > 1) return bHours - aHours;
+      
+      const sourceWeights: Record<string, number> = { "facebook": 5, "google": 4, "direct": 3, "referral": 2 };
+      const aWeight = sourceWeights[a.source?.toLowerCase() || ""] || 1;
+      const bWeight = sourceWeights[b.source?.toLowerCase() || ""] || 1;
+      return bWeight - aWeight;
+    });
+  }
+
+  async processOutcome(leadId: string, outcome: string, userId: string): Promise<{ lead: Lead; interaction: Interaction; tasks?: any[] }> {
+    const lead = await this.getLeadById(leadId);
+    if (!lead) throw new Error("Lead not found");
+    
+    // Create interaction record
+    const interaction = await this.createInteraction({
+      leadId,
+      userId,
+      kind: "call",
+      direction: "outbound",
+      summary: `Outcome: ${outcome}`,
+      outcome
+    });
+    
+    let updatedLead = lead;
+    const tasks: any[] = [];
+    
+    // Process outcome logic
+    switch (outcome) {
+      case "no_answer":
+        // Send SMS A, create follow-up J+2, status Follow-up
+        updatedLead = (await this.updateLead(leadId, { 
+          statut: "Follow-up",
+          prochaineAction: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) // J+2
+        }))!;
+        tasks.push({ type: "sms", template: "A", scheduledFor: new Date() });
+        tasks.push({ type: "follow_up", scheduledFor: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) });
+        break;
+        
+      case "voicemail":
+        // SMS B, follow-up J+1
+        updatedLead = (await this.updateLead(leadId, { 
+          statut: "Follow-up",
+          prochaineAction: new Date(Date.now() + 24 * 60 * 60 * 1000) // J+1
+        }))!;
+        tasks.push({ type: "sms", template: "B", scheduledFor: new Date() });
+        tasks.push({ type: "follow_up", scheduledFor: new Date(Date.now() + 24 * 60 * 60 * 1000) });
+        break;
+        
+      case "bad_number":
+        // bad_number=true, disable outbound
+        updatedLead = (await this.updateLead(leadId, { 
+          badNumber: true,
+          statut: "Bad Contact"
+        }))!;
+        break;
+        
+      case "not_seller":
+        // status Disqualified
+        updatedLead = (await this.updateLead(leadId, { 
+          statut: "Disqualified"
+        }))!;
+        break;
+        
+      case "booked":
+        // create appointment + .ics, send confirm SMS, status Booked
+        updatedLead = (await this.updateLead(leadId, { 
+          statut: "Booked"
+        }))!;
+        tasks.push({ type: "appointment", scheduledFor: new Date() });
+        tasks.push({ type: "sms", template: "confirm", scheduledFor: new Date() });
+        break;
+        
+      case "dnc":
+        // dnc=true, block outbound
+        updatedLead = (await this.updateLead(leadId, { 
+          dnc: true,
+          statut: "Do Not Contact"
+        }))!;
+        break;
+    }
+    
+    return { lead: updatedLead, interaction, tasks };
+  }
+
+  // Appointment .ics generation
+  async generateIcsFile(appointment: Appointment, lead: Lead): Promise<string> {
+    const startDate = new Date(appointment.startTime);
+    const endDate = new Date(appointment.endTime);
+    
+    const formatDate = (date: Date) => {
+      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+    
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Your Company//Your App//EN',
+      'BEGIN:VEVENT',
+      `UID:${appointment.icsUid || appointment.id}`,
+      `DTSTART:${formatDate(startDate)}`,
+      `DTEND:${formatDate(endDate)}`,
+      `SUMMARY:Rendez-vous avec ${lead.nomComplet}`,
+      `DESCRIPTION:Contact: ${lead.telephone}\nEmail: ${lead.email}\nType: ${lead.type}`,
+      `LOCATION:${appointment.location || 'À définir'}`,
+      'STATUS:CONFIRMED',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+    
+    return icsContent;
+  }
+
+  // Deliveries with assets
+  async createDeliveryWithAssets(leadId: string, agentId: string, price: number, extras: any): Promise<{ delivery: Delivery; deliveryUrl: string; pdfUrl: string }> {
+    const deliveryToken = Math.random().toString(36).substring(2, 15);
+    const delivery = await this.createDelivery({
+      leadId,
+      agentId,
+      price,
+      deliveryUrl: `/delivery/${deliveryToken}`,
+      pdfPath: `/pdfs/delivery-${deliveryToken}.pdf`
+    });
+    
+    return {
+      delivery,
+      deliveryUrl: `/delivery/${deliveryToken}`,
+      pdfUrl: `/pdfs/delivery-${deliveryToken}.pdf`
+    };
+  }
+
+  async getDeliveryByToken(token: string): Promise<Delivery | undefined> {
+    const [delivery] = await db.select().from(deliveries).where(eq(deliveries.deliveryUrl, `/delivery/${token}`));
+    return delivery || undefined;
+  }
+
+  async acceptDelivery(deliveryId: string): Promise<Delivery | undefined> {
+    const [delivery] = await db
+      .update(deliveries)
+      .set({ status: "accepted" })
+      .where(eq(deliveries.id, deliveryId))
+      .returning();
+    return delivery || undefined;
+  }
+
+  // Metrics
+  async getOperatorStats(operatorId: string, range: string): Promise<any> {
+    const daysBack = range === "7" ? 7 : 30;
+    const startDate = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
+    
+    const allLeads = await db.select().from(leads).where(eq(leads.ownerUserId, operatorId));
+    const recentLeads = allLeads.filter(lead => lead.createdAt && new Date(lead.createdAt) >= startDate);
+    
+    const stats = {
+      today: {
+        calls: recentLeads.length, // Simplified - should count actual interactions
+        connects: recentLeads.filter(l => l.statut === "Contacted").length,
+        booked: recentLeads.filter(l => l.statut === "Booked").length,
+        deliveries: 0, // Would need to join with deliveries table
+        collected: 0
+      },
+      funnel: {
+        created: recentLeads.length,
+        contacted: recentLeads.filter(l => l.statut === "Contacted").length,
+        booked: recentLeads.filter(l => l.statut === "Booked").length,
+        delivered: recentLeads.filter(l => l.statut === "Sent to Agent").length,
+        won: recentLeads.filter(l => l.statut === "Sold").length
+      },
+      roi: {
+        revenue: recentLeads.filter(l => l.statut === "Sold").reduce((sum, l) => sum + (l.prixEstime || 0), 0),
+        cost: recentLeads.reduce((sum, l) => sum + (l.cost || 0), 0)
+      }
+    };
+    
+    return stats;
+  }
+
+  // Data hygiene
+  async checkDuplicateLeads(phone?: string, email?: string): Promise<Lead[]> {
+    if (!phone && !email) return [];
+    
+    if (phone) {
+      return await db.select().from(leads).where(eq(leads.telephone, phone));
+    }
+    if (email) {
+      return await db.select().from(leads).where(eq(leads.email, email));
+    }
+    
+    return [];
+  }
+
+  async isContactBlocked(leadId: string): Promise<{ blocked: boolean; reason?: string }> {
+    const lead = await this.getLeadById(leadId);
+    if (!lead) return { blocked: false };
+    
+    if (lead.badNumber) return { blocked: true, reason: "Bad number" };
+    if (lead.dnc) return { blocked: true, reason: "Do not contact" };
+    
+    return { blocked: false };
+  }
+
+  async isReadyToSell(leadId: string): Promise<boolean> {
+    const lead = await this.getLeadById(leadId);
+    if (!lead) return false;
+    
+    // Ready to Sell criteria: valid phone, consent, intention+timeline, estimate/budget, city/area, ≥1 live touch
+    const hasValidPhone = lead.telephone && !lead.badNumber;
+    const hasConsent = lead.consentement;
+    const hasIntentionAndTimeline = lead.intention && lead.timeline;
+    const hasEstimateOrBudget = lead.prixEstime || lead.budget;
+    const hasLocation = lead.ville;
+    
+    // Check for live touch (simplified - would check interactions table)
+    const hasLiveTouch = lead.dernierContact;
+    
+    return !!(hasValidPhone && hasConsent && hasIntentionAndTimeline && hasEstimateOrBudget && hasLocation && hasLiveTouch);
   }
 
   private calculateScore(prospect: Partial<InsertProspect>): number {

@@ -8,6 +8,9 @@ import {
   insertRuleSchema, insertTemplateSchema
 } from "@shared/schema";
 import { requireOperator, requireAgent, requireAdmin, requireOwnershipOrAdmin, getUserRole } from "./rbac";
+import { eq } from "drizzle-orm";
+import { db } from "./db";
+import { appointments } from "@shared/schema";
 
 export function registerRoutes(app: Express): Server {
   // Setup authentication routes
@@ -302,6 +305,197 @@ export function registerRoutes(app: Express): Server {
         role: user.role,
         isActive: user.isActive 
       })));
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Operator-specific CRM endpoints
+  
+  // Queue Management
+  app.get("/api/operator/queue", requireOperator, async (req, res, next) => {
+    try {
+      const operatorId = req.user!.id;
+      const leads = await storage.getLeadsQueue(operatorId);
+      res.json(leads);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Process Outcome (keyboard shortcuts)
+  app.post("/api/operator/outcome", requireOperator, async (req, res, next) => {
+    try {
+      const { leadId, outcome } = req.body;
+      const result = await storage.processOutcome(leadId, outcome, req.user!.id);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Operator Interactions
+  app.post("/api/operator/interactions", requireOperator, async (req, res, next) => {
+    try {
+      const validatedData = insertInteractionSchema.parse({
+        ...req.body,
+        userId: req.user!.id,
+      });
+      
+      const interaction = await storage.createInteraction(validatedData);
+      res.status(201).json(interaction);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/operator/interactions", requireOperator, async (req, res, next) => {
+    try {
+      const leadId = req.query.leadId as string;
+      const interactions = await storage.getInteractions(leadId);
+      res.json(interactions);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Operator Appointments with .ics
+  app.post("/api/operator/appointments", requireOperator, async (req, res, next) => {
+    try {
+      const validatedData = insertAppointmentSchema.parse(req.body);
+      const appointment = await storage.createAppointment(validatedData);
+      
+      // Generate .ics file
+      const lead = await storage.getLeadById(validatedData.leadId!);
+      if (lead) {
+        const icsContent = await storage.generateIcsFile(appointment, lead);
+        res.json({ 
+          ...appointment, 
+          icsUrl: `/api/operator/appointments/${appointment.id}/ics`,
+          icsContent 
+        });
+      } else {
+        res.json(appointment);
+      }
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/operator/appointments/:id/ics", async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const appointment = await db.select().from(appointments).where(eq(appointments.id, id)).limit(1);
+      if (!appointment[0]) {
+        return res.status(404).json({ message: "Appointment not found" });
+      }
+      
+      const lead = await storage.getLeadById(appointment[0].leadId!);
+      if (!lead) {
+        return res.status(404).json({ message: "Lead not found" });
+      }
+      
+      const icsContent = await storage.generateIcsFile(appointment[0], lead);
+      
+      res.setHeader('Content-Type', 'text/calendar');
+      res.setHeader('Content-Disposition', `attachment; filename="appointment-${id}.ics"`);
+      res.send(icsContent);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/operator/appointments", requireOperator, async (req, res, next) => {
+    try {
+      const leadId = req.query.leadId as string;
+      const appointments = await storage.getAppointments(leadId);
+      res.json(appointments);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Operator Deliveries with share links and PDFs
+  app.post("/api/operator/deliveries", requireOperator, async (req, res, next) => {
+    try {
+      const { leadId, agentId, price, extras } = req.body;
+      const result = await storage.createDeliveryWithAssets(leadId, agentId, price, extras);
+      res.status(201).json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/operator/deliveries/:id/accept", async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const delivery = await storage.acceptDelivery(id);
+      if (!delivery) {
+        return res.status(404).json({ message: "Delivery not found" });
+      }
+      res.json(delivery);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Public delivery view (no auth required)
+  app.get("/delivery/:token", async (req, res, next) => {
+    try {
+      const { token } = req.params;
+      const delivery = await storage.getDeliveryByToken(token);
+      
+      if (!delivery) {
+        return res.status(404).json({ message: "Delivery not found" });
+      }
+      
+      // Mark as opened if not already
+      if (delivery.status === "sent") {
+        await storage.updateDeliveryStatus(delivery.id, "opened");
+      }
+      
+      const lead = await storage.getLeadById(delivery.leadId);
+      const agent = await storage.getUser(delivery.agentId);
+      
+      res.json({
+        delivery,
+        lead,
+        agent: agent ? { id: agent.id, name: agent.name, email: agent.email } : null
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Operator Stats/Metrics
+  app.get("/api/operator/stats", requireOperator, async (req, res, next) => {
+    try {
+      const operatorId = req.user!.id;
+      const range = req.query.range as string || "7";
+      const stats = await storage.getOperatorStats(operatorId, range);
+      res.json(stats);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Data hygiene endpoints
+  app.get("/api/operator/duplicates", requireOperator, async (req, res, next) => {
+    try {
+      const { phone, email } = req.query;
+      const duplicates = await storage.checkDuplicateLeads(phone as string, email as string);
+      res.json(duplicates);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/operator/contact-status/:leadId", requireOperator, async (req, res, next) => {
+    try {
+      const { leadId } = req.params;
+      const blocked = await storage.isContactBlocked(leadId);
+      const readyToSell = await storage.isReadyToSell(leadId);
+      res.json({ blocked, readyToSell });
     } catch (error) {
       next(error);
     }

@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initializeDemoData } from "./init-demo";
+import { automationRunner, initializeDefaultRules } from "./automation";
 
 const app = express();
 app.use(express.json());
@@ -40,6 +41,10 @@ app.use((req, res, next) => {
 (async () => {
   // Initialize demo data on startup
   await initializeDemoData();
+  
+  // Initialize automation rules and start runner
+  await initializeDefaultRules();
+  automationRunner.start();
   
   const server = await registerRoutes(app);
 

@@ -1,0 +1,170 @@
+Context:
+Current state shows Operator tabs: Leads (table works), Interactions / Appointments / Deliveries / Automation = “Coming soon”. RBAC exists; users are:
+
+alice.martin / demo123 → role=agent
+
+ben.leroy / demo123 → role=agent
+
+admin / demo123 → role=operator (or admin)
+
+Goal:
+Finish the Operator CRM end-to-end. Do not change Agent UX. Implement the items below with strict AC (Acceptance Criteria).
+
+1) Interactions (log every touch)
+
+API
+
+POST /api/operator/interactions → {leadId, kind: "call"|"sms"|"wa"|"email"|"meeting", direction:"out"|"in", summary, outcome?, recordingUrl?, transcript?}
+
+GET /api/operator/interactions?leadId=...
+UI
+
+In Leads table: clicking call/SMS/WA/email also creates an interaction record (optimistic).
+
+Add an “Interactions” panel on lead row (or drawer) showing timeline.
+AC
+
+Creating an action instantly adds a timeline entry with timestamp.
+
+Refresh returns the same data from the API.
+
+2) Queue + Outcomes (keyboard-first)
+
+UI
+
+Add Queue mode on Operator/Leads with sorting: hotScore DESC, hoursSinceCreated DESC, sourceWeight DESC, localWindowFit DESC.
+
+Keyboard outcomes: 1 Answered, 2 No answer, 3 Voicemail, 4 Bad number, 5 Not seller, 6 Booked, 7 DNC.
+
+Buttons: Call, SMS, WA, .ics.
+Logic
+
+Map outcomes → status + follow-up:
+
+2 No answer → send SMS A, create follow-up J+2, status Follow-up.
+
+3 Voicemail → SMS B, follow-up **J+1`.
+
+4 Bad number → bad_number=true, disable outbound.
+
+5 Not seller → status Disqualified, reason required.
+
+6 Booked → create appointment + .ics, send confirm SMS, status Booked.
+
+7 DNC → dnc=true, block outbound.
+AC
+
+Pressing 2 creates a task for J+2 and logs an SMS in interactions.
+
+Pressing 6 creates an appointment and downloads .ics.
+
+3) Appointments + .ics + reminders
+
+API
+
+POST /api/operator/appointments → {leadId, start, end, location, withAgentId?} → returns {icsUrl}
+
+GET /api/operator/appointments?leadId=...
+UI
+
+“Book” modal with quick chips: Today PM / Tomorrow AM / Tomorrow PM.
+
+After create → download .ics and show banner “T-24h & T-1h reminders scheduled”.
+Background
+
+Cron/worker sends SMS reminders at T-24h and T-1h; mark reminders_sent=true.
+AC
+
+Creating an appointment generates a valid .ics, a DB row, and schedules reminders.
+
+4) Deliveries (share link + PDF) + payments
+
+DB/API
+
+POST /api/operator/deliveries → {leadId, agentId, price, extras:{booked:boolean, exclusive:boolean}}
+Returns {deliveryUrl, pdfUrl} and creates deliveries row with status="sent".
+
+GET /delivery/:token public read-only view (lead package). Pixel logs opened.
+
+POST /api/operator/deliveries/:id/accept → marks accepted.
+Payments
+
+MVP: Agent Credits (integer on users). If credits ≥ price → deduct and mark paid_at.
+
+Optional: Stripe Payment Link; webhook sets paid_at.
+AC
+
+Delivering a lead produces a working share link and downloadable PDF.
+
+Visiting the link sets opened. Clicking “Accept” sets accepted.
+
+If credits present, they are decremented atomically and paid_at is set.
+
+5) Automation runner (cron)
+
+Table: rules(name, trigger, action, payload, is_active)
+Worker: run every minute.
+
+Triggers: outcome:no_answer, outcome:voicemail, status:booked, delivery:uncontacted_24h, lead:idle_7d.
+
+Actions: send_sms(templateId), create_task(+2d), create_ics, notify_operator, move_status(...).
+AC
+
+Due jobs execute and are marked with sent_at/completed_at.
+
+Turning a rule off (is_active=false) stops execution.
+
+6) Data hygiene + “Ready to Sell”
+
+Rules
+
+Deduplicate on phone/email; provide Merge in UI.
+
+bad_number or dnc disables call/SMS/WA in UI and API guards.
+
+“Ready to Sell” badge when: valid phone, consent, intention+timeline, estimate/budget, city/area, ≥1 live touch.
+AC
+
+Trying to call a bad_number is blocked with toast + no API call.
+
+Badge appears only when all conditions are met.
+
+7) Dashboard metrics (top of Operator/Leads)
+
+Compute server-side and return via GET /api/operator/stats?range=7|30:
+
+Today: calls, connects, booked, deliveries, € collected.
+
+Funnel 7/30d: created → contacted → booked → delivered → won.
+
+ROI by source: revenue vs lead cost.
+
+Agents table: acceptance %, time-to-first-call, refund rate, LTV, € this month.
+AC
+
+Performing actions (book, deliver, accept, pay) updates metrics within 60s.
+
+8) Drizzle alignment
+
+Replace any raw SQL with proper Drizzle schema + migration so npm run db:push is clean and typesafe.
+
+Non-negotiables
+
+Do not change Agent app UX.
+
+Keep demo accounts working exactly as:
+alice.martin/demo123, ben.leroy/demo123 (Agent) and admin/demo123 (Operator).
+
+Quick QA script (run after delivery)
+
+Login as admin → Operator.
+
+Open Queue, press 2 (No answer) → see SMS in Interactions + task J+2.
+
+Press 6 (Booked) → appointment row + .ics downloads + reminder scheduled.
+
+Deliver lead to Alice → get share link; open link → opened; click Accept → status accepted; if credits set, paid_at filled.
+
+Dashboard shows increments for booked, deliveries, and € collected.
+
+Mark lead bad_number → Call/SMS/WA disabled in UI and API returns 400.
