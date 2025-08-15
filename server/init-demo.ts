@@ -31,7 +31,6 @@ export async function initializeDemoData() {
       const [createdUser] = await db.insert(users).values({
         ...user,
         password: hashedPassword,
-        role: user.username === 'admin' ? 'admin' : 'agent'
       }).returning();
       createdUsers.push(createdUser);
       console.log(`✅ Created user: ${user.username} (${user.name})`);

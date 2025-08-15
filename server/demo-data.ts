@@ -7,24 +7,27 @@ export const demoUsers: InsertUser[] = [
     username: "admin",
     password: "demo123", // This will be hashed when inserted
     name: "Marie Dubois",
-    email: "marie@redweyne.fr"
+    email: "marie@redweyne.fr",
+    role: "operator"
   },
   {
     username: "alice.martin",
     password: "demo123",
     name: "Alice Martin",
-    email: "alice.martin@redweyne.fr"
+    email: "alice.martin@redweyne.fr",
+    role: "agent"
   },
   {
     username: "ben.leroy",
     password: "demo123",
     name: "Ben Leroy",
-    email: "ben.leroy@redweyne.fr"
+    email: "ben.leroy@redweyne.fr",
+    role: "agent"
   }
 ];
 
 // Demo prospects with realistic data
-export const demoProspects: (Omit<InsertProspect, 'agentId'> & { 
+export const demoProspects: (Omit<InsertProspect, 'agentId' | 'score'> & { 
   prochaineAction?: Date;
   dernierContact?: Date;
 })[] = [
@@ -49,7 +52,6 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     statut: "Qualifié",
     adresse: "12 rue de la Convention, 75015 Paris",
     notes: "Client motivé, bien situé, exclusivité signée",
-    score: 85,
     agentOutcome: "in_negotiation",
     leadCost: 45,
     estimatedClosingDays: 60,
@@ -77,7 +79,7 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     statut: "RDV fixé",
     adresse: "",
     notes: "Famille avec 2 enfants, recherche jardin",
-    score: 75,
+    
     agentOutcome: "signed",
     leadCost: 0,
     estimatedClosingDays: 90,
@@ -105,7 +107,7 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     statut: "Mandate Pending",
     adresse: "8 avenue du Général Leclerc, 92100 Boulogne",
     notes: "Investisseur, plusieurs biens, urgent",
-    score: 92,
+    
     agentOutcome: "in_negotiation",
     leadCost: 25,
     estimatedClosingDays: 30,
@@ -133,7 +135,7 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     statut: "Contacté",
     adresse: "",
     notes: "Primo-accédante, dossier solide, patient",
-    score: 68,
+    
     leadCost: 12,
     estimatedClosingDays: 120,
     prochaineAction: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // Day after tomorrow
@@ -160,7 +162,7 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     statut: "Mandat signé",
     adresse: "15 rue de la Paix, 92210 Saint-Cloud",
     notes: "Belle maison familiale, travaux à prévoir",
-    score: 78,
+    
     agentOutcome: "signed",
     leadCost: 0,
     estimatedClosingDays: 180,
@@ -188,7 +190,7 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     statut: "Gagné",
     adresse: "",
     notes: "Achat finalisé - très satisfaite du service",
-    score: 95,
+    
     agentOutcome: "signed",
     leadCost: 35,
     estimatedClosingDays: 45,
@@ -216,7 +218,7 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     statut: "Nouveau",
     adresse: "25 boulevard de la Défense, 92400 Courbevoie",
     notes: "Appartement moderne avec vue sur la Défense",
-    score: 85,
+    
     isHotLead: true,
     agentOutcome: "interested",
     leadCost: 0,
@@ -246,7 +248,7 @@ export const demoProspects: (Omit<InsertProspect, 'agentId'> & {
     statut: "RDV fixé",
     adresse: "",
     notes: "Jeune cadre, dossier solide, recherche transport proche",
-    score: 92,
+    
     isHotLead: true,
     agentOutcome: "interested",
     leadCost: 42,

@@ -1,0 +1,179 @@
+Build brief — Add Operator CRM (my side) + RBAC, keep Agent CRM intact
+Goal
+
+Keep the existing Agent CRM exactly as it is for agent users, and add a second app, the Operator CRM, that only I (the owner) can see after login. One codebase, two UIs, decided by user role.
+
+Users & Roles (seed)
+
+Create or seed 3 accounts with roles:
+
+alice.martin / demo123 → role=agent
+
+ben.leroy / demo123 → role=agent
+
+admin / demo123 → role=operator (also allow admin role if needed; operator routes should accept both operator and admin)
+
+RBAC requirements
+
+Add role ∈ {agent, operator, admin} to users table (enum).
+
+Server middleware requireRole(...roles); return 401 if not logged in, 403 if role not allowed.
+
+Routing:
+
+GET /api/leads → operator/admin only
+
+GET /api/leads/assigned → agent only
+
+All create/update/delete routes must be role-checked.
+
+Client side:
+
+After /api/me, render AgentApp if role=agent, OperatorApp if role=operator|admin.
+
+Operator CRM (my side) — MVP scope
+
+Implement 5 tabs. Reuse styles/components you already have.
+
+Queue (Speed Dial)
+
+Sorted by: hot score, time since lead creation, source weight, current time window.
+
+One-key outcomes during/after call:
+1 Answered · 2 No answer · 3 Voicemail · 4 Bad number · 5 Not seller · 6 Booked · 7 Do-not-contact
+
+Auto-actions per outcome (see “Automation rules” below).
+
+Buttons: Call, SMS, WhatsApp, Create .ics.
+
+Timestamped notes; timer per call; show time-to-first-touch badge.
+
+Pipeline (Operator)
+
+Stages: New → Contacted → Qualified → Booked → Sent to Agent → Sold → Refunded/Bad
+
+Drag & drop; Hot Lead badge if score > 80 && timeline < 3m.
+
+Show Expected value (€) on cards: price_estimate × fees_rate × status_probability × exclusivity_bonus.
+
+Deliveries
+
+Generate a Lead Package (shareable link + PDF) with: name, phone, intention, timeline, city/area, price estimate, consent, booked slot, my notes.
+
+Choose agent (routing by city/zip + performance; manual override allowed).
+
+Send via email or WhatsApp; log sent/opened/accepted.
+
+Pricing: base €20 per lead; allow bonuses for booked slot and exclusivity.
+
+Support Agent credits and/or Stripe Payment Link. Mark delivery paid_at on webhook.
+
+Automations
+
+Store simple rules (DB table) and run via cron/queue. Implement these out of the box:
+
+No answer → send SMS template A, create follow-up for J+2, set status Follow-up.
+
+Voicemail → SMS template B, follow-up J+1.
+
+Booked → send confirmation SMS + create .ics to lead (and agent if assigned), set status Booked.
+
+Agent no first-call in 24h after delivery → notify me; button to reassign/refund.
+
+Lead idle 7 days → move to Nurture, schedule monthly ping.
+
+Bad number → tag bad_number=true, disable call/SMS actions, request updated contact if email exists.
+
+Dashboard
+
+Today: calls placed, connects, booked, leads delivered, € collected.
+
+Funnel (7/30 days): created → contacted → booked → delivered → won.
+
+ROI by source: revenue vs cost (store cost on lead; allow manual input).
+
+Agents table: acceptance rate, time-to-first-call, refund rate, LTV, € this month.
+
+Best call windows heatmap by hour/weekday (based on my connect rate).
+
+Data model additions (keep names simple)
+
+users: add role enum.
+
+leads: add ownerUserId (me), assignedAgentId, bad_number boolean, dnc boolean, cost numeric.
+
+interactions: id, lead_id, kind(call/sms/wa/email/meeting), direction, summary, outcome, timestamp, recording_url, transcript.
+
+appointments: id, lead_id, start, end, location, with_agent_id, ics_uid, reminders_sent.
+
+deliveries: id, lead_id, agent_id, status(sent/opened/accepted/refunded), price, paid_at, created_at.
+
+payments: id, agent_id, amount, currency, paid_at, stripe_id.
+
+rules: id, name, trigger (e.g. "outcome:no_answer"), action (e.g. "send_sms:templateA,create_task:2d"), payload, created_at.
+
+Templates & helpers
+
+SMS/Email templates with merge tags: {firstName}, {city}, {date}, {time}, {agentName}.
+
+Helpers: click-to-call, SMS, WhatsApp link, .ics generator.
+
+“Ready to Sell” badge condition: valid phone ✅, consent ✅, intention+timeline ✅, estimate/budget ✅, city/area ✅, ≥1 live touch ✅ (slot optional but increases price).
+
+Keyboard shortcuts (Operator)
+
+J/K next/prev in Queue, C call, S SMS, W WhatsApp,
+B book slot, I create .ics, P deliver to agent,
+number keys 1..7 = outcomes above, T add follow-up, / search.
+
+Non-goals (protect the current app)
+
+Do not change anything for role=agent UI/UX or flows.
+
+Keep the “Demo” banner and current sample data for agent accounts as-is.
+
+Acceptance criteria
+
+RBAC:
+
+admin/demo123 logs in → sees Operator CRM.
+
+alice.martin and ben.leroy log in → see Agent CRM only.
+
+Hitting /api/leads as agent ⇒ 403; hitting /api/leads/assigned as operator ⇒ 403.
+
+Queue:
+
+Outcomes via number keys update status and trigger the specified automation.
+
+Call/SMS/WA/.ics buttons work; notes are timestamped.
+
+Automations:
+
+Cron processes due actions (SMS queued, tasks created, reminders sent); each job marked with sent_at or completed_at.
+
+Deliveries & Payments:
+
+Delivering a lead creates a record and shareable link/PDF; sending records sent/opened/accepted.
+
+Charging via Stripe Link or Credits works; paid_at populated on webhook or credit deduction.
+
+Dashboard:
+
+KPIs and funnel numbers reflect DB changes after test actions.
+
+Agents table computes metrics correctly.
+
+Data hygiene:
+
+Duplicate phone/email prompts merge; bad_number disables call/SMS; dnc blocks outbound.
+
+Dev notes
+
+Reuse current design system (Tailwind/shadcn).
+
+Keep everything responsive; add a mobile Express view for Operator Queue (call-first layout).
+
+Provide .env.example and update README with run & seed instructions.
+
+Definition of Done: All ACs pass; three seed accounts work exactly as specified; no regressions for agent users.

@@ -127,8 +127,9 @@ export default function AuthPage() {
                   <div className="mt-6 p-4 bg-blue-50 rounded-lg" data-testid="demo-credentials">
                     <p className="text-sm text-blue-800 font-medium mb-2">Identifiants de démonstration :</p>
                     <div className="space-y-1 text-sm text-blue-700">
-                      <p>👤 <strong>alice.martin</strong> / 🔑 <strong>demo123</strong></p>
-                      <p>👤 <strong>ben.leroy</strong> / 🔑 <strong>demo123</strong></p>
+                      <p>🔧 <strong>admin</strong> / 🔑 <strong>demo123</strong> (Operator CRM)</p>
+                      <p>👤 <strong>alice.martin</strong> / 🔑 <strong>demo123</strong> (Agent CRM)</p>
+                      <p>👤 <strong>ben.leroy</strong> / 🔑 <strong>demo123</strong> (Agent CRM)</p>
                     </div>
                   </div>
                 </CardContent>
