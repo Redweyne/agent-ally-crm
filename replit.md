@@ -6,11 +6,24 @@ Redweyne is a customer relationship management (CRM) system designed specificall
 
 The CRM has been significantly enhanced with business-focused features to maximize agent productivity and revenue tracking:
 
+### Core Business Features
+- **Demo Data & Authentication**: Fixed demo accounts (admin/demo123, agent1/demo123, agent2/demo123) with realistic prospect data
 - **Business Value Features**: Mandate Pending status, exact source tracking, ROI calculator, Hot Lead auto-detection
 - **Advanced Filtering**: Budget range filters, "Call Today" view, sorting by value/score/date
 - **Contact Management**: Timeline tracking, WhatsApp integration, pre-filled messages, PDF export capabilities
-- **Professional UI**: Demo banner, enhanced status indicators, mini agent avatars, smooth animations
-- **Revenue Tracking**: Lead cost analysis, estimated closing times, pipeline value calculations
+
+### Professional UI & UX
+- **Dark Mode Support**: Professional light/dark theme toggle with full CSS variable system
+- **Smart Notifications**: Real-time notifications panel for calls due, hot leads, and follow-ups
+- **Mobile Components**: Express mode for mobile prospect management
+- **Agency Branding**: Customizable colors, logos, and fonts for white-label deployment
+- **Enhanced Dashboards**: Improved KPI cards, charts, and prospect pipeline visualization
+
+### Technical Improvements
+- **Database Enhancements**: Added lead scoring, contact timeline, ROI tracking fields
+- **Demo Data System**: Automatic initialization of realistic demo data on startup
+- **Component Architecture**: Modular CRM components for easy customization
+- **Performance**: Optimized filtering, sorting, and real-time updates
 
 # User Preferences
 

@@ -28,6 +28,8 @@ import DemoBanner from "@/components/crm/demo-banner";
 import ROICalculator from "@/components/crm/roi-calculator";
 import ContactTimeline from "@/components/crm/contact-timeline";
 import HotLeadBadge from "@/components/crm/hot-lead-badge";
+import DarkModeToggle from "@/components/crm/dark-mode-toggle";
+import NotificationsPanel from "@/components/crm/notifications-panel";
 
 export default function CrmDashboard() {
   const { user, logoutMutation } = useAuth();
@@ -325,12 +327,16 @@ export default function CrmDashboard() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2">
-              <User className="w-4 h-4 text-gray-500" />
-              <span className="text-sm" data-testid="current-user">
+            <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-xl px-3 py-2">
+              <User className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <span className="text-sm dark:text-gray-200" data-testid="current-user">
                 {user?.name}
               </span>
             </div>
+
+            <NotificationsPanel prospects={prospects} />
+
+            <DarkModeToggle />
 
             <Button
               onClick={exportCSV}
