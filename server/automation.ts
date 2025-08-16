@@ -24,10 +24,10 @@ class AutomationRunner {
     this.isRunning = true;
     console.log("🤖 Automation runner started");
     
-    // Run every minute
+    // Run every 5 minutes to avoid spam
     this.interval = setInterval(() => {
       this.processJobs().catch(console.error);
-    }, 60000);
+    }, 5 * 60000);
     
     // Run immediately
     this.processJobs().catch(console.error);
@@ -126,30 +126,24 @@ class AutomationRunner {
   }
 
   private async processBookedTrigger(rule: any) {
-    // Find recently booked leads (within last 5 minutes to avoid re-processing)
-    const cutoffTime = new Date(Date.now() - 5 * 60 * 1000); // 5 minutes ago
-    const recentlyBooked = await db.select()
+    // Find booked leads that haven't received confirmation SMS yet
+    const bookedLeads = await db.select()
       .from(leads)
-      .where(and(
-        eq(leads.statut, "Booked"),
-        // Only process leads that became "Booked" recently or haven't been processed
-        // This prevents the endless loop of sending SMS to the same leads
-        sql`${leads.createdAt} > ${cutoffTime} OR ${leads.dernierContact} IS NULL OR ${leads.dernierContact} < ${cutoffTime}`
-      ));
+      .where(eq(leads.statut, "Booked"));
 
-    for (const lead of recentlyBooked) {
-      // Check if we already sent confirmation SMS recently
-      const recentConfirmations = await db.select()
+    for (const lead of bookedLeads) {
+      // Check if we already sent confirmation SMS for this booking
+      const existingConfirmations = await db.select()
         .from(interactions)
         .where(and(
           eq(interactions.leadId, lead.id),
           eq(interactions.kind, "sms"),
           eq(interactions.direction, "outbound"),
-          sql`${interactions.summary} LIKE '%Automated SMS (template confirm)%'`,
-          sql`${interactions.timestamp} > ${cutoffTime}`
+          sql`${interactions.summary} LIKE '%confirmation%confirmé%'`
         ));
 
-      if (recentConfirmations.length === 0) {
+      // Only send confirmation if none exists
+      if (existingConfirmations.length === 0) {
         await this.executeAction(rule, lead.id, {
           type: "send_confirmation_sms",
           scheduleReminders: true

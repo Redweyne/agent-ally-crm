@@ -8,7 +8,7 @@ import {
   Plus, Search, Filter, LogOut, Menu, X, Home
 } from 'lucide-react';
 import MobileExpressMode from '@/components/crm/mobile-express-mode';
-import QuickActions from '@/components/crm/quick-actions';
+
 import type { Prospect } from '@shared/schema';
 
 interface MobileCRMLayoutProps {
@@ -77,7 +77,8 @@ export default function MobileCRMLayout({
               variant="ghost" 
               size="sm" 
               onClick={() => setShowMenu(!showMenu)}
-              className="p-2"
+              className="p-2 mobile-button"
+              title={showMenu ? "Fermer menu" : "Ouvrir menu"}
             >
               {showMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -86,7 +87,7 @@ export default function MobileCRMLayout({
 
         {/* Mobile Tabs */}
         <div className="px-4 pb-2">
-          <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+          <div className="flex space-x-1 overflow-x-auto scrollbar-hide mobile-scroll">
             {[
               { id: 'tableau', label: 'Tableau' },
               { id: 'prospects', label: 'Prospects' },
@@ -98,7 +99,7 @@ export default function MobileCRMLayout({
                 size="sm"
                 variant={activeTab === tab.id ? 'default' : 'ghost'}
                 onClick={() => setActiveTab(tab.id)}
-                className="flex-shrink-0 text-xs px-3 py-1"
+                className="flex-shrink-0 text-xs px-3 py-1 mobile-button"
               >
                 {tab.label}
               </Button>
@@ -182,10 +183,11 @@ export default function MobileCRMLayout({
                 
                 <div className="flex space-x-2">
                   <Button 
-                    className="flex-1" 
+                    className="flex-1 mobile-button" 
                     size="sm"
                     onClick={() => setActiveView('express')}
                     disabled={priorityProspects.length === 0}
+                    title="Mode appel rapide"
                   >
                     <Phone className="h-4 w-4 mr-2" />
                     Mode Express
@@ -194,6 +196,8 @@ export default function MobileCRMLayout({
                     variant="outline" 
                     size="sm"
                     onClick={() => setActiveView('list')}
+                    className="mobile-button"
+                    title="Voir tous les prospects"
                   >
                     <User className="h-4 w-4 mr-2" />
                     Liste
@@ -281,7 +285,38 @@ export default function MobileCRMLayout({
                       )}
                     </div>
                   </div>
-                  <QuickActions prospect={prospect} compact />
+                  <div className="flex gap-1 mt-3">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onCall(prospect)} 
+                      className="btn-with-icon mobile-button flex-1"
+                      title="Appeler"
+                    >
+                      <Phone className="w-3 h-3" />
+                      <span className="text-xs">Appel</span>
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onWhatsApp(prospect)} 
+                      className="btn-with-icon mobile-button flex-1"
+                      title="WhatsApp"
+                    >
+                      <MessageSquare className="w-3 h-3" />
+                      <span className="text-xs">WhatsApp</span>
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onScheduleRDV(prospect)} 
+                      className="btn-with-icon mobile-button flex-1"
+                      title="Programmer RDV"
+                    >
+                      <Calendar className="w-3 h-3" />
+                      <span className="text-xs">RDV</span>
+                    </Button>
+                  </div>
                 </Card>
               ))}
             </div>
@@ -290,7 +325,7 @@ export default function MobileCRMLayout({
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-pb">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 pb-safe-area-inset-bottom">
         <div className="flex justify-around py-2">
           <Button
             variant={activeView === 'dashboard' ? 'default' : 'ghost'}
@@ -312,9 +347,9 @@ export default function MobileCRMLayout({
             <Phone className="h-4 w-4 mb-1" />
             <span className="text-xs">Express</span>
             {priorityProspects.length > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full text-xs p-0 flex items-center justify-center">
+              <div className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">
                 {priorityProspects.length}
-              </Badge>
+              </div>
             )}
           </Button>
 

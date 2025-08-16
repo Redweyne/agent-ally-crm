@@ -143,7 +143,8 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
             variant="ghost" 
             onClick={prevProspect}
             disabled={priorityProspects.length <= 1}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 mobile-button"
+            title="Prospect précédent"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -152,7 +153,8 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
             variant="ghost" 
             onClick={nextProspect}
             disabled={priorityProspects.length <= 1}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 mobile-button"
+            title="Prospect suivant"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -215,8 +217,9 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
           <div className="grid grid-cols-3 gap-2">
             <Button
               onClick={() => onCall(currentProspect)}
-              className="flex flex-col gap-1 h-16"
+              className="flex flex-col gap-1 h-16 mobile-button"
               variant="outline"
+              title={`Appeler ${currentProspect.nomComplet}`}
             >
               <Phone className="w-5 h-5" />
               <span className="text-xs">Appeler</span>
@@ -224,8 +227,9 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
             
             <Button
               onClick={() => onWhatsApp(currentProspect)}
-              className="flex flex-col gap-1 h-16"
+              className="flex flex-col gap-1 h-16 mobile-button"
               variant="outline"
+              title={`Contacter ${currentProspect.nomComplet} par WhatsApp`}
             >
               <MessageCircle className="w-5 h-5" />
               <span className="text-xs">WhatsApp</span>
@@ -233,8 +237,9 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
             
             <Button
               onClick={() => onScheduleRDV(currentProspect)}
-              className="flex flex-col gap-1 h-16"
+              className="flex flex-col gap-1 h-16 mobile-button"
               variant="outline"
+              title={`Programmer RDV avec ${currentProspect.nomComplet}`}
             >
               <Calendar className="w-5 h-5" />
               <span className="text-xs">RDV</span>

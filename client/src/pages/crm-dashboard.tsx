@@ -60,7 +60,7 @@ const isReadyToSell = (prospect: any): boolean => {
            prospect.timeline &&
            prospect.ville &&
            (prospect.budget || prospect.prixEstime) &&
-           (prospect.liveTouches || 0) >= 1);
+           ((prospect as any).liveTouches || 0) >= 1);
 };
 
 const isHotLead = (prospect: any): boolean => {
@@ -225,7 +225,7 @@ export default function CrmDashboard() {
       if (showHotLeads && !isHotLead(prospect)) return false;
       if (showDueToday) {
         const today = new Date().toISOString().split('T')[0];
-        if (prospect.nextFollowUp !== today) return false;
+        if ((prospect as any).nextFollowUp !== today) return false;
       }
       
       // Budget filter
@@ -302,7 +302,7 @@ export default function CrmDashboard() {
               ...p, 
               outcome, 
               nextFollowUp: nextFollowUp.toISOString().split('T')[0],
-              liveTouches: (p.liveTouches || 0) + 1
+              liveTouches: ((p as any).liveTouches || 0) + 1
             }
           : p
       );
@@ -315,7 +315,7 @@ export default function CrmDashboard() {
             ...prospect,
             outcome,
             nextFollowUp: nextFollowUp.toISOString().split('T')[0],
-            liveTouches: (prospect.liveTouches || 0) + 1
+            liveTouches: ((prospect as any).liveTouches || 0) + 1
           });
         }
       }
@@ -425,7 +425,7 @@ END:VCALENDAR`;
             <div class="section"><div class="label">Timeline:</div> ${prospect.timeline || 'N/A'}</div>
             <div class="section"><div class="label">Score:</div> ${prospect.score}/100</div>
             <div class="section"><div class="label">Status:</div> ${prospect.statut}</div>
-            <div class="section"><div class="label">Notes:</div> ${prospect.notes || prospect.commentaires || 'N/A'}</div>
+            <div class="section"><div class="label">Notes:</div> ${prospect.notes || (prospect as any).commentaires || 'N/A'}</div>
           </div>
         </body>
       </html>
@@ -491,9 +491,9 @@ END:VCALENDAR`;
   const mergeDuplicates = (primaryProspect: Prospect, duplicates: Prospect[]) => {
     const merged = {
       ...primaryProspect,
-      liveTouches: Math.max(primaryProspect.liveTouches || 0, ...duplicates.map(d => d.liveTouches || 0)),
+      liveTouches: Math.max((primaryProspect as any).liveTouches || 0, ...duplicates.map(d => (d as any).liveTouches || 0)),
       score: Math.max(primaryProspect.score || 0, ...duplicates.map(d => d.score || 0)),
-      notes: [primaryProspect.notes || primaryProspect.commentaires, ...duplicates.map(d => d.notes || d.commentaires)].filter(n => n).join('\n\n')
+      notes: [primaryProspect.notes || (primaryProspect as any).commentaires, ...duplicates.map(d => d.notes || (d as any).commentaires)].filter(n => n).join('\n\n')
     };
 
     setLocalProspects(prev => prev.filter(p => !duplicates.some(d => d.id === p.id))
@@ -797,7 +797,6 @@ END:VCALENDAR`;
             subtitle="prêts à vendre"
             icon={Check}
             trend="up"
-            className="bg-green-50 border-green-200"
           />
           <KpiCard
             title="Hot Leads"
@@ -805,7 +804,6 @@ END:VCALENDAR`;
             subtitle="prospects chauds"
             icon={Star}
             trend="up"
-            className="bg-red-50 border-red-200"
           />
           <KpiCard
             title="RDV fixés"
