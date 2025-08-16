@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useIsMobile } from "@/hooks/use-mobile";
+import MobileCRMLayout from "@/components/mobile-crm-layout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { 
@@ -88,6 +90,7 @@ export default function CrmDashboard() {
   const { user, logoutMutation } = useAuth();
   const [, navigate] = useLocation();
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
   
   const [selectedAgentId, setSelectedAgentId] = useState(user?.id || "");
   const [activeTab, setActiveTab] = useState("tableau");
@@ -630,17 +633,43 @@ END:VCALENDAR`;
     );
   }
 
+  // Mobile layout
+  if (isMobile) {
+    return (
+      <MobileCRMLayout
+        user={user}
+        prospects={filteredProspects}
+        kpis={kpis}
+        onLogout={handleLogout}
+        onCall={(prospect) => {
+          console.log('Calling:', prospect.telephone);
+          window.open(`tel:${prospect.telephone}`, '_self');
+        }}
+        onWhatsApp={(prospect) => {
+          const message = `Bonjour ${prospect.nomComplet}, je suis votre agent immobilier concernant votre projet ${prospect.type?.toLowerCase()} à ${prospect.ville}.`;
+          const phoneNumber = prospect.telephone?.replace(/\s/g, '').replace(/\+33/, '33');
+          const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+          window.open(whatsappUrl, '_blank');
+        }}
+        onScheduleRDV={(prospect) => {
+          setSelectedProspect(prospect);
+        }}
+        onCreateProspect={() => setShowProspectForm(true)}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50" data-testid="crm-dashboard">
       {/* Header */}
       <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-primary text-white grid place-items-center font-bold">
+            <div className="w-9 h-9 rounded-2xl bg-primary text-white grid place-items-center font-bold text-sm">
               RL
             </div>
             <div>
-              <div className="font-semibold leading-tight" data-testid="header-title">
+              <div className="font-semibold leading-tight text-sm sm:text-base" data-testid="header-title">
                 RedLead2Guide CRM — Leads Immobiliers
               </div>
               <div className="text-xs text-gray-500" data-testid="header-subtitle">

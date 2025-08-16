@@ -1,0 +1,311 @@
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Phone, MessageSquare, Calendar, User, TrendingUp, 
+  Plus, Search, Filter, LogOut, Menu, X, Home
+} from 'lucide-react';
+import MobileExpressMode from '@/components/crm/mobile-express-mode';
+import QuickActions from '@/components/crm/quick-actions';
+import type { Prospect } from '@shared/schema';
+
+interface MobileCRMLayoutProps {
+  user: any;
+  prospects: Prospect[];
+  kpis: any;
+  onLogout: () => void;
+  onCall: (prospect: Prospect) => void;
+  onWhatsApp: (prospect: Prospect) => void;
+  onScheduleRDV: (prospect: Prospect) => void;
+  onCreateProspect: () => void;
+}
+
+export default function MobileCRMLayout({
+  user,
+  prospects,
+  kpis,
+  onLogout,
+  onCall,
+  onWhatsApp,
+  onScheduleRDV,
+  onCreateProspect
+}: MobileCRMLayoutProps) {
+  const [activeView, setActiveView] = useState<'dashboard' | 'express' | 'list'>('dashboard');
+  const [showMenu, setShowMenu] = useState(false);
+
+  const priorityProspects = prospects.filter(p => {
+    const today = new Date().toDateString();
+    const needsCall = p.prochaineAction && 
+      new Date(p.prochaineAction).toDateString() === today &&
+      !["Gagné", "Perdu", "Pas de réponse"].includes(p.statut || "");
+    
+    const isHotLead = (p.score && p.score > 80) || p.isHotLead;
+    const isNewToday = p.creeLe && new Date(p.creeLe).toDateString() === today;
+    
+    return needsCall || isHotLead || isNewToday;
+  });
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Mobile Header */}
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">RL</span>
+            </div>
+            <div>
+              <h1 className="text-sm font-semibold text-gray-900 dark:text-white">RedLead2Guide</h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{user?.name}</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-2"
+            >
+              {showMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {showMenu && (
+          <div className="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg">
+            <div className="p-4 space-y-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-left"
+                onClick={onCreateProspect}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Nouveau prospect
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-left text-red-600"
+                onClick={onLogout}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Déconnexion
+              </Button>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Main Content */}
+      <main className="p-4 pb-20">
+        {activeView === 'dashboard' && (
+          <div className="space-y-4">
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                      <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Nouveaux</p>
+                      <p className="text-lg font-semibold">{kpis.newToday}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                      <Calendar className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">RDV</p>
+                      <p className="text-lg font-semibold">{kpis.upcomingRdv}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Priority Actions */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse" />
+                  Actions prioritaires
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Prospects à appeler aujourd'hui</span>
+                  <Badge variant="secondary">{priorityProspects.length}</Badge>
+                </div>
+                
+                <div className="flex space-x-2">
+                  <Button 
+                    className="flex-1" 
+                    size="sm"
+                    onClick={() => setActiveView('express')}
+                    disabled={priorityProspects.length === 0}
+                  >
+                    <Phone className="h-4 w-4 mr-2" />
+                    Mode Express
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setActiveView('list')}
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    Liste
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Activity */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Activité récente</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {prospects.slice(0, 3).map((prospect) => (
+                    <div key={prospect.id} className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{prospect.nomComplet}</p>
+                        <p className="text-xs text-gray-500">{prospect.ville}</p>
+                      </div>
+                      <div className="ml-2">
+                        <Badge variant="outline" className="text-xs">
+                          {prospect.statut}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeView === 'express' && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Mode Express</h2>
+              <Button variant="outline" size="sm" onClick={() => setActiveView('dashboard')}>
+                <Home className="h-4 w-4 mr-2" />
+                Retour
+              </Button>
+            </div>
+            <MobileExpressMode
+              prospects={priorityProspects}
+              onCall={onCall}
+              onWhatsApp={onWhatsApp}
+              onScheduleRDV={onScheduleRDV}
+            />
+          </div>
+        )}
+
+        {activeView === 'list' && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Tous les prospects</h2>
+              <Button variant="outline" size="sm" onClick={() => setActiveView('dashboard')}>
+                <Home className="h-4 w-4 mr-2" />
+                Retour
+              </Button>
+            </div>
+            
+            <div className="space-y-3">
+              {prospects.map((prospect) => (
+                <Card key={prospect.id} className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-sm truncate">{prospect.nomComplet}</h3>
+                      <p className="text-xs text-gray-500 mt-1">{prospect.ville}</p>
+                      <div className="flex items-center space-x-2 mt-2">
+                        <Badge variant="outline" className="text-xs">
+                          {prospect.type}
+                        </Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          {prospect.statut}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="ml-4 text-right">
+                      <p className="text-sm font-medium">
+                        {((prospect.budget || prospect.prixEstime || 0) / 1000).toFixed(0)}k€
+                      </p>
+                      {prospect.score && (
+                        <p className="text-xs text-gray-500">Score: {prospect.score}</p>
+                      )}
+                    </div>
+                  </div>
+                  <QuickActions prospect={prospect} compact />
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-pb">
+        <div className="flex justify-around py-2">
+          <Button
+            variant={activeView === 'dashboard' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveView('dashboard')}
+            className="flex-1 max-w-none mx-1 flex-col h-auto py-2"
+          >
+            <Home className="h-4 w-4 mb-1" />
+            <span className="text-xs">Accueil</span>
+          </Button>
+          
+          <Button
+            variant={activeView === 'express' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveView('express')}
+            className="flex-1 max-w-none mx-1 flex-col h-auto py-2"
+            disabled={priorityProspects.length === 0}
+          >
+            <Phone className="h-4 w-4 mb-1" />
+            <span className="text-xs">Express</span>
+            {priorityProspects.length > 0 && (
+              <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full text-xs p-0 flex items-center justify-center">
+                {priorityProspects.length}
+              </Badge>
+            )}
+          </Button>
+
+          <Button
+            variant={activeView === 'list' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setActiveView('list')}
+            className="flex-1 max-w-none mx-1 flex-col h-auto py-2"
+          >
+            <User className="h-4 w-4 mb-1" />
+            <span className="text-xs">Liste</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onCreateProspect}
+            className="flex-1 max-w-none mx-1 flex-col h-auto py-2"
+          >
+            <Plus className="h-4 w-4 mb-1" />
+            <span className="text-xs">Nouveau</span>
+          </Button>
+        </div>
+      </nav>
+    </div>
+  );
+}
