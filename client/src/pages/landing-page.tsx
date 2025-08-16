@@ -103,6 +103,15 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button 
+                onClick={() => navigate("/enhanced-crm")} 
+                className="bg-green-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition-colors"
+                size="lg"
+                data-testid="button-enhanced-crm"
+              >
+                Demo Enhanced CRM
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button 
                 onClick={() => scrollToSection("services")} 
                 variant="outline"
                 className="border-2 border-white/80 text-white bg-transparent px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-primary-700 transition-all duration-300 backdrop-blur-sm"
