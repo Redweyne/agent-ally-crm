@@ -533,8 +533,20 @@ export default function MobileCRMLayout({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onCreateProspect}
-            className="flex-1 max-w-none mx-1 flex-col h-auto py-2"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Mobile "Nouveau" button clicked');
+              if (typeof onCreateProspect === 'function') {
+                onCreateProspect();
+                console.log('onCreateProspect called successfully');
+              } else {
+                console.error('onCreateProspect is not a function:', onCreateProspect);
+              }
+            }}
+            className="flex-1 max-w-none mx-1 flex-col h-auto py-2 hover:bg-primary-100 active:bg-primary-200 transition-colors"
+            data-testid="mobile-button-nouveau"
+            title="Créer un nouveau prospect"
           >
             <Plus className="h-4 w-4 mb-1" />
             <span className="text-xs">Nouveau</span>
