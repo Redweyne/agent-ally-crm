@@ -1,7 +1,7 @@
 import { storage } from "./storage";
 import { db } from "./db";
 import { rules, leads, interactions } from "@shared/schema";
-import { eq, and, lt } from "drizzle-orm";
+import { eq, and, lt, sql } from "drizzle-orm";
 
 export interface AutomationJob {
   id: string;
@@ -126,16 +126,35 @@ class AutomationRunner {
   }
 
   private async processBookedTrigger(rule: any) {
-    // Find recently booked leads
+    // Find recently booked leads (within last 5 minutes to avoid re-processing)
+    const cutoffTime = new Date(Date.now() - 5 * 60 * 1000); // 5 minutes ago
     const recentlyBooked = await db.select()
       .from(leads)
-      .where(eq(leads.statut, "Booked"));
+      .where(and(
+        eq(leads.statut, "Booked"),
+        // Only process leads that became "Booked" recently or haven't been processed
+        // This prevents the endless loop of sending SMS to the same leads
+        sql`${leads.createdAt} > ${cutoffTime} OR ${leads.dernierContact} IS NULL OR ${leads.dernierContact} < ${cutoffTime}`
+      ));
 
     for (const lead of recentlyBooked) {
-      await this.executeAction(rule, lead.id, {
-        type: "send_confirmation_sms",
-        scheduleReminders: true
-      });
+      // Check if we already sent confirmation SMS recently
+      const recentConfirmations = await db.select()
+        .from(interactions)
+        .where(and(
+          eq(interactions.leadId, lead.id),
+          eq(interactions.kind, "sms"),
+          eq(interactions.direction, "outbound"),
+          sql`${interactions.summary} LIKE '%Automated SMS (template confirm)%'`,
+          sql`${interactions.timestamp} > ${cutoffTime}`
+        ));
+
+      if (recentConfirmations.length === 0) {
+        await this.executeAction(rule, lead.id, {
+          type: "send_confirmation_sms",
+          scheduleReminders: true
+        });
+      }
     }
   }
 

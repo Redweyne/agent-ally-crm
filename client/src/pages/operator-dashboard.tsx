@@ -15,8 +15,9 @@ import {
   Users, Phone, Calendar, DollarSign, Settings, 
   MessageSquare, Mail, CheckCircle, 
   Clock, Plus, Download, Activity, Eye,
-  AlertCircle, Star, Zap, TrendingUp
+  AlertCircle, Star, Zap, TrendingUp, Menu
 } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function OperatorDashboard() {
   const [activeTab, setActiveTab] = useState("leads");
@@ -26,24 +27,88 @@ export default function OperatorDashboard() {
   const [interactionsDialogOpen, setInteractionsDialogOpen] = useState(false);
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
   const [deliveryDialogOpen, setDeliveryDialogOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+  const isMobile = useIsMobile();
 
-  // Fetch data
-  const { data: leads = [] } = useQuery({
+  // Define types for API responses
+  interface Lead {
+    id: string;
+    nomComplet: string;
+    telephone: string;
+    email: string;
+    type: string;
+    ville: string;
+    budget: number;
+    statut: string;
+    source: string;
+    score: number;
+    createdAt: string;
+    ownerUserId: string;
+    assignedAgentId?: string;
+    badNumber: boolean;
+    dnc: boolean;
+  }
+
+  interface Agent {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    isActive: boolean;
+  }
+
+  interface Stats {
+    today: {
+      calls: number;
+      connects: number;
+      booked: number;
+      deliveries: number;
+      collected: number;
+    };
+    yesterday?: {
+      calls: number;
+      connects: number;
+      booked: number;
+      deliveries: number;
+      collected: number;
+    };
+    thisWeek: {
+      calls: number;
+      connects: number;
+      booked: number;
+      deliveries: number;
+      collected: number;
+    };
+  }
+
+  interface Interaction {
+    id: string;
+    leadId: string;
+    userId: string;
+    kind: string;
+    direction: string;
+    summary: string;
+    outcome?: string;
+    timestamp: string;
+  }
+
+  // Fetch data with proper typing
+  const { data: leads = [] } = useQuery<Lead[]>({
     queryKey: queueMode ? ["/api/operator/queue"] : ["/api/leads"],
   });
 
-  const { data: agents = [] } = useQuery({
+  const { data: agents = [] } = useQuery<Agent[]>({
     queryKey: ["/api/users"],
   });
 
-  const { data: interactions = [] } = useQuery({
+  const { data: interactions = [] } = useQuery<Interaction[]>({
     queryKey: ["/api/operator/interactions", selectedLead?.id],
     enabled: !!selectedLead?.id,
   });
 
-  const { data: stats } = useQuery({
+  const { data: stats } = useQuery<Stats>({
     queryKey: ["/api/operator/stats", "7"],
   });
 
@@ -147,7 +212,7 @@ export default function OperatorDashboard() {
   });
 
   // Filter leads
-  const filteredLeads = leads.filter((lead: any) => {
+  const filteredLeads = leads.filter((lead) => {
     if (statusFilter === "all") return true;
     return lead.statut === statusFilter;
   });
@@ -199,7 +264,7 @@ export default function OperatorDashboard() {
   };
 
   // Quick action handlers
-  const handleQuickAction = (lead: any, action: string) => {
+  const handleQuickAction = (lead: Lead, action: string) => {
     setSelectedLead(lead);
     
     // Optimistic interaction creation
@@ -252,7 +317,9 @@ export default function OperatorDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+      <div className={`grid gap-4 mb-6 ${
+        isMobile ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-1 md:grid-cols-5'
+      }`}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Today Calls</CardTitle>
@@ -260,6 +327,9 @@ export default function OperatorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.today?.calls || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              +{((stats?.today?.calls || 0) - (stats?.yesterday?.calls || 0))} from yesterday
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -269,6 +339,9 @@ export default function OperatorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.today?.connects || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats?.today?.calls && stats.today.calls > 0 ? Math.round(((stats?.today?.connects || 0) / stats.today.calls) * 100) : 0}% connect rate
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -278,6 +351,9 @@ export default function OperatorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.today?.booked || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats?.today?.connects && stats.today.connects > 0 ? Math.round(((stats?.today?.booked || 0) / stats.today.connects) * 100) : 0}% booking rate
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -296,6 +372,9 @@ export default function OperatorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">€{stats?.today?.collected || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Avg: €{stats?.today?.deliveries && stats.today.deliveries > 0 ? Math.round((stats.today.collected || 0) / stats.today.deliveries) : 0} per delivery
+            </p>
           </CardContent>
         </Card>
       </div>
