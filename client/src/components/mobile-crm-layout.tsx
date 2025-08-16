@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,8 @@ interface MobileCRMLayoutProps {
   user: any;
   prospects: Prospect[];
   kpis: any;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
   onLogout: () => void;
   onCall: (prospect: Prospect) => void;
   onWhatsApp: (prospect: Prospect) => void;
@@ -26,14 +28,23 @@ export default function MobileCRMLayout({
   user,
   prospects,
   kpis,
+  activeTab,
+  setActiveTab,
   onLogout,
   onCall,
   onWhatsApp,
   onScheduleRDV,
   onCreateProspect
 }: MobileCRMLayoutProps) {
-  const [activeView, setActiveView] = useState<'dashboard' | 'express' | 'list'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'express' | 'list'>(() => {
+    return (sessionStorage.getItem('mobile-view') as 'dashboard' | 'express' | 'list') || 'dashboard';
+  });
   const [showMenu, setShowMenu] = useState(false);
+
+  // Persist view state
+  React.useEffect(() => {
+    sessionStorage.setItem('mobile-view', activeView);
+  }, [activeView]);
 
   const priorityProspects = prospects.filter(p => {
     const today = new Date().toDateString();
@@ -73,9 +84,31 @@ export default function MobileCRMLayout({
           </div>
         </div>
 
+        {/* Mobile Tabs */}
+        <div className="px-4 pb-2">
+          <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+            {[
+              { id: 'tableau', label: 'Tableau' },
+              { id: 'prospects', label: 'Prospects' },
+              { id: 'pipeline', label: 'Pipeline' },
+              { id: 'opportunites', label: 'Opps' }
+            ].map(tab => (
+              <Button
+                key={tab.id}
+                size="sm"
+                variant={activeTab === tab.id ? 'default' : 'ghost'}
+                onClick={() => setActiveTab(tab.id)}
+                className="flex-shrink-0 text-xs px-3 py-1"
+              >
+                {tab.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Mobile Menu */}
         {showMenu && (
-          <div className="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg">
+          <div className="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg z-40">
             <div className="p-4 space-y-2">
               <Button
                 variant="ghost"

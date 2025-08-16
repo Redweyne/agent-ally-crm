@@ -640,6 +640,8 @@ END:VCALENDAR`;
         user={user}
         prospects={filteredProspects}
         kpis={kpis}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
         onLogout={handleLogout}
         onCall={(prospect) => {
           console.log('Calling:', prospect.telephone);

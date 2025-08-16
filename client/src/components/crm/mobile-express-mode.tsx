@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Phone, MessageCircle, Calendar, MapPin, Euro, User, ArrowRight } from "lucide-react";
+import { Phone, MessageCircle, Calendar, MapPin, Euro, User, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Prospect } from "@shared/schema";
 
 interface MobileExpressModeProps {
@@ -13,7 +13,17 @@ interface MobileExpressModeProps {
 }
 
 export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onScheduleRDV }: MobileExpressModeProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    return parseInt(sessionStorage.getItem('mobile-express-index') || '0');
+  });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const startX = useRef(0);
+  const isDragging = useRef(false);
+
+  // Persist current index
+  useEffect(() => {
+    sessionStorage.setItem('mobile-express-index', currentIndex.toString());
+  }, [currentIndex]);
   
   // Filter prospects that need immediate attention
   const priorityProspects = prospects.filter(p => {
@@ -32,6 +42,40 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
 
   const nextProspect = () => {
     setCurrentIndex((prev) => (prev + 1) % priorityProspects.length);
+  };
+
+  const prevProspect = () => {
+    setCurrentIndex((prev) => (prev - 1 + priorityProspects.length) % priorityProspects.length);
+  };
+
+  // Touch handlers for swipe functionality
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+    isDragging.current = true;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging.current) return;
+    e.preventDefault();
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    
+    const endX = e.changedTouches[0].clientX;
+    const diffX = startX.current - endX;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(diffX) > minSwipeDistance) {
+      if (diffX > 0) {
+        // Swiped left - next prospect
+        nextProspect();
+      } else {
+        // Swiped right - previous prospect
+        prevProspect();
+      }
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -83,8 +127,36 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
       </div>
 
       {/* Main Prospect Card */}
-      <Card className="relative overflow-hidden">
+      <Card 
+        ref={cardRef}
+        className="relative overflow-hidden select-none"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className={`absolute top-0 left-0 w-1 h-full ${getUrgencyColor(currentProspect)}`}></div>
+        
+        {/* Swipe indicators */}
+        <div className="absolute top-4 right-4 flex items-center space-x-1">
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            onClick={prevProspect}
+            disabled={priorityProspects.length <= 1}
+            className="h-8 w-8 p-0"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            onClick={nextProspect}
+            disabled={priorityProspects.length <= 1}
+            className="h-8 w-8 p-0"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
         
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
@@ -169,14 +241,10 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
             </Button>
           </div>
 
-          {/* Next Button */}
-          <Button
-            onClick={nextProspect}
-            className="w-full"
-            disabled={priorityProspects.length <= 1}
-          >
-            Prospect suivant <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
+          {/* Navigation hint */}
+          <div className="text-center text-xs text-gray-400 mt-2">
+            Glissez ← → pour naviguer
+          </div>
         </CardContent>
       </Card>
     </div>
