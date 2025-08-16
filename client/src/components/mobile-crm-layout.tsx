@@ -134,7 +134,7 @@ export default function MobileCRMLayout({
 
       {/* Main Content */}
       <main className="p-4 pb-20">
-        {activeView === 'dashboard' && (
+        {activeView === 'dashboard' && activeTab === 'tableau' && (
           <div className="space-y-4">
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-4">
@@ -229,6 +229,173 @@ export default function MobileCRMLayout({
                 </div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {activeView === 'dashboard' && activeTab === 'prospects' && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Tous les prospects</h2>
+            </div>
+            
+            <div className="space-y-3">
+              {prospects.map((prospect) => (
+                <Card key={prospect.id} className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-sm truncate">{prospect.nomComplet}</h3>
+                      <p className="text-xs text-gray-500 mt-1">{prospect.ville}</p>
+                      <div className="flex items-center space-x-2 mt-2">
+                        <Badge variant="outline" className="text-xs">
+                          {prospect.type}
+                        </Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          {prospect.statut}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="ml-4 text-right">
+                      <p className="text-sm font-medium">
+                        {((prospect.budget || prospect.prixEstime || 0) / 1000).toFixed(0)}k€
+                      </p>
+                      {prospect.score && (
+                        <p className="text-xs text-gray-500">Score: {prospect.score}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-1 mt-3">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onCall(prospect)} 
+                      className="btn-with-icon mobile-button flex-1"
+                      title="Appeler"
+                    >
+                      <Phone className="w-3 h-3" />
+                      <span className="text-xs">Appel</span>
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onWhatsApp(prospect)} 
+                      className="btn-with-icon mobile-button flex-1"
+                      title="WhatsApp"
+                    >
+                      <MessageSquare className="w-3 h-3" />
+                      <span className="text-xs">WhatsApp</span>
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onScheduleRDV(prospect)} 
+                      className="btn-with-icon mobile-button flex-1"
+                      title="Programmer RDV"
+                    >
+                      <Calendar className="w-3 h-3" />
+                      <span className="text-xs">RDV</span>
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeView === 'dashboard' && activeTab === 'pipeline' && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Pipeline</h2>
+            </div>
+            
+            <div className="space-y-4">
+              {['Nouveau', 'Contact', 'RDV fixé', 'Négociation', 'Gagné'].map(status => {
+                const statusProspects = prospects.filter(p => p.statut === status);
+                return (
+                  <Card key={status}>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base flex items-center justify-between">
+                        {status}
+                        <Badge variant="secondary">{statusProspects.length}</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {statusProspects.slice(0, 3).map((prospect) => (
+                          <div key={prospect.id} className="flex items-center justify-between text-sm">
+                            <span className="truncate">{prospect.nomComplet}</span>
+                            <span className="text-gray-500">
+                              {((prospect.budget || prospect.prixEstime || 0) / 1000).toFixed(0)}k€
+                            </span>
+                          </div>
+                        ))}
+                        {statusProspects.length > 3 && (
+                          <p className="text-xs text-gray-500 text-center">
+                            +{statusProspects.length - 3} autres
+                          </p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {activeView === 'dashboard' && activeTab === 'opportunites' && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Opportunités</h2>
+            </div>
+            
+            <div className="space-y-3">
+              {prospects
+                .filter(p => ['RDV fixé', 'Négociation'].includes(p.statut || ''))
+                .sort((a, b) => (b.budget || b.prixEstime || 0) - (a.budget || a.prixEstime || 0))
+                .map((prospect) => (
+                <Card key={prospect.id} className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-sm truncate">{prospect.nomComplet}</h3>
+                      <p className="text-xs text-gray-500 mt-1">{prospect.ville}</p>
+                      <Badge variant="outline" className="text-xs mt-2">
+                        {prospect.statut}
+                      </Badge>
+                    </div>
+                    <div className="ml-4 text-right">
+                      <p className="text-lg font-semibold text-green-600">
+                        {((prospect.budget || prospect.prixEstime || 0) / 1000).toFixed(0)}k€
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Revenue: {(((prospect.budget || prospect.prixEstime || 0) * (prospect.tauxHonoraires || 0.04)) / 1000).toFixed(1)}k€
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 mt-3">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onCall(prospect)} 
+                      className="btn-with-icon mobile-button flex-1"
+                      title="Appeler"
+                    >
+                      <Phone className="w-3 h-3" />
+                      <span className="text-xs">Appel</span>
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onScheduleRDV(prospect)} 
+                      className="btn-with-icon mobile-button flex-1"
+                      title="Programmer RDV"
+                    >
+                      <Calendar className="w-3 h-3" />
+                      <span className="text-xs">RDV</span>
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
         )}
 
