@@ -33,33 +33,96 @@ export function DownloadDialog({ children }: DownloadDialogProps) {
           title: "Application installée",
           description: "L'application a été installée avec succès sur votre appareil",
         });
+        setOpen(false);
+      } else {
+        showInstallInstructions('pwa');
       }
       setDeferredPrompt(null);
-      setOpen(false);
     } else {
-      // Fallback for browsers that don't support PWA installation
-      toast({
-        title: "Installation PWA",
-        description: "Pour installer l'application, utilisez le menu de votre navigateur et sélectionnez 'Installer l'application' ou 'Ajouter à l'écran d'accueil'",
-      });
+      showInstallInstructions('pwa');
     }
   };
 
-  const handleDownload = (platform: string) => {
+  const showInstallInstructions = (platform: string) => {
+    const instructions = {
+      Windows: {
+        title: "Installation sur Windows",
+        steps: [
+          "1. Utilisez Chrome, Edge ou Firefox",
+          "2. Cliquez sur l'icône d'installation dans la barre d'adresse",
+          "3. Ou allez dans Menu > Installer RedLead2Guide",
+          "4. L'application apparaîtra dans votre menu Démarrer"
+        ]
+      },
+      Android: {
+        title: "Installation sur Android",
+        steps: [
+          "1. Ouvrez cette page dans Chrome",
+          "2. Appuyez sur le menu (3 points)",
+          "3. Sélectionnez 'Ajouter à l'écran d'accueil'",
+          "4. Confirmez l'installation",
+          "5. L'icône apparaîtra sur votre écran d'accueil"
+        ]
+      },
+      iOS: {
+        title: "Installation sur iPhone/iPad",
+        steps: [
+          "1. Ouvrez cette page dans Safari",
+          "2. Appuyez sur le bouton de partage (carré avec flèche)",
+          "3. Faites défiler et appuyez sur 'Sur l'écran d'accueil'",
+          "4. Personnalisez le nom si souhaité",
+          "5. Appuyez sur 'Ajouter'"
+        ]
+      },
+      pwa: {
+        title: "Installation de l'application",
+        steps: [
+          "1. Utilisez un navigateur moderne (Chrome, Safari, Edge)",
+          "2. Recherchez l'icône d'installation dans la barre d'adresse",
+          "3. Ou utilisez le menu du navigateur",
+          "4. Sélectionnez 'Installer l'application' ou 'Ajouter à l'écran d'accueil'"
+        ]
+      }
+    };
+
+    const instruction = instructions[platform as keyof typeof instructions];
+    
+    toast({
+      title: instruction.title,
+      description: (
+        <div className="space-y-2">
+          <p className="text-sm font-medium mb-2">Suivez ces étapes:</p>
+          {instruction.steps.map((step, index) => (
+            <p key={index} className="text-sm">{step}</p>
+          ))}
+        </div>
+      ),
+      duration: 8000,
+    });
+  };
+
+  const handleDownload = async (platform: string) => {
     if (platform === 'pwa') {
-      handlePWAInstall();
+      await handlePWAInstall();
       return;
     }
 
-    // For Windows, Android, iOS - trigger PWA installation or show instructions
-    toast({
-      title: `Installation ${platform}`,
-      description: platform === 'Windows' 
-        ? "Sur Windows, utilisez Chrome ou Edge et cliquez sur l'icône d'installation dans la barre d'adresse"
-        : platform === 'Android'
-        ? "Sur Android, utilisez Chrome et sélectionnez 'Ajouter à l'écran d'accueil' dans le menu"
-        : "Sur iOS, utilisez Safari et sélectionnez 'Ajouter à l'écran d'accueil' dans le menu de partage",
-    });
+    // Try PWA installation first
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        toast({
+          title: "Application installée",
+          description: "L'application a été installée avec succès sur votre appareil",
+        });
+        setOpen(false);
+        return;
+      }
+    }
+
+    // Show specific instructions for the platform
+    showInstallInstructions(platform);
     setOpen(false);
   };
 

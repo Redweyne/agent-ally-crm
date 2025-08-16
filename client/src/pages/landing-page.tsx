@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DownloadDialog } from "@/components/download-dialog";
+import { DownloadSection } from "@/components/download-section";
 
 export default function LandingPage() {
   const { user } = useAuth();
@@ -114,6 +115,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Download Section */}
+      <DownloadSection />
 
       {/* Services Section */}
       <section id="services" className="py-20 bg-white" data-testid="services-section">

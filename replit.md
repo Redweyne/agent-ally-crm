@@ -8,8 +8,12 @@ The CRM has been significantly enhanced with business-focused features to maximi
 
 ### Latest Updates (August 16, 2025)
 - **PWA Implementation**: Full Progressive Web App functionality with offline support, app installation, and native-like experience
-- **Download Dialog**: Added "Télécharger" button with platform selection (Windows, Android, iOS) for easy app installation
-- **New Operator Account**: Created dedicated Redweyne operator account with enhanced privileges
+- **Enhanced Download System**: 
+  - Added "Télécharger" button in navigation with platform selection dialog
+  - Created dedicated download section below hero with beautiful cards for Windows, Android, iOS
+  - Smart PWA installation with automatic install attempt followed by detailed platform-specific instructions
+  - Service Worker for offline functionality and app caching
+- **New Operator Account**: Created dedicated Redweyne operator account (Redweyne / Aa55337278**) with operator privileges
 
 ### Core Business Features
 - **Demo Data & Authentication**: Fixed demo accounts (admin/demo123, agent1/demo123, agent2/demo123) with realistic prospect data
