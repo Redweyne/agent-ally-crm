@@ -3,9 +3,10 @@ import { useLocation } from "wouter";
 import { useEffect } from "react";
 import { 
   Users, TrendingUp, Calendar, ShieldCheck, Zap, Smartphone, 
-  Phone, Mail, BarChart3, Check, ArrowRight, Star
+  Phone, Mail, BarChart3, Check, ArrowRight, Star, Download
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DownloadDialog } from "@/components/download-dialog";
 
 export default function LandingPage() {
   const { user } = useAuth();
@@ -56,6 +57,16 @@ export default function LandingPage() {
                 >
                   Contact
                 </button>
+                <DownloadDialog>
+                  <Button 
+                    variant="outline"
+                    className="border-primary-600 text-primary-600 hover:bg-primary-50"
+                    data-testid="button-download"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Télécharger
+                  </Button>
+                </DownloadDialog>
                 <Button 
                   onClick={() => navigate("/auth")} 
                   className="bg-primary-600 hover:bg-primary-700 text-white"

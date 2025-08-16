@@ -6,6 +6,11 @@ Redweyne is a customer relationship management (CRM) system designed specificall
 
 The CRM has been significantly enhanced with business-focused features to maximize agent productivity and revenue tracking:
 
+### Latest Updates (August 16, 2025)
+- **PWA Implementation**: Full Progressive Web App functionality with offline support, app installation, and native-like experience
+- **Download Dialog**: Added "Télécharger" button with platform selection (Windows, Android, iOS) for easy app installation
+- **New Operator Account**: Created dedicated Redweyne operator account with enhanced privileges
+
 ### Core Business Features
 - **Demo Data & Authentication**: Fixed demo accounts (admin/demo123, agent1/demo123, agent2/demo123) with realistic prospect data
 - **Business Value Features**: Mandate Pending status, exact source tracking, ROI calculator, Hot Lead auto-detection
