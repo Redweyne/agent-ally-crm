@@ -56,6 +56,40 @@ export default function LandingPage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-primary-700" data-testid="logo">RedLead2Guide</h1>
+              
+              {/* Mobile quick icons */}
+              <div className="md:hidden flex items-center ml-4 space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => scrollToSection("services")}
+                  className="p-2 mobile-button"
+                  title="Services"
+                  data-testid="mobile-icon-services"
+                >
+                  <Users className="h-5 w-5 text-primary-600" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => scrollToSection("avantages")}
+                  className="p-2 mobile-button"
+                  title="Avantages"
+                  data-testid="mobile-icon-avantages"
+                >
+                  <TrendingUp className="h-5 w-5 text-primary-600" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => scrollToSection("contact")}
+                  className="p-2 mobile-button"
+                  title="Contact"
+                  data-testid="mobile-icon-contact"
+                >
+                  <Phone className="h-5 w-5 text-primary-600" />
+                </Button>
+              </div>
             </div>
             
             {/* Mobile menu button */}
@@ -66,7 +100,7 @@ export default function LandingPage() {
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="p-2"
                 data-testid="mobile-menu-toggle"
-                title={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+                title={isMobileMenuOpen ? "Plus d'options" : "Menu"}
               >
                 {isMobileMenuOpen ? (
                   <X className="h-6 w-6" />
