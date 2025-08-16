@@ -1,9 +1,10 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { 
   Users, TrendingUp, Calendar, ShieldCheck, Zap, Smartphone, 
-  Phone, Mail, BarChart3, Check, ArrowRight, Star, Download
+  Phone, Mail, BarChart3, Check, ArrowRight, Star, Download,
+  Menu, X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DownloadDialog } from "@/components/download-dialog";
@@ -12,12 +13,33 @@ import { DownloadSection } from "@/components/download-section";
 export default function LandingPage() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
       navigate("/crm");
     }
   }, [user, navigate]);
+
+  // Close mobile menu on scroll or outside click
+  useEffect(() => {
+    const handleScroll = () => setIsMobileMenuOpen(false);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isMobileMenuOpen && !(event.target as Element).closest('nav')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      window.addEventListener('scroll', handleScroll);
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -35,6 +57,26 @@ export default function LandingPage() {
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-primary-700" data-testid="logo">RedLead2Guide</h1>
             </div>
+            
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2"
+                data-testid="mobile-menu-toggle"
+                title={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </Button>
+            </div>
+            
+            {/* Desktop navigation */}
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-8">
                 <button 
@@ -78,6 +120,75 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+          
+          {/* Mobile navigation menu */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm">
+              <div className="px-2 pt-2 pb-3 space-y-1">
+                <button
+                  onClick={() => {
+                    scrollToSection("services");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-primary-600 hover:bg-gray-50 rounded-md w-full text-left"
+                  data-testid="mobile-link-services"
+                >
+                  <Users className="h-5 w-5 mr-3" />
+                  Services
+                </button>
+                
+                <button
+                  onClick={() => {
+                    scrollToSection("avantages");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-primary-600 hover:bg-gray-50 rounded-md w-full text-left"
+                  data-testid="mobile-link-avantages"
+                >
+                  <TrendingUp className="h-5 w-5 mr-3" />
+                  Avantages
+                </button>
+                
+                <button
+                  onClick={() => {
+                    scrollToSection("contact");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-primary-600 hover:bg-gray-50 rounded-md w-full text-left"
+                  data-testid="mobile-link-contact"
+                >
+                  <Phone className="h-5 w-5 mr-3" />
+                  Contact
+                </button>
+                
+                <div className="pt-2 border-t border-gray-200">
+                  <DownloadDialog>
+                    <Button 
+                      variant="outline"
+                      className="flex items-center w-full justify-start border-primary-600 text-primary-600 hover:bg-primary-50 mb-2"
+                      data-testid="mobile-button-download"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Download className="h-5 w-5 mr-3" />
+                      Télécharger
+                    </Button>
+                  </DownloadDialog>
+                  
+                  <Button 
+                    onClick={() => {
+                      navigate("/auth");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full justify-start bg-primary-600 hover:bg-primary-700 text-white"
+                    data-testid="mobile-button-login"
+                  >
+                    <ArrowRight className="h-5 w-5 mr-3" />
+                    Connexion Agent
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
