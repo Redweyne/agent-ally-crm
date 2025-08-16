@@ -6,7 +6,8 @@ import {
   Plus, Download, Upload, FileText, User, 
   Clock, Euro, Crown, Calendar, Phone, MessageSquare,
   BarChart3, Users, TrendingUp, Star, Home, LogOut,
-  Search, Filter, Info
+  Search, Filter, Info, Edit, Save, X, Check,
+  PhoneOff, UserX, Merge, AlertCircle, MapPin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { toast } from "@/hooks/use-toast";
 import { apiRequest, getQueryFn } from "@/lib/queryClient";
@@ -46,6 +50,40 @@ const getStatusProbability = (status: string): number => {
   return probabilities[status] || 0.1;
 };
 
+// Enhanced CRM helper functions
+const isReadyToSell = (prospect: any): boolean => {
+  return !!(prospect.telephone && 
+           prospect.consentement &&
+           prospect.intention &&
+           prospect.timeline &&
+           prospect.ville &&
+           (prospect.budget || prospect.prixEstime) &&
+           (prospect.liveTouches || 0) >= 1);
+};
+
+const isHotLead = (prospect: any): boolean => {
+  const score = prospect.score || 0;
+  const timeline = prospect.timeline || "";
+  const timelineMonths = parseInt(timeline.split(' ')[0]) || 12;
+  return score > 80 && timelineMonths < 3;
+};
+
+const OUTCOMES = {
+  '1': 'Interested',
+  '2': 'Not interested', 
+  '3': 'Callback',
+  '4': 'Voicemail',
+  '5': 'Wrong number',
+  '6': 'Appointment booked',
+  '7': 'Do not call'
+};
+
+const TIME_SLOTS = [
+  { label: 'Today PM', value: 'today-pm' },
+  { label: 'Tomorrow AM', value: 'tomorrow-am' },
+  { label: 'Tomorrow PM', value: 'tomorrow-pm' }
+];
+
 export default function CrmDashboard() {
   const { user, logoutMutation } = useAuth();
   const [, navigate] = useLocation();
@@ -63,6 +101,14 @@ export default function CrmDashboard() {
   const [showCallToday, setShowCallToday] = useState(false);
   const [minBudget, setMinBudget] = useState("");
   const [maxBudget, setMaxBudget] = useState("");
+  const [isMobileCallMode, setIsMobileCallMode] = useState(false);
+  const [editingFees, setEditingFees] = useState<string | null>(null);
+  const [editingStatus, setEditingStatus] = useState<string | null>(null);
+  const [showDuplicates, setShowDuplicates] = useState(false);
+  const [localProspects, setLocalProspects] = useState<Prospect[]>([]);
+  const [showReadyToSell, setShowReadyToSell] = useState(false);
+  const [showHotLeads, setShowHotLeads] = useState(false);
+  const [showDueToday, setShowDueToday] = useState(false);
 
   // Fetch prospects
   const { data: prospects = [], isLoading } = useQuery<Prospect[]>({
@@ -137,9 +183,32 @@ export default function CrmDashboard() {
     },
   });
 
+  // Load localStorage data for enhanced features
+  useEffect(() => {
+    const savedProspects = localStorage.getItem('enhanced-prospects');
+    if (savedProspects) {
+      setLocalProspects(JSON.parse(savedProspects));
+    }
+  }, []);
+
+  // Save to localStorage when prospects change
+  useEffect(() => {
+    if (localProspects.length > 0) {
+      localStorage.setItem('enhanced-prospects', JSON.stringify(localProspects));
+    }
+  }, [localProspects]);
+
+  // Merge server prospects with localStorage enhancements
+  const enhancedProspects = useMemo(() => {
+    return prospects.map(prospect => {
+      const enhanced = localProspects.find(lp => lp.id === prospect.id);
+      return enhanced ? { ...prospect, ...enhanced } : prospect;
+    });
+  }, [prospects, localProspects]);
+
   // Filtered and sorted prospects
   const filteredProspects = useMemo(() => {
-    let filtered = prospects.filter(prospect => {
+    let filtered = enhancedProspects.filter(prospect => {
       const matchesSearch = !searchQuery || 
         [prospect.nomComplet, prospect.telephone, prospect.email, prospect.ville, prospect.exactSource]
           .filter(Boolean)
@@ -147,6 +216,14 @@ export default function CrmDashboard() {
       
       const matchesType = typeFilter === "Tous" || prospect.type === typeFilter;
       const matchesStatus = statusFilter === "Tous" || prospect.statut === statusFilter;
+      
+      // Enhanced filters
+      if (showReadyToSell && !isReadyToSell(prospect)) return false;
+      if (showHotLeads && !isHotLead(prospect)) return false;
+      if (showDueToday) {
+        const today = new Date().toISOString().split('T')[0];
+        if (prospect.nextFollowUp !== today) return false;
+      }
       
       // Budget filter
       const prospectBudget = prospect.budget || prospect.prixEstime || 0;
@@ -166,11 +243,17 @@ export default function CrmDashboard() {
       return matchesSearch && matchesType && matchesStatus && matchesMinBudget && matchesMaxBudget;
     });
 
-    // Sorting
+    // Enhanced sorting with Hot First option
     filtered.sort((a, b) => {
       let aValue, bValue;
       
       switch (sortBy) {
+        case "hot-first":
+          const aHot = isHotLead(a) ? 1 : 0;
+          const bHot = isHotLead(b) ? 1 : 0;
+          if (aHot !== bHot) return bHot - aHot;
+          // Secondary sort by score
+          return (b.score || 0) - (a.score || 0);
         case "value":
           aValue = (a.budget || a.prixEstime || 0) * (a.tauxHonoraires || 0.04);
           bValue = (b.budget || b.prixEstime || 0) * (b.tauxHonoraires || 0.04);
@@ -200,7 +283,233 @@ export default function CrmDashboard() {
     });
 
     return filtered;
-  }, [prospects, searchQuery, typeFilter, statusFilter, minBudget, maxBudget, showCallToday, sortBy, sortOrder]);
+  }, [enhancedProspects, searchQuery, typeFilter, statusFilter, minBudget, maxBudget, showCallToday, showReadyToSell, showHotLeads, showDueToday, sortBy, sortOrder]);
+
+  // Enhanced CRM functions
+  const handleOutcome = (prospectId: string, outcomeKey: string) => {
+    const outcome = OUTCOMES[outcomeKey as keyof typeof OUTCOMES];
+    const followUpDays = outcomeKey === '3' ? 2 : 1; // Callback = J+2, others = J+1
+    const nextFollowUp = new Date();
+    nextFollowUp.setDate(nextFollowUp.getDate() + followUpDays);
+
+    setLocalProspects(prev => {
+      const updated = prev.map(p => 
+        p.id === prospectId 
+          ? { 
+              ...p, 
+              outcome, 
+              nextFollowUp: nextFollowUp.toISOString().split('T')[0],
+              liveTouches: (p.liveTouches || 0) + 1
+            }
+          : p
+      );
+      
+      // Add if not exists
+      if (!updated.find(p => p.id === prospectId)) {
+        const prospect = prospects.find(p => p.id === prospectId);
+        if (prospect) {
+          updated.push({
+            ...prospect,
+            outcome,
+            nextFollowUp: nextFollowUp.toISOString().split('T')[0],
+            liveTouches: (prospect.liveTouches || 0) + 1
+          });
+        }
+      }
+      
+      return updated;
+    });
+
+    toast({
+      title: "Outcome recorded",
+      description: `${outcome} - Follow up scheduled for ${nextFollowUp.toLocaleDateString()}`
+    });
+  };
+
+  const calculateExpectedRevenue = (prospect: Prospect) => {
+    const budget = prospect.budget || prospect.prixEstime || 0;
+    const fees = prospect.tauxHonoraires || 0.04;
+    return (budget * fees).toLocaleString('fr-FR');
+  };
+
+  const bookAppointment = (prospectId: string, slot: string) => {
+    const prospect = prospects.find(p => p.id === prospectId);
+    if (!prospect) return;
+
+    const now = new Date();
+    let appointmentDate = new Date();
+    let time = '';
+
+    switch (slot) {
+      case 'today-pm':
+        time = '14:00';
+        break;
+      case 'tomorrow-am':
+        appointmentDate.setDate(now.getDate() + 1);
+        time = '10:00';
+        break;
+      case 'tomorrow-pm':
+        appointmentDate.setDate(now.getDate() + 1);
+        time = '14:00';
+        break;
+    }
+
+    // Generate ICS file
+    const startDate = new Date(`${appointmentDate.toISOString().split('T')[0]}T${time}`);
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+    
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//RedLead2Guide//EN
+BEGIN:VEVENT
+UID:${prospectId}-${Date.now()}@redlead2guide.com
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTART:${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTEND:${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+SUMMARY:Appointment with ${prospect.nomComplet}
+DESCRIPTION:Real estate appointment\\nPhone: ${prospect.telephone}\\nArea: ${prospect.ville}\\nBudget: €${(prospect.budget || prospect.prixEstime || 0).toLocaleString()}
+LOCATION:${prospect.ville}
+END:VEVENT
+END:VCALENDAR`;
+
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `appointment-${prospect.nomComplet?.replace(/\s/g, '-')}.ics`;
+    a.click();
+    
+    toast({
+      title: "Appointment booked",
+      description: `${slot.replace('-', ' ')} with ${prospect.nomComplet}`
+    });
+  };
+
+  const exportProspectPDF = (prospect: Prospect) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Lead Package - ${prospect.nomComplet}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .header { background: #1e40af; color: white; padding: 20px; text-align: center; }
+            .content { margin: 20px 0; }
+            .section { margin: 15px 0; }
+            .label { font-weight: bold; }
+            .badge { background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>RedLead2Guide CRM</h1>
+            <h2>Lead Package</h2>
+          </div>
+          <div class="content">
+            <div class="section">
+              <div class="label">Name:</div> ${prospect.nomComplet}
+              ${isReadyToSell(prospect) ? '<span class="badge">Ready to Sell</span>' : ''}
+              ${isHotLead(prospect) ? '<span class="badge">Hot Lead</span>' : ''}
+            </div>
+            <div class="section"><div class="label">Phone:</div> ${prospect.telephone}</div>
+            <div class="section"><div class="label">Email:</div> ${prospect.email}</div>
+            <div class="section"><div class="label">Area:</div> ${prospect.ville}</div>
+            <div class="section"><div class="label">Budget:</div> €${(prospect.budget || prospect.prixEstime || 0).toLocaleString()}</div>
+            <div class="section"><div class="label">Expected Revenue:</div> €${calculateExpectedRevenue(prospect)}</div>
+            <div class="section"><div class="label">Timeline:</div> ${prospect.timeline || 'N/A'}</div>
+            <div class="section"><div class="label">Score:</div> ${prospect.score}/100</div>
+            <div class="section"><div class="label">Status:</div> ${prospect.statut}</div>
+            <div class="section"><div class="label">Notes:</div> ${prospect.notes || prospect.commentaires || 'N/A'}</div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  const exportJSON = () => {
+    const data = { prospects: localProspects };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `crm-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+  };
+
+  const importJSON = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        if (data.prospects) setLocalProspects(data.prospects);
+        toast({ title: "Data imported successfully" });
+      } catch (error) {
+        toast({ title: "Import failed", description: "Invalid file format" });
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const findDuplicates = () => {
+    const duplicates: Prospect[][] = [];
+    const processed = new Set();
+
+    enhancedProspects.forEach((prospect, index) => {
+      if (processed.has(index)) return;
+      
+      const matches = enhancedProspects.filter((other, otherIndex) => {
+        if (otherIndex <= index) return false;
+        return other.telephone === prospect.telephone || 
+               (other.nomComplet?.toLowerCase() === prospect.nomComplet?.toLowerCase() && other.email === prospect.email);
+      });
+
+      if (matches.length > 0) {
+        duplicates.push([prospect, ...matches]);
+        matches.forEach(match => {
+          const matchIndex = enhancedProspects.findIndex(p => p.id === match.id);
+          processed.add(matchIndex);
+        });
+      }
+    });
+
+    return duplicates;
+  };
+
+  const mergeDuplicates = (primaryProspect: Prospect, duplicates: Prospect[]) => {
+    const merged = {
+      ...primaryProspect,
+      liveTouches: Math.max(primaryProspect.liveTouches || 0, ...duplicates.map(d => d.liveTouches || 0)),
+      score: Math.max(primaryProspect.score || 0, ...duplicates.map(d => d.score || 0)),
+      notes: [primaryProspect.notes || primaryProspect.commentaires, ...duplicates.map(d => d.notes || d.commentaires)].filter(n => n).join('\n\n')
+    };
+
+    setLocalProspects(prev => prev.filter(p => !duplicates.some(d => d.id === p.id))
+                                 .map(p => p.id === primaryProspect.id ? merged : p));
+    
+    toast({ title: "Prospects merged successfully" });
+  };
+
+  // Keyboard shortcuts for outcomes
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (selectedProspect && e.key >= '1' && e.key <= '7') {
+        handleOutcome(selectedProspect.id!, e.key);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [selectedProspect]);
 
   // KPI calculations
   const kpis = useMemo(() => {
@@ -363,6 +672,49 @@ export default function CrmDashboard() {
             </Button>
 
             <Button
+              onClick={exportJSON}
+              variant="outline"
+              size="sm"
+              data-testid="button-export-json"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Backup
+            </Button>
+
+            <label className="cursor-pointer">
+              <Button variant="outline" size="sm" asChild>
+                <span>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import
+                </span>
+              </Button>
+              <input
+                type="file"
+                accept=".json"
+                onChange={importJSON}
+                className="hidden"
+              />
+            </label>
+
+            <Button
+              variant={showDuplicates ? "default" : "outline"}
+              onClick={() => setShowDuplicates(!showDuplicates)}
+              size="sm"
+            >
+              <Merge className="w-4 h-4 mr-2" />
+              Duplicates ({findDuplicates().length})
+            </Button>
+
+            <Button
+              variant={isMobileCallMode ? "default" : "outline"}
+              onClick={() => setIsMobileCallMode(!isMobileCallMode)}
+              size="sm"
+              className="md:hidden"
+            >
+              Call Mode
+            </Button>
+
+            <Button
               onClick={() => setShowProspectForm(true)}
               size="sm"
               data-testid="button-new-prospect"
@@ -399,14 +751,30 @@ export default function CrmDashboard() {
         {/* Demo Banner */}
         <DemoBanner />
         
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {/* Enhanced KPI Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           <KpiCard
             title="Leads aujourd'hui"
             value={kpis.newToday}
             subtitle="nouveaux"
             icon={Plus}
             trend={kpis.newToday > 0 ? "up" : "neutral"}
+          />
+          <KpiCard
+            title="Ready to Sell"
+            value={enhancedProspects.filter(isReadyToSell).length}
+            subtitle="prêts à vendre"
+            icon={Check}
+            trend="up"
+            className="bg-green-50 border-green-200"
+          />
+          <KpiCard
+            title="Hot Leads"
+            value={enhancedProspects.filter(isHotLead).length}
+            subtitle="prospects chauds"
+            icon={Star}
+            trend="up"
+            className="bg-red-50 border-red-200"
           />
           <KpiCard
             title="RDV fixés"
@@ -605,19 +973,48 @@ export default function CrmDashboard() {
                         />
                       </div>
                       
-                      <Button
-                        variant={showCallToday ? "default" : "outline"}
-                        onClick={() => setShowCallToday(!showCallToday)}
-                        className="gap-2"
-                      >
-                        <Phone className="w-4 h-4" />
-                        Appels du jour ({prospects.filter(p => {
-                          const today = new Date().toDateString();
-                          return p.prochaineAction && 
+                      <div className="flex gap-2">
+                        <Button
+                          variant={showReadyToSell ? "default" : "outline"}
+                          onClick={() => setShowReadyToSell(!showReadyToSell)}
+                          size="sm"
+                        >
+                          <Check className="w-4 h-4 mr-2" />
+                          Ready to Sell
+                        </Button>
+                        
+                        <Button
+                          variant={showHotLeads ? "default" : "outline"}
+                          onClick={() => setShowHotLeads(!showHotLeads)}
+                          size="sm"
+                        >
+                          <Star className="w-4 h-4 mr-2" />
+                          Hot Leads
+                        </Button>
+                        
+                        <Button
+                          variant={showDueToday ? "default" : "outline"}
+                          onClick={() => setShowDueToday(!showDueToday)}
+                          size="sm"
+                        >
+                          <Clock className="w-4 h-4 mr-2" />
+                          Due Today
+                        </Button>
+                        
+                        <Button
+                          variant={showCallToday ? "default" : "outline"}
+                          onClick={() => setShowCallToday(!showCallToday)}
+                          size="sm"
+                        >
+                          <Phone className="w-4 h-4 mr-2" />
+                          Call Today ({prospects.filter(p => {
+                            const today = new Date().toDateString();
+                            return p.prochaineAction && 
                             new Date(p.prochaineAction).toDateString() === today &&
                             !["Gagné", "Perdu", "Pas de réponse"].includes(p.statut || "");
                         }).length})
-                      </Button>
+                        </Button>
+                      </div>
                     </div>
 
                     {/* Advanced Filters */}
@@ -671,6 +1068,7 @@ export default function CrmDashboard() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="date">Par date</SelectItem>
+                          <SelectItem value="hot-first">Hot First</SelectItem>
                           <SelectItem value="value">Par valeur (€)</SelectItem>
                           <SelectItem value="score">Par score</SelectItem>
                           <SelectItem value="name">Par nom</SelectItem>
@@ -719,6 +1117,113 @@ export default function CrmDashboard() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Duplicates Panel */}
+              {showDuplicates && (
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Duplicates Management</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {findDuplicates().length === 0 ? (
+                      <p className="text-center text-gray-500 py-4">No duplicates found</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {findDuplicates().map((group, index) => (
+                          <div key={index} className="border rounded-lg p-4">
+                            <h4 className="font-medium mb-3">Duplicate Group {index + 1}</h4>
+                            <div className="space-y-2">
+                              {group.map((prospect, pIndex) => (
+                                <div key={prospect.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                  <div>
+                                    <span className="font-medium">{prospect.nomComplet}</span> - {prospect.telephone}
+                                    <span className="text-sm text-gray-500 ml-2">Score: {prospect.score}</span>
+                                  </div>
+                                  {pIndex === 0 && (
+                                    <Button
+                                      size="sm"
+                                      onClick={() => mergeDuplicates(prospect, group.slice(1))}
+                                    >
+                                      Set as Primary & Merge
+                                    </Button>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Mobile Call Mode */}
+              {isMobileCallMode && (
+                <Card className="mb-6 md:hidden">
+                  <CardHeader>
+                    <CardTitle>Mobile Call Mode</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {selectedProspect ? (
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <h3 className="text-xl font-bold">{selectedProspect.nomComplet}</h3>
+                          <p className="text-lg">{selectedProspect.telephone}</p>
+                          <p className="text-sm text-gray-500">{selectedProspect.ville} • {selectedProspect.type}</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-4 gap-2">
+                          {Object.entries(OUTCOMES).map(([key, label]) => (
+                            <Button
+                              key={key}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleOutcome(selectedProspect.id!, key)}
+                              className="text-xs"
+                            >
+                              {key}. {label}
+                            </Button>
+                          ))}
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-2">
+                          {TIME_SLOTS.map((slot) => (
+                            <Button
+                              key={slot.value}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => bookAppointment(selectedProspect.id!, slot.value)}
+                            >
+                              {slot.label}
+                            </Button>
+                          ))}
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => exportProspectPDF(selectedProspect)}
+                          >
+                            Export PDF
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              navigator.clipboard.writeText(`${selectedProspect.nomComplet} - ${selectedProspect.telephone}`);
+                              toast({ title: "Copied to clipboard" });
+                            }}
+                          >
+                            Copy Info
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-center text-gray-500">Select a prospect to start calling</p>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
 
               {/* ROI Calculator */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

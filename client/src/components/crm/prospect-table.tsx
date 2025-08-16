@@ -26,6 +26,24 @@ import {
 import HotLeadBadge from "./hot-lead-badge";
 import type { Prospect } from "@shared/schema";
 
+// Enhanced CRM helper functions
+const isReadyToSell = (prospect: any): boolean => {
+  return !!(prospect.telephone && 
+           prospect.consentement &&
+           prospect.intention &&
+           prospect.timeline &&
+           prospect.ville &&
+           (prospect.budget || prospect.prixEstime) &&
+           (prospect.liveTouches || 0) >= 1);
+};
+
+const isHotLead = (prospect: any): boolean => {
+  const score = prospect.score || 0;
+  const timeline = prospect.timeline || "";
+  const timelineMonths = parseInt(timeline.split(' ')[0]) || 12;
+  return score > 80 && timelineMonths < 3;
+};
+
 interface ProspectTableProps {
   prospects: Prospect[];
   onEdit: (prospect: Prospect) => void;
@@ -131,9 +149,17 @@ export default function ProspectTable({ prospects, onEdit, onDelete, compact = f
                     <User className="w-5 h-5 text-primary-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900" data-testid={`prospect-name-${prospect.id}`}>
-                      {prospect.nomComplet || "Sans nom"}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-gray-900" data-testid={`prospect-name-${prospect.id}`}>
+                        {prospect.nomComplet || "Sans nom"}
+                      </h3>
+                      {isHotLead(prospect) && <HotLeadBadge />}
+                      {isReadyToSell(prospect) && (
+                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                          ✓ Ready
+                        </Badge>
+                      )}
+                    </div>
                     <p className="text-sm text-gray-500">
                       {prospect.type} • {prospect.typeBien} • {prospect.ville}
                     </p>
@@ -249,8 +275,16 @@ export default function ProspectTable({ prospects, onEdit, onDelete, compact = f
                         <User className="w-5 h-5 text-primary-600" />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900" data-testid={`prospect-name-${prospect.id}`}>
-                          {prospect.nomComplet || "Sans nom"}
+                        <div className="flex items-center gap-2">
+                          <div className="font-medium text-gray-900" data-testid={`prospect-name-${prospect.id}`}>
+                            {prospect.nomComplet || "Sans nom"}
+                          </div>
+                          {isHotLead(prospect) && <HotLeadBadge />}
+                          {isReadyToSell(prospect) && (
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
+                              ✓ Ready
+                            </Badge>
+                          )}
                         </div>
                         <div className="text-sm text-gray-500" data-testid={`prospect-contact-${prospect.id}`}>
                           {prospect.email && <div>{prospect.email}</div>}

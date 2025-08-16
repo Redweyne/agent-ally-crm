@@ -9,7 +9,7 @@ import LandingPage from "@/pages/landing-page";
 import AuthPage from "@/pages/auth-page";
 import CrmDashboard from "@/pages/crm-dashboard";
 import OperatorDashboard from "@/pages/operator-dashboard";
-import EnhancedCRMPage from "@/pages/enhanced-crm-page";
+
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -19,7 +19,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <RoleBasedRoute path="/crm" component={CrmDashboard} allowedRoles={["agent", "admin"]} />
       <RoleBasedRoute path="/operator" component={OperatorDashboard} allowedRoles={["operator", "admin"]} />
-      <Route path="/enhanced-crm" component={EnhancedCRMPage} />
+
       <Route component={NotFound} />
     </Switch>
   );
