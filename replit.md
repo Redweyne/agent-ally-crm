@@ -7,10 +7,17 @@ Redweyne is a customer relationship management (CRM) system designed specificall
 The CRM has been significantly enhanced with business-focused features to maximize agent productivity and revenue tracking:
 
 ### Latest Updates (August 17, 2025)
-- **Complete Mobile-First Optimization**: Implemented comprehensive mobile UX for one-handed smartphone use without pinch-zoom
-  - Mobile prospect cards with 44px+ touch targets replacing tables on small screens
-  - Mobile filter drawer consolidating all search/filter controls into single accessible button
-  - Pipeline board with vertical stacking on mobile and enhanced touch targets
+- **Advanced Mobile Enhancements**: Implemented cutting-edge mobile UX for professional field agents
+  - **Swipe-to-Action Cards**: Swipe left on prospect cards to reveal call/SMS/RDV buttons with haptic feedback
+  - **Pull-to-Refresh**: Native mobile gesture to refresh prospect lists with visual feedback
+  - **Voice Notes Integration**: Speech-to-text for hands-free note taking during calls (French language support)
+  - **Template Messages**: Pre-written SMS/WhatsApp templates with automatic personalization
+  - **Quick Actions FAB**: Floating action button for rapid prospect creation and common tasks
+  - **Enhanced Touch Targets**: All interactive elements meet 44px minimum with haptic feedback on actions
+- **Complete Mobile-First Optimization**: Comprehensive mobile UX for one-handed smartphone use
+  - Mobile prospect cards with swipe gestures replacing traditional tables
+  - Mobile filter drawer consolidating all search/filter controls
+  - Pipeline board with vertical stacking and enhanced touch targets
   - Enhanced mobile CSS with proper touch targets, form inputs, and safe area support
   - Responsive breakpoints: mobile cards (<sm), desktop table (≥sm)
 - **Migration Completion**: Successfully migrated multi-role CRM from Replit Agent to standard environment
