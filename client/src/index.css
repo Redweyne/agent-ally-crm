@@ -32,9 +32,10 @@
     display: none;
   }
   
-  /* Fix map overlay issue - ensure map components stay below header */
+  /* Fix map overlay issue - ensure map components stay below header and above bottom nav */
   .leaflet-container {
     z-index: 10 !important;
+    position: relative !important;
   }
   
   .leaflet-control-container {
@@ -52,6 +53,11 @@
   
   .leaflet-marker-pane {
     z-index: 15 !important;
+  }
+  
+  /* Ensure bottom navigation stays above all map content */
+  nav.fixed.bottom-0 {
+    z-index: 50 !important;
   }
 }
 

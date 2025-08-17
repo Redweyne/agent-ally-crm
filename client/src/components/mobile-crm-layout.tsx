@@ -168,7 +168,7 @@ export default function MobileCRMLayout({
       </header>
 
       {/* Main Content */}
-      <main className="p-4 pb-20">
+      <main className="p-4 pb-24">
         {activeView === 'dashboard' && activeTab === 'tableau' && (
           <div className="space-y-4">
             {/* Quick Stats */}

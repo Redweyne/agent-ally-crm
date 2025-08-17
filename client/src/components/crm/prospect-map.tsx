@@ -250,7 +250,7 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
       {/* Map Container */}
       <Card>
         <CardContent className="p-0">
-          <div className="h-96 w-full rounded-lg overflow-hidden relative z-10">
+          <div className="h-80 w-full rounded-lg overflow-hidden relative z-10">
             <MapContainer
               center={franceCenter}
               zoom={6}
