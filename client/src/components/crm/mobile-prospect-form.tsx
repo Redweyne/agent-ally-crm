@@ -41,6 +41,7 @@ export default function MobileProspectForm({
     telephone: prospect?.telephone || "",
     email: prospect?.email || "",
     ville: prospect?.ville || "",
+    codePostal: prospect?.codePostal || "",
     type: prospect?.type || "Vendeur",
     typeBien: prospect?.typeBien || "Appartement",
     budget: prospect?.budget || 0,
@@ -240,6 +241,16 @@ export default function MobileProspectForm({
                     value={formData.ville}
                     onChange={(e) => handleInputChange("ville", e.target.value)}
                     placeholder="Lyon"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="codePostal">Code postal</Label>
+                  <Input
+                    id="codePostal"
+                    value={formData.codePostal}
+                    onChange={(e) => handleInputChange("codePostal", e.target.value)}
+                    placeholder="69000"
                     className="mt-1"
                   />
                 </div>

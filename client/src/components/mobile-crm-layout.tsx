@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Phone, MessageSquare, Calendar, User, TrendingUp, 
-  Plus, Search, Filter, LogOut, Menu, X, Home
+  Plus, Search, Filter, LogOut, Menu, X, Home, MapPin
 } from 'lucide-react';
 import MobileExpressMode from '@/components/crm/mobile-express-mode';
 import QuickActionsFAB from '@/components/crm/quick-actions-fab';
@@ -13,6 +13,7 @@ import VoiceNotes from '@/components/crm/voice-notes';
 import MobileProspectForm from '@/components/crm/mobile-prospect-form';
 import MobileProspectCards from '@/components/crm/mobile-prospect-cards';
 import ProspectEditPopup from '@/components/crm/prospect-edit-popup';
+import ProspectMap from '@/components/crm/prospect-map';
 
 import type { Prospect } from '@shared/schema';
 
@@ -414,20 +415,22 @@ export default function MobileCRMLayout({
         {activeView === 'carte' && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Vue Carte</h2>
+              <h2 className="text-lg font-semibold">Carte des Prospects</h2>
               <Button variant="outline" size="sm" onClick={() => setActiveView('dashboard')}>
                 <Home className="h-4 w-4 mr-2" />
                 Retour
               </Button>
             </div>
             
-            <div className="flex items-center justify-center h-64">
-              <div className="text-center text-gray-500">
-                <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">Vue Carte</p>
-                <p className="text-sm">Fonctionnalité à venir</p>
-              </div>
-            </div>
+            <ProspectMap 
+              prospects={prospects}
+              onEdit={(prospect: Prospect) => {
+                setEditingProspect(prospect);
+                setShowEditPopup(true);
+              }}
+              onCall={onCall}
+              onSMS={onWhatsApp}
+            />
           </div>
         )}
       </main>
@@ -462,7 +465,7 @@ export default function MobileCRMLayout({
             onClick={() => setActiveView('carte')}
             className="flex-1 max-w-none mx-1 flex-col h-auto py-2"
           >
-            <User className="h-4 w-4 mb-1" />
+            <MapPin className="h-4 w-4 mb-1" />
             <span className="text-xs">Carte</span>
           </Button>
 

@@ -26,6 +26,7 @@ export default function ProspectEditPopup({ prospect, isOpen, onClose, onSave }:
         email: prospect.email || '',
         telephone: prospect.telephone || '',
         ville: prospect.ville || '',
+        codePostal: prospect.codePostal || '',
         type: prospect.type || 'Acheteur',
         statut: prospect.statut || 'Nouveau',
         budget: prospect.budget || '',
@@ -110,15 +111,27 @@ export default function ProspectEditPopup({ prospect, isOpen, onClose, onSave }:
                 </div>
               </div>
               
-              <div>
-                <Label htmlFor="ville" className="text-xs">Ville</Label>
-                <Input
-                  id="ville"
-                  value={formData.ville}
-                  onChange={(e) => setFormData({...formData, ville: e.target.value})}
-                  placeholder="Ville"
-                  className="mt-1"
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label htmlFor="ville" className="text-xs">Ville</Label>
+                  <Input
+                    id="ville"
+                    value={formData.ville}
+                    onChange={(e) => setFormData({...formData, ville: e.target.value})}
+                    placeholder="Ville"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="codePostal" className="text-xs">Code postal</Label>
+                  <Input
+                    id="codePostal"
+                    value={formData.codePostal}
+                    onChange={(e) => setFormData({...formData, codePostal: e.target.value})}
+                    placeholder="75001"
+                    className="mt-1"
+                  />
+                </div>
               </div>
             </div>
           </div>

@@ -72,6 +72,7 @@ export const prospects = pgTable("prospects", {
   email: text("email"),
   type: text("type"), // "Vendeur" or "Acheteur"
   ville: text("ville"),
+  codePostal: text("code_postal"),
   typeBien: text("type_bien"),
   budget: integer("budget").default(0),
   prixEstime: integer("prix_estime").default(0),
