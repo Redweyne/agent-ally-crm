@@ -8,6 +8,8 @@ import {
   Plus, Search, Filter, LogOut, Menu, X, Home
 } from 'lucide-react';
 import MobileExpressMode from '@/components/crm/mobile-express-mode';
+import QuickActionsFAB from '@/components/crm/quick-actions-fab';
+import VoiceNotes from '@/components/crm/voice-notes';
 
 import type { Prospect } from '@shared/schema';
 
@@ -40,6 +42,7 @@ export default function MobileCRMLayout({
     return (sessionStorage.getItem('mobile-view') as 'dashboard' | 'express' | 'list') || 'dashboard';
   });
   const [showMenu, setShowMenu] = useState(false);
+  const [showVoiceNotes, setShowVoiceNotes] = useState(false);
 
   // Persist view state
   React.useEffect(() => {
@@ -85,27 +88,29 @@ export default function MobileCRMLayout({
           </div>
         </div>
 
-        {/* Mobile Tabs */}
-        <div className="px-4 pb-2">
-          <div className="flex space-x-1 overflow-x-auto scrollbar-hide mobile-scroll">
-            {[
-              { id: 'tableau', label: 'Tableau' },
-              { id: 'prospects', label: 'Prospects' },
-              { id: 'pipeline', label: 'Pipeline' },
-              { id: 'opportunites', label: 'Opps' }
-            ].map(tab => (
-              <Button
-                key={tab.id}
-                size="sm"
-                variant={activeTab === tab.id ? 'default' : 'ghost'}
-                onClick={() => setActiveTab(tab.id)}
-                className="flex-shrink-0 text-xs px-3 py-1 mobile-button"
-              >
-                {tab.label}
-              </Button>
-            ))}
+        {/* Mobile Tabs - Only visible when in Accueil (dashboard) view */}
+        {activeView === 'dashboard' && (
+          <div className="px-4 pb-2">
+            <div className="flex space-x-1 overflow-x-auto scrollbar-hide mobile-scroll">
+              {[
+                { id: 'tableau', label: 'Tableau' },
+                { id: 'prospects', label: 'Prospects' },
+                { id: 'pipeline', label: 'Pipeline' },
+                { id: 'opportunites', label: 'Opps' }
+              ].map(tab => (
+                <Button
+                  key={tab.id}
+                  size="sm"
+                  variant={activeTab === tab.id ? 'default' : 'ghost'}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="flex-shrink-0 text-xs px-3 py-1 mobile-button"
+                >
+                  {tab.label}
+                </Button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Mobile Menu */}
         {showMenu && (
@@ -553,6 +558,41 @@ export default function MobileCRMLayout({
           </Button>
         </div>
       </nav>
+
+      {/* Quick Actions FAB - Only visible in dashboard view */}
+      {activeView === 'dashboard' && (
+        <QuickActionsFAB
+          onAddProspect={onCreateProspect}
+          onVoiceNote={() => setShowVoiceNotes(true)}
+          onQuickCall={() => {
+            const hotProspects = prospects.filter(p => (p.score && p.score > 80) || p.isHotLead);
+            if (hotProspects.length > 0) {
+              onCall(hotProspects[0]);
+            }
+          }}
+          onQuickSchedule={() => {
+            const rdvProspects = prospects.filter(p => p.statut === 'Contacté' || p.statut === 'Qualifié');
+            if (rdvProspects.length > 0) {
+              onScheduleRDV(rdvProspects[0]);
+            }
+          }}
+        />
+      )}
+
+      {/* Voice Notes Modal */}
+      {showVoiceNotes && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <VoiceNotes
+            onSave={(note) => {
+              console.log('Voice note saved:', note);
+              setShowVoiceNotes(false);
+              // Here you could add the note to the current prospect or create a general note
+            }}
+            onCancel={() => setShowVoiceNotes(false)}
+            placeholder="Dictez vos notes de prospection..."
+          />
+        </div>
+      )}
     </div>
   );
 }

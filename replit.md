@@ -14,6 +14,7 @@ The CRM has been significantly enhanced with business-focused features to maximi
   - **Template Messages**: Pre-written SMS/WhatsApp templates with automatic personalization
   - **Quick Actions FAB**: Floating action button for rapid prospect creation and common tasks
   - **Enhanced Touch Targets**: All interactive elements meet 44px minimum with haptic feedback on actions
+  - **Conditional Navigation**: Top tabs (Tableau, Prospect, Pipeline, Opps) only visible when in "Accueil" view
 - **Complete Mobile-First Optimization**: Comprehensive mobile UX for one-handed smartphone use
   - Mobile prospect cards with swipe gestures replacing traditional tables
   - Mobile filter drawer consolidating all search/filter controls
