@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { 
-  insertProspectSchema, insertLeadSchema, insertInteractionSchema, 
+  insertProspectSchema, updateProspectSchema, insertLeadSchema, insertInteractionSchema, 
   insertAppointmentSchema, insertDeliverySchema, insertPaymentSchema,
   insertRuleSchema, insertTemplateSchema
 } from "@shared/schema";
@@ -52,8 +52,8 @@ export function registerRoutes(app: Express): Server {
       const { id } = req.params;
       const updates = req.body;
       
-      // Validate updates with insertProspectSchema (partial)
-      const validatedUpdates = insertProspectSchema.partial().parse(updates);
+      // Validate updates with updateProspectSchema (handles date conversion)
+      const validatedUpdates = updateProspectSchema.parse(updates);
       
       const prospect = await storage.updateProspect(id, validatedUpdates);
       if (!prospect) {

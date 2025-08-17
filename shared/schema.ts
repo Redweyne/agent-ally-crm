@@ -313,6 +313,12 @@ export const insertProspectSchema = createInsertSchema(prospects).omit({
   score: true,
 });
 
+// Update schema that handles string dates from frontend
+export const updateProspectSchema = insertProspectSchema.extend({
+  dernierContact: z.string().transform((val) => val ? new Date(val) : null).nullable().optional(),
+  prochaineAction: z.string().transform((val) => val ? new Date(val) : null).nullable().optional(),
+}).partial();
+
 export const insertInteractionSchema = createInsertSchema(interactions).omit({
   id: true,
   timestamp: true,
@@ -359,6 +365,7 @@ export type User = typeof users.$inferSelect;
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Lead = typeof leads.$inferSelect;
 export type InsertProspect = z.infer<typeof insertProspectSchema>;
+export type UpdateProspect = z.infer<typeof updateProspectSchema>;
 export type Prospect = typeof prospects.$inferSelect;
 export type InsertInteraction = z.infer<typeof insertInteractionSchema>;
 export type Interaction = typeof interactions.$inferSelect;
