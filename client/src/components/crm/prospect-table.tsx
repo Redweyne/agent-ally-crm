@@ -139,108 +139,155 @@ export default function ProspectTable({ prospects, onEdit, onDelete, compact = f
 
   if (compact) {
     return (
-      <div className="grid gap-4" data-testid="prospect-cards">
+      <div className="grid gap-3 sm:gap-4" data-testid="prospect-cards">
         {prospects.map((prospect) => (
           <Card key={prospect.id} className="transition-all duration-200 hover:shadow-md">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
+              {/* Header with avatar and key info */}
               <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-primary-600" />
+                <div className="flex items-center space-x-3 flex-1 min-w-0">
+                  <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <User className="w-6 h-6 text-primary-600" />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-gray-900" data-testid={`prospect-name-${prospect.id}`}>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-semibold text-gray-900 text-base truncate" data-testid={`prospect-name-${prospect.id}`}>
                         {prospect.nomComplet || "Sans nom"}
                       </h3>
-                      {isHotLead(prospect) && <HotLeadBadge />}
+                      {isHotLead(prospect) && <HotLeadBadge prospect={prospect} />}
                       {isReadyToSell(prospect) && (
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
                           ✓ Ready
                         </Badge>
                       )}
                     </div>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-600 truncate">
+                      {prospect.telephone}
+                    </p>
+                    <p className="text-sm text-gray-500 truncate">
                       {prospect.type} • {prospect.typeBien} • {prospect.ville}
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex-shrink-0">
                   <div className="text-lg font-bold text-green-600" data-testid={`prospect-value-${prospect.id}`}>
                     {formatCurrency(calculateExpectedValue(prospect))}
                   </div>
-                  <div className="text-sm text-gray-500">Valeur attendue</div>
+                  <div className="text-xs text-gray-500">Valeur attendue</div>
                 </div>
               </div>
               
+              {/* Status and Score row */}
               <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
                 <Badge className={getStatusColor(prospect.statut!)} data-testid={`prospect-status-${prospect.id}`}>
                   {prospect.statut}
                 </Badge>
-                {prospect.exclusif && (
-                  <span className="flex items-center text-purple-600">
-                    <Crown className="w-4 h-4 mr-1" />
-                    Exclusif
-                  </span>
-                )}
-                <span data-testid={`prospect-score-${prospect.id}`}>Score: {prospect.score}</span>
-              </div>
-              
-              {prospect.motivation && (
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2" data-testid={`prospect-motivation-${prospect.id}`}>
-                  {prospect.motivation}
-                </p>
-              )}
-              
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-500">
-                  {prospect.prochaineAction ? (
-                    <span data-testid={`prospect-next-action-${prospect.id}`}>
-                      Prochaine action: {new Date(prospect.prochaineAction).toLocaleDateString("fr-FR")}
+                <div className="flex items-center gap-3">
+                  {prospect.exclusif && (
+                    <span className="flex items-center text-purple-600">
+                      <Crown className="w-4 h-4 mr-1" />
+                      Exclusif
                     </span>
-                  ) : (
-                    "Aucune action planifiée"
                   )}
-                </div>
-                <div className="flex space-x-1">
-                  {prospect.telephone && (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => window.open(createPhoneLink(prospect.telephone!), "_self")}
-                        data-testid={`button-call-${prospect.id}`}
-                      >
-                        <Phone className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => window.open(createSMSLink(prospect.telephone!), "_self")}
-                        data-testid={`button-sms-${prospect.id}`}
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => window.open(createWhatsAppLink(prospect.telephone!), "_blank")}
-                        data-testid={`button-whatsapp-${prospect.id}`}
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                      </Button>
-                    </>
-                  )}
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onEdit(prospect)}
-                    data-testid={`button-edit-${prospect.id}`}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
+                  <span className="font-medium" data-testid={`prospect-score-${prospect.id}`}>Score: {prospect.score}</span>
                 </div>
               </div>
+              
+              {/* Budget/Price info */}
+              <div className="text-sm text-gray-600 mb-4">
+                <div className="flex justify-between">
+                  <span>Budget:</span>
+                  <span className="font-medium">{formatCurrency(prospect.budget || 0)}</span>
+                </div>
+                {prospect.prixEstime && prospect.prixEstime !== prospect.budget && (
+                  <div className="flex justify-between">
+                    <span>Prix estimé:</span>
+                    <span className="font-medium">{formatCurrency(prospect.prixEstime)}</span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Three prominent action buttons with ≥44px touch targets */}
+              <div className="grid grid-cols-3 gap-2">
+                {prospect.telephone ? (
+                  <>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="min-h-[44px] text-sm font-medium"
+                      onClick={() => window.open(createPhoneLink(prospect.telephone!), "_self")}
+                      data-testid={`button-call-${prospect.id}`}
+                      aria-label={`Appeler ${prospect.nomComplet}`}
+                    >
+                      <Phone className="w-4 h-4 mr-2" />
+                      Appel
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="min-h-[44px] text-sm font-medium"
+                      onClick={() => window.open(createSMSLink(prospect.telephone!), "_self")}
+                      data-testid={`button-sms-${prospect.id}`}
+                      aria-label={`Envoyer SMS à ${prospect.nomComplet}`}
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      SMS
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="min-h-[44px] text-sm font-medium"
+                      onClick={() => onEdit(prospect)}
+                      data-testid={`button-rdv-${prospect.id}`}
+                      aria-label={`Planifier RDV avec ${prospect.nomComplet}`}
+                    >
+                      <Calendar className="w-4 h-4 mr-2" />
+                      RDV
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      disabled
+                      className="min-h-[44px] text-sm font-medium opacity-50"
+                      aria-label="Pas de téléphone"
+                    >
+                      <Phone className="w-4 h-4 mr-2" />
+                      Appel
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      disabled
+                      className="min-h-[44px] text-sm font-medium opacity-50"
+                      aria-label="Pas de téléphone"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      SMS
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="min-h-[44px] text-sm font-medium"
+                      onClick={() => onEdit(prospect)}
+                      data-testid={`button-rdv-${prospect.id}`}
+                      aria-label={`Planifier RDV avec ${prospect.nomComplet}`}
+                    >
+                      <Calendar className="w-4 h-4 mr-2" />
+                      RDV
+                    </Button>
+                  </>
+                )}
+              </div>
+              
+              {/* Next action info */}
+              {prospect.prochaineAction && (
+                <div className="text-xs text-gray-500 mt-3 text-center" data-testid={`prospect-next-action-${prospect.id}`}>
+                  Prochaine action: {new Date(prospect.prochaineAction).toLocaleDateString("fr-FR")}
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
@@ -279,7 +326,7 @@ export default function ProspectTable({ prospects, onEdit, onDelete, compact = f
                           <div className="font-medium text-gray-900" data-testid={`prospect-name-${prospect.id}`}>
                             {prospect.nomComplet || "Sans nom"}
                           </div>
-                          {isHotLead(prospect) && <HotLeadBadge />}
+                          {isHotLead(prospect) && <HotLeadBadge prospect={prospect} />}
                           {isReadyToSell(prospect) && (
                             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
                               ✓ Ready

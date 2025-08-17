@@ -78,9 +78,9 @@ export default function PipelineBoard({ prospects, onUpdateStatus }: PipelineBoa
   const createSMSLink = (phone: string) => `sms:${phone?.replace(/\s+/g, "")}`;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4" data-testid="pipeline-board">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4" data-testid="pipeline-board">
       {STATUSES.map((status) => (
-        <div key={status} className={`rounded-xl p-4 min-h-[500px] ${STATUS_COLORS[status]}`}>
+        <div key={status} className={`rounded-xl p-3 sm:p-4 min-h-[400px] sm:min-h-[500px] ${STATUS_COLORS[status]}`}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-900" data-testid={`column-title-${status}`}>
               {status}
@@ -93,14 +93,14 @@ export default function PipelineBoard({ prospects, onUpdateStatus }: PipelineBoa
             </Badge>
           </div>
           
-          <div className="space-y-3" data-testid={`column-prospects-${status}`}>
+          <div className="space-y-2 sm:space-y-3" data-testid={`column-prospects-${status}`}>
             {columns[status]?.map((prospect) => (
               <Card 
                 key={prospect.id} 
                 className="cursor-pointer transition-all duration-200 hover:shadow-md border-gray-200 bg-white"
                 data-testid={`prospect-card-${prospect.id}`}
               >
-                <CardContent className="p-4">
+                <CardContent className="p-3 sm:p-4">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-medium text-gray-900 text-sm line-clamp-1" data-testid={`prospect-name-${prospect.id}`}>
                       {prospect.nomComplet || "Sans nom"}
@@ -111,8 +111,9 @@ export default function PipelineBoard({ prospects, onUpdateStatus }: PipelineBoa
                         variant="ghost"
                         onClick={() => moveProspect(prospect, -1)}
                         disabled={STATUSES.indexOf(prospect.statut!) === 0}
-                        className="h-6 w-6 p-0"
+                        className="min-h-[32px] min-w-[32px] p-0 sm:h-6 sm:w-6"
                         data-testid={`button-move-back-${prospect.id}`}
+                        aria-label={`Déplacer ${prospect.nomComplet} vers l'étape précédente`}
                       >
                         <ChevronLeft className="w-3 h-3" />
                       </Button>
@@ -121,8 +122,9 @@ export default function PipelineBoard({ prospects, onUpdateStatus }: PipelineBoa
                         variant="ghost"
                         onClick={() => moveProspect(prospect, 1)}
                         disabled={STATUSES.indexOf(prospect.statut!) === STATUSES.length - 1}
-                        className="h-6 w-6 p-0"
+                        className="min-h-[32px] min-w-[32px] p-0 sm:h-6 sm:w-6"
                         data-testid={`button-move-forward-${prospect.id}`}
+                        aria-label={`Déplacer ${prospect.nomComplet} vers l'étape suivante`}
                       >
                         <ChevronRight className="w-3 h-3" />
                       </Button>
@@ -177,8 +179,9 @@ export default function PipelineBoard({ prospects, onUpdateStatus }: PipelineBoa
                             variant="ghost"
                             onClick={() => window.open(createPhoneLink(prospect.telephone!), "_self")}
                             title="Appeler"
-                            className="h-6 w-6 p-0"
+                            className="min-h-[32px] min-w-[32px] p-0 sm:h-6 sm:w-6"
                             data-testid={`button-call-${prospect.id}`}
+                            aria-label={`Appeler ${prospect.nomComplet}`}
                           >
                             <Phone className="w-3 h-3 text-green-600" />
                           </Button>
@@ -187,8 +190,9 @@ export default function PipelineBoard({ prospects, onUpdateStatus }: PipelineBoa
                             variant="ghost"
                             onClick={() => window.open(createSMSLink(prospect.telephone!), "_self")}
                             title="SMS"
-                            className="h-6 w-6 p-0"
+                            className="min-h-[32px] min-w-[32px] p-0 sm:h-6 sm:w-6"
                             data-testid={`button-sms-${prospect.id}`}
+                            aria-label={`Envoyer SMS à ${prospect.nomComplet}`}
                           >
                             <MessageSquare className="w-3 h-3 text-blue-600" />
                           </Button>

@@ -30,6 +30,7 @@ import KpiCard from "@/components/crm/kpi-card";
 import ProspectTable from "@/components/crm/prospect-table";
 import PipelineBoard from "@/components/crm/pipeline-board";
 import ProspectForm from "@/components/crm/prospect-form";
+import MobileFilterDrawer from "@/components/crm/mobile-filter-drawer";
 import DemoBanner from "@/components/crm/demo-banner";
 import ROICalculator from "@/components/crm/roi-calculator";
 import ContactTimeline from "@/components/crm/contact-timeline";
@@ -986,68 +987,118 @@ END:VCALENDAR`;
 
           <TabsContent value="prospects">
             <div className="space-y-4">
-              {/* Enhanced Search and Filters */}
+              {/* Enhanced Search and Filters - Mobile/Desktop Responsive */}
               <Card>
                 <CardContent className="pt-6">
                   <div className="space-y-4">
-                    {/* Search and Quick Actions */}
-                    <div className="flex flex-col md:flex-row gap-4">
-                      <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                        <Input
-                          placeholder="Rechercher par nom, téléphone, email, ville, source exacte..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        <Button
-                          variant={showReadyToSell ? "default" : "outline"}
-                          onClick={() => setShowReadyToSell(!showReadyToSell)}
-                          size="sm"
-                        >
-                          <Check className="w-4 h-4 mr-2" />
-                          Ready to Sell
-                        </Button>
-                        
-                        <Button
-                          variant={showHotLeads ? "default" : "outline"}
-                          onClick={() => setShowHotLeads(!showHotLeads)}
-                          size="sm"
-                        >
-                          <Star className="w-4 h-4 mr-2" />
-                          Hot Leads
-                        </Button>
-                        
-                        <Button
-                          variant={showDueToday ? "default" : "outline"}
-                          onClick={() => setShowDueToday(!showDueToday)}
-                          size="sm"
-                        >
-                          <Clock className="w-4 h-4 mr-2" />
-                          Due Today
-                        </Button>
-                        
-                        <Button
-                          variant={showCallToday ? "default" : "outline"}
-                          onClick={() => setShowCallToday(!showCallToday)}
-                          size="sm"
-                        >
-                          <Phone className="w-4 h-4 mr-2" />
-                          Call Today ({prospects.filter(p => {
-                            const today = new Date().toDateString();
-                            return p.prochaineAction && 
+                    {/* Mobile Filter Button - Visible on small screens */}
+                    <div className="block sm:hidden">
+                      <MobileFilterDrawer
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        typeFilter={typeFilter}
+                        setTypeFilter={setTypeFilter}
+                        statusFilter={statusFilter}
+                        setStatusFilter={setStatusFilter}
+                        minBudget={minBudget}
+                        setMinBudget={setMinBudget}
+                        maxBudget={maxBudget}
+                        setMaxBudget={setMaxBudget}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        sortOrder={sortOrder}
+                        setSortOrder={setSortOrder}
+                        showReadyToSell={showReadyToSell}
+                        setShowReadyToSell={setShowReadyToSell}
+                        showHotLeads={showHotLeads}
+                        setShowHotLeads={setShowHotLeads}
+                        showDueToday={showDueToday}
+                        setShowDueToday={setShowDueToday}
+                        showCallToday={showCallToday}
+                        setShowCallToday={setShowCallToday}
+                        callTodayCount={prospects.filter(p => {
+                          const today = new Date().toDateString();
+                          return p.prochaineAction && 
                             new Date(p.prochaineAction).toDateString() === today &&
                             !["Gagné", "Perdu", "Pas de réponse"].includes(p.statut || "");
-                        }).length})
-                        </Button>
+                        }).length}
+                        activeFiltersCount={[
+                          searchQuery ? 1 : 0,
+                          typeFilter !== "Tous" ? 1 : 0,
+                          statusFilter !== "Tous" ? 1 : 0,
+                          minBudget ? 1 : 0,
+                          maxBudget ? 1 : 0,
+                          showReadyToSell ? 1 : 0,
+                          showHotLeads ? 1 : 0,
+                          showDueToday ? 1 : 0,
+                          showCallToday ? 1 : 0,
+                          sortBy !== "date" ? 1 : 0,
+                          sortOrder !== "desc" ? 1 : 0
+                        ].reduce((sum, val) => sum + val, 0)}
+                      />
+                    </div>
+
+                    {/* Desktop Filters - Hidden on small screens */}
+                    <div className="hidden sm:block">
+                      {/* Search and Quick Actions */}
+                      <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex-1 relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                          <Input
+                            placeholder="Rechercher par nom, téléphone, email, ville, source exacte..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                        
+                        <div className="flex gap-2 flex-wrap">
+                          <Button
+                            variant={showReadyToSell ? "default" : "outline"}
+                            onClick={() => setShowReadyToSell(!showReadyToSell)}
+                            size="sm"
+                          >
+                            <Check className="w-4 h-4 mr-2" />
+                            Ready to Sell
+                          </Button>
+                          
+                          <Button
+                            variant={showHotLeads ? "default" : "outline"}
+                            onClick={() => setShowHotLeads(!showHotLeads)}
+                            size="sm"
+                          >
+                            <Star className="w-4 h-4 mr-2" />
+                            Hot Leads
+                          </Button>
+                          
+                          <Button
+                            variant={showDueToday ? "default" : "outline"}
+                            onClick={() => setShowDueToday(!showDueToday)}
+                            size="sm"
+                          >
+                            <Clock className="w-4 h-4 mr-2" />
+                            Due Today
+                          </Button>
+                          
+                          <Button
+                            variant={showCallToday ? "default" : "outline"}
+                            onClick={() => setShowCallToday(!showCallToday)}
+                            size="sm"
+                          >
+                            <Phone className="w-4 h-4 mr-2" />
+                            Call Today ({prospects.filter(p => {
+                              const today = new Date().toDateString();
+                              return p.prochaineAction && 
+                              new Date(p.prochaineAction).toDateString() === today &&
+                              !["Gagné", "Perdu", "Pas de réponse"].includes(p.statut || "");
+                          }).length})
+                          </Button>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Advanced Filters */}
-                    <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                    {/* Desktop Advanced Filters - Hidden on mobile since they're in the drawer */}
+                    <div className="hidden sm:grid grid-cols-2 md:grid-cols-6 gap-4">
                       <Select value={typeFilter} onValueChange={setTypeFilter}>
                         <SelectTrigger>
                           <SelectValue />

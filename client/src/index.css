@@ -301,3 +301,72 @@ button:empty::before {
     transform: translateY(0);
   }
 }
+
+/* Enhanced mobile touch targets */
+@media (max-width: 768px) {
+  /* Ensure all interactive elements are at least 44px */
+  .mobile-touch {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Form inputs */
+  input, select, textarea, button {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Card touch targets */
+  .card-hover:active {
+    transform: scale(0.98);
+    background-color: hsl(var(--accent));
+  }
+  
+  /* Better button spacing */
+  .button-group > * {
+    margin: 4px;
+  }
+  
+  /* Pipeline cards mobile optimization */
+  .pipeline-card {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  
+  /* Mobile table improvements */
+  .mobile-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .mobile-table table {
+    min-width: 600px;
+  }
+  
+  /* Fixed bottom navigation safe area */
+  .bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Search input improvements */
+  .mobile-search {
+    font-size: 16px;
+    padding: 12px 16px;
+  }
+}
+
+/* Mobile-specific optimizations */
+.mobile-button {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mobile-scroll::-webkit-scrollbar {
+  display: none;
+}

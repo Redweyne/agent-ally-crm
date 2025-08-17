@@ -1,0 +1,117 @@
+Goal: Mobile-first polish so agents can use the CRM one-handed on iPhone/Android without pinch/zoom.
+
+Scope (no new features, only UX/layout):
+
+Leads (List)
+
+On small screens, replace the table with a stacked card list showing: name, phone, city, property type, price/budget, status, score, and 3 quick actions (Call, SMS, RDV).
+
+Keep the current table for ≥ sm breakpoints; auto-switch based on viewport.
+
+Maintain existing helper functions for links (tel/sms/wa/ics).
+
+Lead Drawer (Detail panel)
+
+Add a sticky bottom action bar (visible only on small screens) with Call / SMS / RDV.
+
+Keep the current grid of actions for desktop unchanged.
+
+Ensure the drawer content scrolls but the action bar stays fixed.
+
+Tap Targets & Spacing
+
+All primary and icon buttons on mobile must have min height/width ≥ 44px with comfortable padding.
+
+Increase spacing between touch elements to prevent mis-taps.
+
+Pipeline (Kanban)
+
+On mobile, columns stack vertically (single column).
+
+Ensure cards have bigger paddings; scrolling is smooth.
+
+Preserve current desktop layout from md and up.
+
+Filters & Search
+
+On mobile, compress top filter controls into a single “Filtres” button that opens a lightweight sheet/drawer containing search + select inputs.
+
+On desktop, keep the existing inline filters.
+
+Charts
+
+Improve touch usability: larger tooltip text and easier tap area.
+
+Optionally hide charts on very narrow widths if they become unusable, but do not remove them on desktop.
+
+Accessibility & Semantics
+
+Add aria-labels to icon-only buttons on mobile.
+
+Ensure focus states are visible.
+
+Do not change data or business logic.
+
+Constraints:
+
+Do not introduce new libraries; use existing stack (React, Tailwind, Recharts, lucide-react).
+
+Do not change server or data shape.
+
+Keep desktop behavior intact; changes are mobile-only unless stated.
+
+Reuse existing helper functions (tel/sms/wa/ics) and styling patterns.
+
+Keep diffs minimal and localized.
+
+Styling Guide (Tailwind):
+
+Use responsive utilities (sm:, md:, xl:) to switch between card list and table.
+
+For tap targets, apply size utilities so the rendered area is ≥44px (e.g., padding + min-h/ min-w), but don’t hardcode pixel values if not needed.
+
+Maintain the product’s current aesthetic (rounded-xl/2xl, soft borders/shadows, neutral palette).
+
+QA Checklist (must pass before finishing):
+
+iPhone 13/14/15 Pro, Android Pixel 6+:
+
+No horizontal scroll; no zoom required.
+
+Can add a lead, open it, call/SMS/RDV with a single thumb.
+
+Sticky action bar stays visible while details scroll.
+
+Pipelines scroll smoothly; no accidental taps.
+
+Filters are accessible via one obvious button; search works.
+
+All actionable icons have readable labels or tooltips for screen readers.
+
+Charts don’t block scrolling; tooltips are legible on touch.
+
+Deliverables:
+
+A single PR that:
+
+Introduces the mobile card list view for Leads (auto-selected < sm) and preserves the table ≥ sm.
+
+Adds the sticky bottom action bar in the Lead drawer for small screens.
+
+Enlarges mobile tap targets across list, drawer, and pipeline.
+
+Wraps filter controls in a mobile drawer and keeps desktop filters intact.
+
+Adjusts chart touch UX.
+
+Update any component docs/comments to reflect responsive behavior.
+
+No code unrelated to mobile UX.
+
+Definition of Done:
+
+Lighthouse Mobile Accessibility score ≥ 90 on the Leads and Lead Drawer views.
+
+All QA checklist items met on at least one iPhone and one Android viewport in DevTools.
+
+Desktop experience unchanged functionally and visually.
