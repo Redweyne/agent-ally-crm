@@ -558,25 +558,7 @@ export default function MobileCRMLayout({
         </div>
       </nav>
 
-      {/* Quick Actions FAB - Only visible in dashboard view */}
-      {activeView === 'dashboard' && (
-        <QuickActionsFAB
-          onAddProspect={onCreateProspect}
-          onVoiceNote={() => setShowVoiceNotes(true)}
-          onQuickCall={() => {
-            const hotProspects = prospects.filter(p => (p.score && p.score > 80) || p.isHotLead);
-            if (hotProspects.length > 0) {
-              onCall(hotProspects[0]);
-            }
-          }}
-          onQuickSchedule={() => {
-            const rdvProspects = prospects.filter(p => p.statut === 'Contacté' || p.statut === 'Qualifié');
-            if (rdvProspects.length > 0) {
-              onScheduleRDV(rdvProspects[0]);
-            }
-          }}
-        />
-      )}
+
 
       {/* Voice Notes Modal */}
       {showVoiceNotes && (
