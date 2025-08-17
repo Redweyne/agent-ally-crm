@@ -7,6 +7,11 @@ Redweyne is a customer relationship management (CRM) system designed specificall
 The CRM has been significantly enhanced with business-focused features to maximize agent productivity and revenue tracking:
 
 ### Latest Updates (August 17, 2025)
+- **Navigation Restructure**: Optimized mobile navigation for agent workflow efficiency
+  - **Bottom Navigation**: Replaced "Liste" with "Carte" (placeholder for future map view)
+  - **Top Navigation**: "Prospects" tab now displays comprehensive prospect list with mobile cards
+  - **Unified Prospect Management**: Consolidated prospect viewing into single, feature-rich tab
+  - **Fixed Date Validation**: Resolved prospect editing errors with proper date string handling
 - **Advanced Mobile Enhancements**: Implemented cutting-edge mobile UX for professional field agents
   - **Swipe-to-Action Cards**: Swipe left on prospect cards to reveal call/SMS/RDV buttons with haptic feedback
   - **Pull-to-Refresh**: Native mobile gesture to refresh prospect lists with visual feedback

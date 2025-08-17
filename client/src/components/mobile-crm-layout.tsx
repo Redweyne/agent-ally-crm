@@ -45,8 +45,8 @@ export default function MobileCRMLayout({
   onEditProspect,
   onSaveProspect
 }: MobileCRMLayoutProps) {
-  const [activeView, setActiveView] = useState<'dashboard' | 'express' | 'list'>(() => {
-    return (sessionStorage.getItem('mobile-view') as 'dashboard' | 'express' | 'list') || 'dashboard';
+  const [activeView, setActiveView] = useState<'dashboard' | 'express' | 'carte'>(() => {
+    return (sessionStorage.getItem('mobile-view') as 'dashboard' | 'express' | 'carte') || 'dashboard';
   });
   const [showMenu, setShowMenu] = useState(false);
   const [showVoiceNotes, setShowVoiceNotes] = useState(false);
@@ -229,12 +229,12 @@ export default function MobileCRMLayout({
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => setActiveView('list')}
+                    onClick={() => setActiveTab('prospects')}
                     className="mobile-button"
                     title="Voir tous les prospects"
                   >
                     <User className="h-4 w-4 mr-2" />
-                    Liste
+                    Prospects
                   </Button>
                 </div>
               </CardContent>
@@ -270,71 +270,24 @@ export default function MobileCRMLayout({
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Tous les prospects</h2>
+              <Button variant="outline" size="sm" onClick={() => setActiveTab('tableau')}>
+                <Home className="h-4 w-4 mr-2" />
+                Retour
+              </Button>
             </div>
             
-            <div className="space-y-3">
-              {prospects.map((prospect) => (
-                <Card key={prospect.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
-                  setEditingProspect(prospect);
-                  setShowEditPopup(true);
-                }}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-base truncate text-gray-900">{prospect.nomComplet}</h3>
-                      <p className="text-xs text-gray-500 mt-1">{prospect.ville}</p>
-                      <div className="flex items-center space-x-2 mt-2">
-                        <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 font-medium">
-                          {prospect.type}
-                        </Badge>
-                        <Badge variant="secondary" className="text-xs">
-                          {prospect.statut}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="ml-4 text-right">
-                      <p className="text-sm font-medium">
-                        {((prospect.budget || prospect.prixEstime || 0) / 1000).toFixed(0)}k€
-                      </p>
-                      {prospect.score && (
-                        <p className="text-xs text-gray-500">Score: {prospect.score}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex gap-1 mt-3">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={(e) => {e.stopPropagation(); onCall(prospect);}} 
-                      className="btn-with-icon mobile-button flex-1"
-                      title="Appeler"
-                    >
-                      <Phone className="w-3 h-3" />
-                      <span className="text-xs">Appel</span>
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={(e) => {e.stopPropagation(); onWhatsApp(prospect);}} 
-                      className="btn-with-icon mobile-button flex-1"
-                      title="WhatsApp"
-                    >
-                      <MessageSquare className="w-3 h-3" />
-                      <span className="text-xs">WhatsApp</span>
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={(e) => {e.stopPropagation(); onScheduleRDV(prospect);}} 
-                      className="btn-with-icon mobile-button flex-1"
-                      title="Programmer RDV"
-                    >
-                      <Calendar className="w-3 h-3" />
-                      <span className="text-xs">RDV</span>
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <MobileProspectCards
+              prospects={prospects}
+              onEdit={(prospect: Prospect) => {
+                setEditingProspect(prospect);
+                setShowEditPopup(true);
+              }}
+              onRefresh={async () => {
+                // Add refresh functionality here if needed
+                console.log('Refreshing prospects list...');
+              }}
+              isRefreshing={false}
+            />
           </div>
         )}
 
@@ -458,28 +411,23 @@ export default function MobileCRMLayout({
           </div>
         )}
 
-        {activeView === 'list' && (
+        {activeView === 'carte' && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Tous les prospects</h2>
+              <h2 className="text-lg font-semibold">Vue Carte</h2>
               <Button variant="outline" size="sm" onClick={() => setActiveView('dashboard')}>
                 <Home className="h-4 w-4 mr-2" />
                 Retour
               </Button>
             </div>
             
-            <MobileProspectCards
-              prospects={prospects}
-              onEdit={(prospect: Prospect) => {
-                setEditingProspect(prospect);
-                setShowEditPopup(true);
-              }}
-              onRefresh={async () => {
-                // Add refresh functionality here if needed
-                console.log('Refreshing prospects list...');
-              }}
-              isRefreshing={false}
-            />
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center text-gray-500">
+                <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-lg">Vue Carte</p>
+                <p className="text-sm">Fonctionnalité à venir</p>
+              </div>
+            </div>
           </div>
         )}
       </main>
@@ -514,13 +462,13 @@ export default function MobileCRMLayout({
           </Button>
 
           <Button
-            variant={activeView === 'list' ? 'default' : 'ghost'}
+            variant={activeView === 'carte' ? 'default' : 'ghost'}
             size="sm"
-            onClick={() => setActiveView('list')}
+            onClick={() => setActiveView('carte')}
             className="flex-1 max-w-none mx-1 flex-col h-auto py-2"
           >
             <User className="h-4 w-4 mb-1" />
-            <span className="text-xs">Liste</span>
+            <span className="text-xs">Carte</span>
           </Button>
 
           <Button
