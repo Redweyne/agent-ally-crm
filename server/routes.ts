@@ -52,13 +52,17 @@ export function registerRoutes(app: Express): Server {
       const { id } = req.params;
       const updates = req.body;
       
-      const prospect = await storage.updateProspect(id, updates);
+      // Validate updates with insertProspectSchema (partial)
+      const validatedUpdates = insertProspectSchema.partial().parse(updates);
+      
+      const prospect = await storage.updateProspect(id, validatedUpdates);
       if (!prospect) {
         return res.status(404).json({ message: "Prospect non trouvé" });
       }
       
       res.json(prospect);
     } catch (error) {
+      console.error('Error updating prospect:', error);
       next(error);
     }
   });

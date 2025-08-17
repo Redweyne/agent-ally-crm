@@ -316,10 +316,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateProspect(id: string, updates: Partial<InsertProspect>): Promise<Prospect | undefined> {
+    // Prepare updates with proper date handling
+    const cleanUpdates: any = { ...updates };
+    
+    // Remove date fields that should not be updated or convert them properly
+    delete cleanUpdates.creeLe; // Never update creation date
+    
+    // Handle prochaineAction date field
+    if (cleanUpdates.prochaineAction && typeof cleanUpdates.prochaineAction === 'string') {
+      cleanUpdates.prochaineAction = new Date(cleanUpdates.prochaineAction);
+    }
+    
     const [prospect] = await db
       .update(prospects)
       .set({
-        ...updates,
+        ...cleanUpdates,
         score: updates.statut ? this.calculateScore(updates as InsertProspect) : undefined,
       })
       .where(eq(prospects.id, id))

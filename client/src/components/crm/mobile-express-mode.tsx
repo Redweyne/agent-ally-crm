@@ -145,15 +145,28 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span>Action {currentIndex + 1} sur {priorityProspects.length}</span>
-          <div className="flex gap-1">
-            {priorityProspects.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full ${
-                  index === currentIndex ? "bg-blue-500" : "bg-gray-300"
-                }`}
-              />
-            ))}
+          <div className="flex items-center gap-2">
+            {priorityProspects.length > 1 && (
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                onClick={nextProspect}
+                className="h-6 w-6 p-0 mobile-button"
+                title="Prospect suivant"
+              >
+                <ChevronRight className="h-3 w-3" />
+              </Button>
+            )}
+            <div className="flex gap-1">
+              {priorityProspects.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full ${
+                    index === currentIndex ? "bg-blue-500" : "bg-gray-300"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
         <div className="flex items-center justify-center">
@@ -176,20 +189,7 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
       >
         <div className={`absolute top-0 left-0 w-1 h-full ${getUrgencyColor(currentProspect)}`}></div>
         
-        {/* Navigation - only if multiple prospects */}
-        {priorityProspects.length > 1 && (
-          <div className="absolute top-4 left-4">
-            <Button 
-              size="sm" 
-              variant="ghost" 
-              onClick={nextProspect}
-              className="h-8 w-8 p-0 mobile-button bg-white/80 backdrop-blur-sm"
-              title="Prospect suivant"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
+
         
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
