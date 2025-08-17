@@ -62,12 +62,12 @@ export default function LandingPage() {
             {/* Revolutionary Logo */}
             <div className="flex items-center group">
               <div className="flex-shrink-0 relative">
-                {/* Glowing background effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                {/* Glowing background effect - positioned to not interfere with text */}
+                <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
                 
-                <div className="relative bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-3 border border-white/20">
+                <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 rounded-2xl p-3 border border-white/30 shadow-xl">
                   <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent tracking-tight" data-testid="logo">
-                    <span className="relative">
+                    <span className="relative filter-none">
                       RedLead2Guide
                       {/* Subtle animated underline */}
                       <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
