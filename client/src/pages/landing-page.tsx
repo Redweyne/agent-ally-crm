@@ -52,57 +52,83 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50" data-testid="landing-page">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-sm border-b border-gray-200 z-50" data-testid="navigation">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-primary-700" data-testid="logo">RedLead2Guide</h1>
+      {/* Modern Revolutionary Navigation */}
+      <nav className="fixed top-0 w-full bg-gradient-to-r from-slate-900/95 via-blue-900/95 to-purple-900/95 backdrop-blur-xl border-b border-white/10 z-50 shadow-2xl" data-testid="navigation">
+        {/* Animated background glow */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="flex justify-between items-center h-20">
+            {/* Revolutionary Logo */}
+            <div className="flex items-center group">
+              <div className="flex-shrink-0 relative">
+                {/* Glowing background effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                
+                <div className="relative bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-3 border border-white/20">
+                  <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent tracking-tight" data-testid="logo">
+                    <span className="relative">
+                      RedLead2Guide
+                      {/* Subtle animated underline */}
+                      <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </span>
+                  </h1>
+                </div>
+              </div>
               
-              {/* Mobile quick icons */}
-              <div className="md:hidden flex items-center ml-4 space-x-2">
+              {/* New badge */}
+              <div className="hidden sm:block ml-3">
+                <Badge className="bg-gradient-to-r from-green-400/20 to-emerald-400/20 text-green-100 border border-green-400/30 text-xs font-medium animate-pulse">
+                  ✨ Mobile-First
+                </Badge>
+              </div>
+            </div>
+            
+            {/* Modern Mobile Icons - Visible on small screens */}
+            <div className="flex md:hidden space-x-1">
+              <div className="flex items-center space-x-1 bg-white/5 backdrop-blur-sm rounded-2xl p-2 border border-white/10">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => scrollToSection("services")}
-                  className="p-2 mobile-button"
+                  className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 text-white hover:text-blue-200"
                   title="Services"
                   data-testid="mobile-icon-services"
                 >
-                  <Users className="h-5 w-5 text-primary-600" />
+                  <Users className="h-5 w-5" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => scrollToSection("avantages")}
-                  className="p-2 mobile-button"
+                  className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 text-white hover:text-green-200"
                   title="Avantages"
                   data-testid="mobile-icon-avantages"
                 >
-                  <TrendingUp className="h-5 w-5 text-primary-600" />
+                  <TrendingUp className="h-5 w-5" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => scrollToSection("contact")}
-                  className="p-2 mobile-button"
+                  className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 text-white hover:text-purple-200"
                   title="Contact"
                   data-testid="mobile-icon-contact"
                 >
-                  <Phone className="h-5 w-5 text-primary-600" />
+                  <Phone className="h-5 w-5" />
                 </Button>
               </div>
             </div>
             
-            {/* Mobile menu button */}
+            {/* Futuristic Mobile Menu Button */}
             <div className="md:hidden">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2"
+                className="p-3 rounded-2xl bg-gradient-to-r from-white/10 to-white/5 border border-white/20 hover:from-white/20 hover:to-white/10 transition-all duration-300 text-white"
                 data-testid="mobile-menu-toggle"
-                title={isMobileMenuOpen ? "Plus d'options" : "Menu"}
+                title={isMobileMenuOpen ? "Fermer" : "Menu"}
               >
                 {isMobileMenuOpen ? (
                   <X className="h-6 w-6" />
@@ -112,115 +138,140 @@ export default function LandingPage() {
               </Button>
             </div>
             
-            {/* Desktop navigation */}
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-8">
+            {/* Futuristic Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-2">
+              <div className="flex items-center space-x-1 bg-white/5 backdrop-blur-sm rounded-2xl p-2 border border-white/10 mr-6">
                 <button 
                   onClick={() => scrollToSection("services")} 
-                  className="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
+                  className="text-white/90 hover:text-white hover:bg-white/10 px-6 py-3 text-sm font-medium transition-all duration-200 rounded-xl"
                   data-testid="link-services"
                 >
                   Services
                 </button>
                 <button 
                   onClick={() => scrollToSection("avantages")} 
-                  className="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
+                  className="text-white/90 hover:text-white hover:bg-white/10 px-6 py-3 text-sm font-medium transition-all duration-200 rounded-xl"
                   data-testid="link-avantages"
                 >
                   Avantages
                 </button>
                 <button 
                   onClick={() => scrollToSection("contact")} 
-                  className="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
+                  className="text-white/90 hover:text-white hover:bg-white/10 px-6 py-3 text-sm font-medium transition-all duration-200 rounded-xl"
                   data-testid="link-contact"
                 >
                   Contact
                 </button>
-                <DownloadDialog>
-                  <Button 
-                    variant="outline"
-                    className="border-primary-600 text-primary-600 hover:bg-primary-50"
-                    data-testid="button-download"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Télécharger
-                  </Button>
-                </DownloadDialog>
-                <Button 
-                  onClick={() => navigate("/auth")} 
-                  className="bg-primary-600 hover:bg-primary-700 text-white"
-                  data-testid="button-login"
-                >
-                  Connexion Agent
-                </Button>
               </div>
+              
+              <DownloadDialog>
+                <Button 
+                  variant="outline"
+                  className="border-2 border-white/30 text-white bg-transparent hover:bg-white hover:text-gray-900 transition-all duration-300 rounded-2xl px-6 py-3 font-medium backdrop-blur-sm"
+                  data-testid="button-download"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Télécharger
+                </Button>
+              </DownloadDialog>
+              
+              <Button 
+                onClick={() => navigate("/auth")} 
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold px-8 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl border border-white/20"
+                data-testid="button-login"
+              >
+                <span className="flex items-center">
+                  🚀 Connexion Agent
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </span>
+              </Button>
             </div>
           </div>
           
-          {/* Mobile navigation menu */}
+          {/* Futuristic Mobile Menu Dropdown */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm">
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                <button
-                  onClick={() => {
-                    scrollToSection("services");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-primary-600 hover:bg-gray-50 rounded-md w-full text-left"
-                  data-testid="mobile-link-services"
-                >
-                  <Users className="h-5 w-5 mr-3" />
-                  Services
-                </button>
+            <div className="md:hidden border-t border-white/10 bg-gradient-to-b from-slate-900/98 to-purple-900/98 backdrop-blur-xl">
+              <div className="px-4 pt-4 pb-6 space-y-3 relative">
+                {/* Subtle glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-purple-500/5 rounded-b-2xl"></div>
                 
-                <button
-                  onClick={() => {
-                    scrollToSection("avantages");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-primary-600 hover:bg-gray-50 rounded-md w-full text-left"
-                  data-testid="mobile-link-avantages"
-                >
-                  <TrendingUp className="h-5 w-5 mr-3" />
-                  Avantages
-                </button>
-                
-                <button
-                  onClick={() => {
-                    scrollToSection("contact");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center px-3 py-2 text-base font-medium text-gray-600 hover:text-primary-600 hover:bg-gray-50 rounded-md w-full text-left"
-                  data-testid="mobile-link-contact"
-                >
-                  <Phone className="h-5 w-5 mr-3" />
-                  Contact
-                </button>
-                
-                <div className="pt-2 border-t border-gray-200">
-                  <DownloadDialog>
-                    <Button 
-                      variant="outline"
-                      className="flex items-center w-full justify-start border-primary-600 text-primary-600 hover:bg-primary-50 mb-2"
-                      data-testid="mobile-button-download"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <Download className="h-5 w-5 mr-3" />
-                      Télécharger
-                    </Button>
-                  </DownloadDialog>
-                  
-                  <Button 
+                <div className="relative space-y-2">
+                  <button
                     onClick={() => {
-                      navigate("/auth");
+                      scrollToSection("services");
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center w-full justify-start bg-primary-600 hover:bg-primary-700 text-white"
-                    data-testid="mobile-button-login"
+                    className="flex items-center px-4 py-3 text-base font-medium text-white/90 hover:text-white hover:bg-white/10 rounded-2xl w-full text-left transition-all duration-200 backdrop-blur-sm"
+                    data-testid="mobile-link-services"
                   >
-                    <ArrowRight className="h-5 w-5 mr-3" />
-                    Connexion Agent
-                  </Button>
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center mr-4">
+                      <Users className="h-5 w-5 text-blue-300" />
+                    </div>
+                    Services
+                    <ArrowRight className="h-4 w-4 ml-auto opacity-50" />
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      scrollToSection("avantages");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center px-4 py-3 text-base font-medium text-white/90 hover:text-white hover:bg-white/10 rounded-2xl w-full text-left transition-all duration-200 backdrop-blur-sm"
+                    data-testid="mobile-link-avantages"
+                  >
+                    <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center mr-4">
+                      <TrendingUp className="h-5 w-5 text-green-300" />
+                    </div>
+                    Avantages
+                    <ArrowRight className="h-4 w-4 ml-auto opacity-50" />
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      scrollToSection("contact");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center px-4 py-3 text-base font-medium text-white/90 hover:text-white hover:bg-white/10 rounded-2xl w-full text-left transition-all duration-200 backdrop-blur-sm"
+                    data-testid="mobile-link-contact"
+                  >
+                    <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center mr-4">
+                      <Phone className="h-5 w-5 text-purple-300" />
+                    </div>
+                    Contact
+                    <ArrowRight className="h-4 w-4 ml-auto opacity-50" />
+                  </button>
+                  
+                  <div className="pt-4 border-t border-white/10 space-y-3">
+                    <DownloadDialog>
+                      <Button 
+                        variant="outline"
+                        className="flex items-center w-full justify-start border-2 border-white/30 text-white bg-transparent hover:bg-white hover:text-gray-900 rounded-2xl py-3 px-4 font-medium transition-all duration-300 backdrop-blur-sm"
+                        data-testid="mobile-button-download"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mr-4">
+                          <Download className="h-5 w-5" />
+                        </div>
+                        Télécharger
+                        <ArrowRight className="h-4 w-4 ml-auto opacity-50" />
+                      </Button>
+                    </DownloadDialog>
+                    
+                    <Button 
+                      onClick={() => {
+                        navigate("/auth");
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center w-full justify-start bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-2xl py-3 px-4 font-bold transition-all duration-300 shadow-xl"
+                      data-testid="mobile-button-login"
+                    >
+                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                        <span className="text-lg">🚀</span>
+                      </div>
+                      Connexion Agent
+                      <ArrowRight className="h-4 w-4 ml-auto" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

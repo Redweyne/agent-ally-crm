@@ -292,10 +292,7 @@ export default function CrmDashboard() {
 
   // Opportunities filtering - prospects with high value or imminent appointments
   const opportunityProspects = useMemo(() => {
-    console.log('🔍 Debug: enhancedProspects count:', enhancedProspects.length);
-    console.log('🔍 Debug: First 3 prospects scores:', enhancedProspects.slice(0, 3).map(p => ({ name: p.nomComplet, score: p.score, status: p.statut })));
-    
-    const filtered = enhancedProspects.filter(prospect => {
+    return enhancedProspects.filter(prospect => {
       // Exclude already won or lost prospects
       if (["Gagné", "Perdu", "Pas de réponse"].includes(prospect.statut || "")) {
         return false;
@@ -327,18 +324,8 @@ export default function CrmDashboard() {
       // Hot leads from database flag
       const isMarkedHotLead = prospect.isHotLead || false;
 
-      const qualifies = isHighValue || hasGoodScore || isAdvancedStage || hasImminentAction || isQualified || isMarkedHotLead;
-      
-      if (qualifies) {
-        console.log(`✅ OPPORTUNITY: ${prospect.nomComplet} (score: ${prospect.score}, budget: ${budget}, status: ${prospect.statut})`);
-      }
-      
-      return qualifies;
-    });
-    
-    console.log(`🎯 Final opportunityProspects count: ${filtered.length}`);
-    
-    return filtered.sort((a, b) => {
+      return isHighValue || hasGoodScore || isAdvancedStage || hasImminentAction || isQualified || isMarkedHotLead;
+    }).sort((a, b) => {
       // Sort by priority: Hot leads first, then by score, then by value
       const aHot = isHotLead(a) ? 1 : 0;
       const bHot = isHotLead(b) ? 1 : 0;
