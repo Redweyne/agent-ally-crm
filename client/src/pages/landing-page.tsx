@@ -53,24 +53,22 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gray-50" data-testid="landing-page">
       {/* Modern Revolutionary Navigation */}
-      <nav className="fixed top-0 w-full bg-gradient-to-r from-slate-900/95 via-blue-900/95 to-purple-900/95 backdrop-blur-xl border-b border-white/10 z-50 shadow-2xl" data-testid="navigation">
-        {/* Animated background glow */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
+      <nav className="fixed top-0 w-full bg-gradient-to-r from-gray-900/95 via-slate-800/95 to-gray-900/95 backdrop-blur-xl border-b border-gray-700/30 z-50 shadow-2xl" data-testid="navigation">
+        {/* Subtle animated background glow */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-cyan-500/5 to-blue-600/5 animate-pulse"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="flex justify-between items-center h-20">
-            {/* Revolutionary Logo */}
+            {/* Crystal Clear Logo */}
             <div className="flex items-center group">
               <div className="flex-shrink-0 relative">
-                {/* Glowing background effect - positioned to not interfere with text */}
-                <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
-                
-                <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 rounded-2xl p-3 border border-white/30 shadow-xl">
-                  <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent tracking-tight" data-testid="logo">
-                    <span className="relative filter-none">
+                {/* Clean background without blur */}
+                <div className="bg-gradient-to-r from-gray-800 to-slate-800 rounded-2xl p-4 border border-cyan-500/40 shadow-xl group-hover:border-cyan-400/60 transition-all duration-300">
+                  <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight" data-testid="logo">
+                    <span className="relative">
                       RedLead2Guide
-                      {/* Subtle animated underline */}
-                      <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      {/* Clean animated underline */}
+                      <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-400 to-blue-400 opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </span>
                   </h1>
                 </div>
@@ -78,7 +76,7 @@ export default function LandingPage() {
               
               {/* New badge */}
               <div className="hidden sm:block ml-3">
-                <Badge className="bg-gradient-to-r from-green-400/20 to-emerald-400/20 text-green-100 border border-green-400/30 text-xs font-medium animate-pulse">
+                <Badge className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-100 border border-cyan-400/40 text-xs font-medium animate-pulse">
                   ✨ Mobile-First
                 </Badge>
               </div>
@@ -86,12 +84,12 @@ export default function LandingPage() {
             
             {/* Modern Mobile Icons - Visible on small screens */}
             <div className="flex md:hidden space-x-1">
-              <div className="flex items-center space-x-1 bg-white/5 backdrop-blur-sm rounded-2xl p-2 border border-white/10">
+              <div className="flex items-center space-x-1 bg-gray-800/80 rounded-2xl p-2 border border-gray-600/40">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => scrollToSection("services")}
-                  className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 text-white hover:text-blue-200"
+                  className="p-2 hover:bg-gray-700/60 rounded-xl transition-all duration-200 text-gray-200 hover:text-cyan-200"
                   title="Services"
                   data-testid="mobile-icon-services"
                 >
@@ -101,7 +99,7 @@ export default function LandingPage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => scrollToSection("avantages")}
-                  className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 text-white hover:text-green-200"
+                  className="p-2 hover:bg-gray-700/60 rounded-xl transition-all duration-200 text-gray-200 hover:text-green-300"
                   title="Avantages"
                   data-testid="mobile-icon-avantages"
                 >
@@ -111,7 +109,7 @@ export default function LandingPage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => scrollToSection("contact")}
-                  className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 text-white hover:text-purple-200"
+                  className="p-2 hover:bg-gray-700/60 rounded-xl transition-all duration-200 text-gray-200 hover:text-blue-300"
                   title="Contact"
                   data-testid="mobile-icon-contact"
                 >
@@ -126,7 +124,7 @@ export default function LandingPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-3 rounded-2xl bg-gradient-to-r from-white/10 to-white/5 border border-white/20 hover:from-white/20 hover:to-white/10 transition-all duration-300 text-white"
+                className="p-3 rounded-2xl bg-gradient-to-r from-gray-800/80 to-slate-800/80 border border-gray-600/40 hover:border-cyan-400/40 transition-all duration-300 text-gray-200"
                 data-testid="mobile-menu-toggle"
                 title={isMobileMenuOpen ? "Fermer" : "Menu"}
               >
@@ -140,24 +138,24 @@ export default function LandingPage() {
             
             {/* Futuristic Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-2">
-              <div className="flex items-center space-x-1 bg-white/5 backdrop-blur-sm rounded-2xl p-2 border border-white/10 mr-6">
+              <div className="flex items-center space-x-1 bg-gray-800/80 rounded-2xl p-2 border border-gray-600/40 mr-6">
                 <button 
                   onClick={() => scrollToSection("services")} 
-                  className="text-white/90 hover:text-white hover:bg-white/10 px-6 py-3 text-sm font-medium transition-all duration-200 rounded-xl"
+                  className="text-gray-200 hover:text-white hover:bg-gray-700/60 px-6 py-3 text-sm font-medium transition-all duration-200 rounded-xl"
                   data-testid="link-services"
                 >
                   Services
                 </button>
                 <button 
                   onClick={() => scrollToSection("avantages")} 
-                  className="text-white/90 hover:text-white hover:bg-white/10 px-6 py-3 text-sm font-medium transition-all duration-200 rounded-xl"
+                  className="text-gray-200 hover:text-white hover:bg-gray-700/60 px-6 py-3 text-sm font-medium transition-all duration-200 rounded-xl"
                   data-testid="link-avantages"
                 >
                   Avantages
                 </button>
                 <button 
                   onClick={() => scrollToSection("contact")} 
-                  className="text-white/90 hover:text-white hover:bg-white/10 px-6 py-3 text-sm font-medium transition-all duration-200 rounded-xl"
+                  className="text-gray-200 hover:text-white hover:bg-gray-700/60 px-6 py-3 text-sm font-medium transition-all duration-200 rounded-xl"
                   data-testid="link-contact"
                 >
                   Contact
@@ -167,7 +165,7 @@ export default function LandingPage() {
               <DownloadDialog>
                 <Button 
                   variant="outline"
-                  className="border-2 border-white/30 text-white bg-transparent hover:bg-white hover:text-gray-900 transition-all duration-300 rounded-2xl px-6 py-3 font-medium backdrop-blur-sm"
+                  className="border-2 border-gray-600/60 text-gray-200 bg-transparent hover:bg-gray-700 hover:text-white transition-all duration-300 rounded-2xl px-6 py-3 font-medium"
                   data-testid="button-download"
                 >
                   <Download className="h-4 w-4 mr-2" />
@@ -177,7 +175,7 @@ export default function LandingPage() {
               
               <Button 
                 onClick={() => navigate("/auth")} 
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold px-8 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl border border-white/20"
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold px-8 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl border border-cyan-400/30"
                 data-testid="button-login"
               >
                 <span className="flex items-center">
@@ -190,7 +188,7 @@ export default function LandingPage() {
           
           {/* Futuristic Mobile Menu Dropdown */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-white/10 bg-gradient-to-b from-slate-900/98 to-purple-900/98 backdrop-blur-xl">
+            <div className="md:hidden border-t border-gray-700/40 bg-gradient-to-b from-gray-900/98 to-slate-800/98 backdrop-blur-xl">
               <div className="px-4 pt-4 pb-6 space-y-3 relative">
                 {/* Subtle glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-purple-500/5 rounded-b-2xl"></div>
