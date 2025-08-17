@@ -98,32 +98,71 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
 
   if (priorityProspects.length === 0) {
     return (
-      <Card className="max-w-md mx-auto">
-        <CardContent className="pt-6">
-          <div className="text-center">
-            <User className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium mb-2">Aucun prospect prioritaire</h3>
-            <p className="text-gray-500">Tous vos prospects sont à jour !</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="max-w-md mx-auto space-y-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <User className="w-16 h-16 mx-auto text-green-500 mb-4" />
+              <h3 className="text-lg font-medium mb-2 text-green-700">Mode Express - Prêt!</h3>
+              <p className="text-gray-600 text-sm mb-4">Aucune action urgente pour le moment</p>
+              <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg space-y-1">
+                <p className="font-medium">Express mode affiche automatiquement:</p>
+                <p>🔥 Hot leads (score &gt; 80)</p>
+                <p>📞 Rappels programmés aujourd'hui</p>
+                <p>⚡ Nouveaux prospects urgents</p>
+                <p>💰 Prospects haute valeur (&gt;500k€)</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="pt-4">
+            <h4 className="font-medium mb-2">💡 Prochaines actions:</h4>
+            <div className="space-y-2 text-sm">
+              <div className="p-2 rounded bg-blue-50 flex items-center justify-between">
+                <span>📊 Vérifier la liste complète</span>
+                <span className="text-xs text-blue-600">→ Liste</span>
+              </div>
+              <div className="p-2 rounded bg-green-50 flex items-center justify-between">
+                <span>📱 Appeler prospects récents</span>
+                <span className="text-xs text-green-600">→ Contact</span>
+              </div>
+              <div className="p-2 rounded bg-orange-50 flex items-center justify-between">
+                <span>⚡ Programmer des rappels</span>
+                <span className="text-xs text-orange-600">→ RDV</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
     <div className="max-w-md mx-auto space-y-4">
-      {/* Progress Indicator */}
-      <div className="flex items-center justify-between text-sm text-gray-600">
-        <span>Prospect {currentIndex + 1} sur {priorityProspects.length}</span>
-        <div className="flex gap-1">
-          {priorityProspects.map((_, index) => (
-            <div
-              key={index}
-              className={`w-2 h-2 rounded-full ${
-                index === currentIndex ? "bg-blue-500" : "bg-gray-300"
-              }`}
-            />
-          ))}
+      {/* Progress Indicator & Filter Info */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-sm text-gray-600">
+          <span>Action {currentIndex + 1} sur {priorityProspects.length}</span>
+          <div className="flex gap-1">
+            {priorityProspects.map((_, index) => (
+              <div
+                key={index}
+                className={`w-2 h-2 rounded-full ${
+                  index === currentIndex ? "bg-blue-500" : "bg-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center justify-center">
+          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+            🎯 Actions prioritaires détectées
+          </span>
+        </div>
+        <div className="text-center text-xs text-gray-500">
+          👈 Glissez pour naviguer • Tapez pour éditer
         </div>
       </div>
 
@@ -139,12 +178,12 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
         
         {/* Navigation - only if multiple prospects */}
         {priorityProspects.length > 1 && (
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 left-4">
             <Button 
               size="sm" 
               variant="ghost" 
               onClick={nextProspect}
-              className="h-8 w-8 p-0 mobile-button"
+              className="h-8 w-8 p-0 mobile-button bg-white/80 backdrop-blur-sm"
               title="Prospect suivant"
             >
               <ChevronRight className="h-4 w-4" />

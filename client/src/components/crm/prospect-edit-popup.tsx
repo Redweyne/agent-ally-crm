@@ -45,7 +45,10 @@ export default function ProspectEditPopup({ prospect, isOpen, onClose, onSave }:
       ...prospect,
       ...formData,
       budget: formData.budget ? parseFloat(formData.budget) : null,
-      prixEstime: formData.prixEstime ? parseFloat(formData.prixEstime) : null
+      prixEstime: formData.prixEstime ? parseFloat(formData.prixEstime) : null,
+      // Ensure date fields are properly handled
+      creeLe: prospect.creeLe,
+      prochaineAction: prospect.prochaineAction
     };
     
     onSave(updatedProspect);
