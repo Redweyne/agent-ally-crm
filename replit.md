@@ -7,6 +7,17 @@ Redweyne is a customer relationship management (CRM) system designed specificall
 The CRM has been significantly enhanced with business-focused features to maximize agent productivity and revenue tracking:
 
 ### Latest Updates (August 17, 2025)
+- **Revolutionary Landing Page Redesign**: Complete overhaul with modern, breathtaking design showcasing mobile CRM features
+  - **Modern Hero Section**: Blue/purple gradient with animated grid background, key feature highlights
+  - **Mobile-First Feature Showcase**: Detailed cards highlighting swipe actions, voice notes, pull-to-refresh
+  - **Interactive Map Promotion**: Dedicated section promoting the new geolocation and mapping capabilities
+  - **Business Intelligence Cards**: ROI tracking, hot leads detection, mandate pending status features
+  - **Professional CTA Section**: Performance stats (47% CA increase, 2.3h saved daily, 94% satisfaction)
+  - **Enhanced Footer**: Complete feature listing and French branding emphasis
+- **Map Enhancement**: Enhanced coordinate lookup system with specific French city coordinates
+  - **City-Specific Geocoding**: Added precise coordinates for all French cities in prospect database
+  - **Improved Fallback System**: Enhanced département-level coordinate system for better coverage
+  - **Debug Information**: Added statistics and prospect location tracking for better visibility
 - **Navigation Restructure**: Optimized mobile navigation for agent workflow efficiency
   - **Bottom Navigation**: Replaced "Liste" with "Carte" (placeholder for future map view)
   - **Top Navigation**: "Prospects" tab now displays comprehensive prospect list with mobile cards
