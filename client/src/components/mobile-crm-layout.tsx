@@ -11,6 +11,7 @@ import MobileExpressMode from '@/components/crm/mobile-express-mode';
 import QuickActionsFAB from '@/components/crm/quick-actions-fab';
 import VoiceNotes from '@/components/crm/voice-notes';
 import MobileProspectForm from '@/components/crm/mobile-prospect-form';
+import MobileProspectCards from '@/components/crm/mobile-prospect-cards';
 
 import type { Prospect } from '@shared/schema';
 
@@ -252,13 +253,13 @@ export default function MobileCRMLayout({
             
             <div className="space-y-3">
               {prospects.map((prospect) => (
-                <Card key={prospect.id} className="p-4">
+                <Card key={prospect.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => onEditProspect?.(prospect)}>
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm truncate">{prospect.nomComplet}</h3>
+                      <h3 className="font-medium text-base truncate text-gray-900">{prospect.nomComplet}</h3>
                       <p className="text-xs text-gray-500 mt-1">{prospect.ville}</p>
                       <div className="flex items-center space-x-2 mt-2">
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 font-medium">
                           {prospect.type}
                         </Badge>
                         <Badge variant="secondary" className="text-xs">
@@ -279,7 +280,7 @@ export default function MobileCRMLayout({
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => onCall(prospect)} 
+                      onClick={(e) => {e.stopPropagation(); onCall(prospect);}} 
                       className="btn-with-icon mobile-button flex-1"
                       title="Appeler"
                     >
@@ -289,7 +290,7 @@ export default function MobileCRMLayout({
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => onWhatsApp(prospect)} 
+                      onClick={(e) => {e.stopPropagation(); onWhatsApp(prospect);}} 
                       className="btn-with-icon mobile-button flex-1"
                       title="WhatsApp"
                     >
@@ -299,7 +300,7 @@ export default function MobileCRMLayout({
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => onScheduleRDV(prospect)} 
+                      onClick={(e) => {e.stopPropagation(); onScheduleRDV(prospect);}} 
                       className="btn-with-icon mobile-button flex-1"
                       title="Programmer RDV"
                     >
@@ -425,6 +426,10 @@ export default function MobileCRMLayout({
               onCall={onCall}
               onWhatsApp={onWhatsApp}
               onScheduleRDV={onScheduleRDV}
+              onEdit={(prospect: Prospect) => {
+                setEditingProspect(prospect);
+                setShowProspectForm(true);
+              }}
             />
           </div>
         )}
@@ -439,66 +444,18 @@ export default function MobileCRMLayout({
               </Button>
             </div>
             
-            <div className="space-y-3">
-              {prospects.map((prospect) => (
-                <Card key={prospect.id} className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm truncate">{prospect.nomComplet}</h3>
-                      <p className="text-xs text-gray-500 mt-1">{prospect.ville}</p>
-                      <div className="flex items-center space-x-2 mt-2">
-                        <Badge variant="outline" className="text-xs">
-                          {prospect.type}
-                        </Badge>
-                        <Badge variant="secondary" className="text-xs">
-                          {prospect.statut}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="ml-4 text-right">
-                      <p className="text-sm font-medium">
-                        {((prospect.budget || prospect.prixEstime || 0) / 1000).toFixed(0)}k€
-                      </p>
-                      {prospect.score && (
-                        <p className="text-xs text-gray-500">Score: {prospect.score}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex gap-1 mt-3">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => onCall(prospect)} 
-                      className="btn-with-icon mobile-button flex-1"
-                      title="Appeler"
-                    >
-                      <Phone className="w-3 h-3" />
-                      <span className="text-xs">Appel</span>
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => onWhatsApp(prospect)} 
-                      className="btn-with-icon mobile-button flex-1"
-                      title="WhatsApp"
-                    >
-                      <MessageSquare className="w-3 h-3" />
-                      <span className="text-xs">WhatsApp</span>
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => onScheduleRDV(prospect)} 
-                      className="btn-with-icon mobile-button flex-1"
-                      title="Programmer RDV"
-                    >
-                      <Calendar className="w-3 h-3" />
-                      <span className="text-xs">RDV</span>
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <MobileProspectCards
+              prospects={prospects}
+              onEdit={(prospect: Prospect) => {
+                setEditingProspect(prospect);
+                setShowProspectForm(true);
+              }}
+              onRefresh={async () => {
+                // Add refresh functionality here if needed
+                console.log('Refreshing prospects list...');
+              }}
+              isRefreshing={false}
+            />
           </div>
         )}
       </main>

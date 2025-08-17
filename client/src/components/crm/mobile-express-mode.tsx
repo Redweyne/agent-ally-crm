@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Phone, MessageCircle, Calendar, MapPin, Euro, User, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Phone, MessageCircle, Calendar, MapPin, Euro, User, ArrowRight, ChevronLeft, ChevronRight, Edit } from "lucide-react";
 import type { Prospect } from "@shared/schema";
 
 interface MobileExpressModeProps {
@@ -10,9 +10,10 @@ interface MobileExpressModeProps {
   onCall: (prospect: Prospect) => void;
   onWhatsApp: (prospect: Prospect) => void;
   onScheduleRDV: (prospect: Prospect) => void;
+  onEdit?: (prospect: Prospect) => void;
 }
 
-export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onScheduleRDV }: MobileExpressModeProps) {
+export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onScheduleRDV, onEdit }: MobileExpressModeProps) {
   const [currentIndex, setCurrentIndex] = useState(() => {
     return parseInt(sessionStorage.getItem('mobile-express-index') || '0');
   });
@@ -162,17 +163,30 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
         
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
-            <div>
-              <CardTitle className="text-xl">{currentProspect.nomComplet}</CardTitle>
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-xl truncate">{currentProspect.nomComplet}</CardTitle>
               <div className="flex items-center gap-2 mt-1">
                 <MapPin className="w-4 h-4 text-gray-500" />
                 <span className="text-gray-600">{currentProspect.ville}</span>
               </div>
             </div>
-            <div className="text-right">
-              <Badge variant="outline" className="mb-1">
-                {currentProspect.type}
-              </Badge>
+            <div className="text-right flex-shrink-0 ml-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 font-medium">
+                  {currentProspect.type}
+                </Badge>
+                {onEdit && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => onEdit(currentProspect)}
+                    className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
+                    title="Modifier les informations"
+                  >
+                    <Edit className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
               {currentProspect.score && (
                 <div className="text-sm text-gray-500">
                   Score: {currentProspect.score}/100

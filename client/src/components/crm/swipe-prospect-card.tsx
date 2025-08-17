@@ -217,7 +217,13 @@ export default function SwipeProspectCard({
                 <div className="text-sm text-gray-600 space-y-1">
                   <p className="truncate">{prospect.telephone}</p>
                   <p className="truncate">{prospect.ville}</p>
-                  <p className="truncate">{prospect.type} • {prospect.typeBien}</p>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                      {prospect.type}
+                    </Badge>
+                    <span className="text-gray-500">•</span>
+                    <span className="text-gray-600">{prospect.typeBien}</span>
+                  </div>
                 </div>
               </div>
             </div>
