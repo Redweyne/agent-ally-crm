@@ -109,7 +109,7 @@ export default function QuickActionsFAB({
         {isExpanded ? (
           <X className="w-6 h-6 text-white" />
         ) : (
-          <Plus className="w-6 h-6 text-white" />
+          <Users className="w-6 h-6 text-white" />
         )}
       </Button>
     </div>

@@ -543,17 +543,17 @@ export default function MobileCRMLayout({
           </Button>
 
           <Button
-            variant="default"
+            variant="ghost"
             size="sm"
             onClick={() => {
               setEditingProspect(null);
               setShowProspectForm(true);
             }}
-            className="flex-1 max-w-none mx-1 flex-col h-auto py-2 bg-primary text-primary-foreground hover:bg-primary/90"
+            className="flex-1 max-w-none mx-1 flex-col h-auto py-2"
             title="Créer un nouveau prospect"
           >
             <User className="h-4 w-4 mb-1" />
-            <span className="text-xs font-medium">Nouveau</span>
+            <span className="text-xs">Nouveau</span>
           </Button>
         </div>
       </nav>
