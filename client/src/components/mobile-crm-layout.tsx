@@ -12,6 +12,7 @@ import QuickActionsFAB from '@/components/crm/quick-actions-fab';
 import VoiceNotes from '@/components/crm/voice-notes';
 import MobileProspectForm from '@/components/crm/mobile-prospect-form';
 import MobileProspectCards from '@/components/crm/mobile-prospect-cards';
+import ProspectEditPopup from '@/components/crm/prospect-edit-popup';
 
 import type { Prospect } from '@shared/schema';
 
@@ -51,6 +52,7 @@ export default function MobileCRMLayout({
   const [showVoiceNotes, setShowVoiceNotes] = useState(false);
   const [showProspectForm, setShowProspectForm] = useState(false);
   const [editingProspect, setEditingProspect] = useState<Prospect | null>(null);
+  const [showEditPopup, setShowEditPopup] = useState(false);
 
   // Persist view state
   React.useEffect(() => {
@@ -58,15 +60,34 @@ export default function MobileCRMLayout({
   }, [activeView]);
 
   const priorityProspects = prospects.filter(p => {
-    const today = new Date().toDateString();
-    const needsCall = p.prochaineAction && 
-      new Date(p.prochaineAction).toDateString() === today &&
-      !["Gagné", "Perdu", "Pas de réponse"].includes(p.statut || "");
+    // Express mode: prospects that need IMMEDIATE action today
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
     
+    // 1. Hot leads (score > 80) - highest priority
     const isHotLead = (p.score && p.score > 80) || p.isHotLead;
-    const isNewToday = p.creeLe && new Date(p.creeLe).toDateString() === today;
     
-    return needsCall || isHotLead || isNewToday;
+    // 2. Follow-up calls due today
+    const needsFollowUp = p.prochaineAction && 
+      new Date(p.prochaineAction).toISOString().split('T')[0] === today;
+    
+    // 3. New prospects that need initial contact
+    const needsInitialContact = p.statut === 'Nouveau' || p.statut === 'Contact';
+    
+    // 4. Urgent timeline prospects
+    const isUrgent = p.timeline && (
+      p.timeline.includes('Immédiat') || 
+      p.timeline.includes('Cette semaine') ||
+      p.timeline.includes('Urgent')
+    );
+    
+    // 5. High-value prospects (budget > 500k)
+    const isHighValue = (p.budget || p.prixEstime || 0) > 500000;
+    
+    // Exclude closed deals
+    const isActive = !["Gagné", "Perdu", "Pas de réponse", "Annulé"].includes(p.statut || "");
+    
+    return isActive && (isHotLead || needsFollowUp || (needsInitialContact && (isUrgent || isHighValue)));
   });
 
   return (
@@ -253,7 +274,10 @@ export default function MobileCRMLayout({
             
             <div className="space-y-3">
               {prospects.map((prospect) => (
-                <Card key={prospect.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => onEditProspect?.(prospect)}>
+                <Card key={prospect.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+                  setEditingProspect(prospect);
+                  setShowEditPopup(true);
+                }}>
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-base truncate text-gray-900">{prospect.nomComplet}</h3>
@@ -428,7 +452,7 @@ export default function MobileCRMLayout({
               onScheduleRDV={onScheduleRDV}
               onEdit={(prospect: Prospect) => {
                 setEditingProspect(prospect);
-                setShowProspectForm(true);
+                setShowEditPopup(true);
               }}
             />
           </div>
@@ -448,7 +472,7 @@ export default function MobileCRMLayout({
               prospects={prospects}
               onEdit={(prospect: Prospect) => {
                 setEditingProspect(prospect);
-                setShowProspectForm(true);
+                setShowEditPopup(true);
               }}
               onRefresh={async () => {
                 // Add refresh functionality here if needed
@@ -531,6 +555,21 @@ export default function MobileCRMLayout({
           />
         </div>
       )}
+
+      {/* Edit Popup */}
+      <ProspectEditPopup
+        prospect={editingProspect}
+        isOpen={showEditPopup}
+        onClose={() => {
+          setShowEditPopup(false);
+          setEditingProspect(null);
+        }}
+        onSave={(updatedProspect) => {
+          onSaveProspect?.(updatedProspect);
+          setShowEditPopup(false);
+          setEditingProspect(null);
+        }}
+      />
 
       {/* Prospect Form Modal */}
       {showProspectForm && (

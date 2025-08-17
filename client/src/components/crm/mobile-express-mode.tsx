@@ -137,29 +137,20 @@ export default function MobileExpressMode({ prospects, onCall, onWhatsApp, onSch
       >
         <div className={`absolute top-0 left-0 w-1 h-full ${getUrgencyColor(currentProspect)}`}></div>
         
-        {/* Swipe indicators */}
-        <div className="absolute top-4 right-4 flex items-center space-x-1">
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={prevProspect}
-            disabled={priorityProspects.length <= 1}
-            className="h-8 w-8 p-0 mobile-button"
-            title="Prospect précédent"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={nextProspect}
-            disabled={priorityProspects.length <= 1}
-            className="h-8 w-8 p-0 mobile-button"
-            title="Prospect suivant"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
+        {/* Navigation - only if multiple prospects */}
+        {priorityProspects.length > 1 && (
+          <div className="absolute top-4 right-4">
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              onClick={nextProspect}
+              className="h-8 w-8 p-0 mobile-button"
+              title="Prospect suivant"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
         
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
