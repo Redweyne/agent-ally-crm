@@ -31,6 +31,28 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  
+  /* Fix map overlay issue - ensure map components stay below header */
+  .leaflet-container {
+    z-index: 10 !important;
+  }
+  
+  .leaflet-control-container {
+    z-index: 15 !important;
+  }
+  
+  .leaflet-popup {
+    z-index: 20 !important;
+  }
+  
+  /* Ensure map tiles stay under header */
+  .leaflet-tile-pane {
+    z-index: 1 !important;
+  }
+  
+  .leaflet-marker-pane {
+    z-index: 15 !important;
+  }
 }
 
 /* Fix empty button issue */

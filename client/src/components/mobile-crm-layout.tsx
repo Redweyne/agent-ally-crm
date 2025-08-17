@@ -413,8 +413,8 @@ export default function MobileCRMLayout({
         )}
 
         {activeView === 'carte' && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4 relative z-20">
               <h2 className="text-lg font-semibold">Carte des Prospects</h2>
               <Button variant="outline" size="sm" onClick={() => setActiveView('dashboard')}>
                 <Home className="h-4 w-4 mr-2" />
@@ -422,19 +422,21 @@ export default function MobileCRMLayout({
               </Button>
             </div>
             
-            <ProspectMap 
-              prospects={prospects}
-              onEdit={(prospect: Prospect) => {
-                setEditingProspect(prospect);
-                setActiveView('dashboard');
-                setActiveTab('prospects');
-                setTimeout(() => {
-                  setShowEditPopup(true);
-                }, 100);
-              }}
-              onCall={onCall}
-              onSMS={onWhatsApp}
-            />
+            <div className="relative z-10">
+              <ProspectMap 
+                prospects={prospects}
+                onEdit={(prospect: Prospect) => {
+                  setEditingProspect(prospect);
+                  setActiveView('dashboard');
+                  setActiveTab('prospects');
+                  setTimeout(() => {
+                    setShowEditPopup(true);
+                  }, 100);
+                }}
+                onCall={onCall}
+                onSMS={onWhatsApp}
+              />
+            </div>
           </div>
         )}
       </main>

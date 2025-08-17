@@ -250,12 +250,12 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
       {/* Map Container */}
       <Card>
         <CardContent className="p-0">
-          <div className="h-96 w-full rounded-lg overflow-hidden">
+          <div className="h-96 w-full rounded-lg overflow-hidden relative z-10">
             <MapContainer
               center={franceCenter}
               zoom={6}
-              className="h-full w-full"
-              style={{ height: "100%", width: "100%" }}
+              className="h-full w-full relative"
+              style={{ height: "100%", width: "100%", position: "relative", zIndex: 10 }}
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
