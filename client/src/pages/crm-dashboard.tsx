@@ -292,19 +292,22 @@ export default function CrmDashboard() {
 
   // Opportunities filtering - prospects with high value or imminent appointments
   const opportunityProspects = useMemo(() => {
-    return enhancedProspects.filter(prospect => {
+    console.log('🔍 Debug: enhancedProspects count:', enhancedProspects.length);
+    console.log('🔍 Debug: First 3 prospects scores:', enhancedProspects.slice(0, 3).map(p => ({ name: p.nomComplet, score: p.score, status: p.statut })));
+    
+    const filtered = enhancedProspects.filter(prospect => {
       // Exclude already won or lost prospects
       if (["Gagné", "Perdu", "Pas de réponse"].includes(prospect.statut || "")) {
         return false;
       }
 
-      // High value prospects (budget >= 300k EUR or estimated commission >= 9k EUR)
+      // High value prospects (budget >= 250k EUR or estimated commission >= 6k EUR)
       const budget = prospect.budget || prospect.prixEstime || 0;
       const commission = budget * (prospect.tauxHonoraires || 0.04);
-      const isHighValue = budget >= 300000 || commission >= 9000;
+      const isHighValue = budget >= 250000 || commission >= 6000;
 
-      // Good scoring prospects (score > 55)
-      const hasGoodScore = (prospect.score || 0) > 55;
+      // Good scoring prospects (score > 50 - lowered threshold)
+      const hasGoodScore = (prospect.score || 0) > 50;
 
       // Advanced stage prospects
       const isAdvancedStage = ["Qualifié", "RDV fixé", "Mandat signé", "Mandate Pending", "En négociation"].includes(prospect.statut || "");
@@ -324,8 +327,18 @@ export default function CrmDashboard() {
       // Hot leads from database flag
       const isMarkedHotLead = prospect.isHotLead || false;
 
-      return isHighValue || hasGoodScore || isAdvancedStage || hasImminentAction || isQualified || isMarkedHotLead;
-    }).sort((a, b) => {
+      const qualifies = isHighValue || hasGoodScore || isAdvancedStage || hasImminentAction || isQualified || isMarkedHotLead;
+      
+      if (qualifies) {
+        console.log(`✅ OPPORTUNITY: ${prospect.nomComplet} (score: ${prospect.score}, budget: ${budget}, status: ${prospect.statut})`);
+      }
+      
+      return qualifies;
+    });
+    
+    console.log(`🎯 Final opportunityProspects count: ${filtered.length}`);
+    
+    return filtered.sort((a, b) => {
       // Sort by priority: Hot leads first, then by score, then by value
       const aHot = isHotLead(a) ? 1 : 0;
       const bHot = isHotLead(b) ? 1 : 0;
@@ -1033,7 +1046,7 @@ END:VCALENDAR`;
                     <Info className="w-16 h-16 mx-auto text-gray-400 mb-4" />
                     <p className="text-gray-600">Aucune opportunité prioritaire trouvée</p>
                     <p className="text-sm text-gray-500 mt-2">
-                      Les critères incluent: valeur élevée (&gt;300k€), hot leads (score &gt;55), 
+                      Les critères incluent: valeur élevée (&gt;250k€), hot leads (score &gt;50), 
                       stages avancés, ou actions dans les 7 prochains jours
                     </p>
                   </div>
@@ -1043,7 +1056,7 @@ END:VCALENDAR`;
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-amber-50 p-3 rounded-lg">
                         <div className="text-lg font-bold text-amber-700">
-                          {opportunityProspects.filter(p => (p.score || 0) > 55).length}
+                          {opportunityProspects.filter(p => (p.score || 0) > 50).length}
                         </div>
                         <div className="text-sm text-amber-600">Hot Leads</div>
                       </div>
@@ -1052,7 +1065,7 @@ END:VCALENDAR`;
                           {opportunityProspects.filter(p => {
                             const budget = p.budget || p.prixEstime || 0;
                             const commission = budget * (p.tauxHonoraires || 0.04);
-                            return budget >= 300000 || commission >= 9000;
+                            return budget >= 250000 || commission >= 6000;
                           }).length}
                         </div>
                         <div className="text-sm text-green-600">Forte Valeur</div>
