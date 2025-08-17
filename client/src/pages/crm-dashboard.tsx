@@ -298,13 +298,13 @@ export default function CrmDashboard() {
         return false;
       }
 
-      // High value prospects (budget >= 300k EUR or estimated commission >= 10k EUR)
+      // High value prospects (budget >= 400k EUR or estimated commission >= 12k EUR)
       const budget = prospect.budget || prospect.prixEstime || 0;
       const commission = budget * (prospect.tauxHonoraires || 0.04);
-      const isHighValue = budget >= 300000 || commission >= 10000;
+      const isHighValue = budget >= 400000 || commission >= 12000;
 
-      // Hot leads (score > 75)
-      const isHotLead = (prospect.score || 0) > 75;
+      // Hot leads (score >= 70)
+      const isHotLead = (prospect.score || 0) >= 70;
 
       // Advanced stage prospects
       const isAdvancedStage = ["Qualifié", "RDV fixé", "Mandat signé", "Mandate Pending", "En négociation"].includes(prospect.statut || "");
@@ -1026,7 +1026,7 @@ END:VCALENDAR`;
                     <Info className="w-16 h-16 mx-auto text-gray-400 mb-4" />
                     <p className="text-gray-600">Aucune opportunité prioritaire trouvée</p>
                     <p className="text-sm text-gray-500 mt-2">
-                      Les critères incluent: valeur élevée (&gt;300k€), hot leads (score &gt;75), 
+                      Les critères incluent: valeur élevée (&gt;400k€), hot leads (score ≥70), 
                       stages avancés, ou actions dans les 7 prochains jours
                     </p>
                   </div>
@@ -1036,7 +1036,7 @@ END:VCALENDAR`;
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-amber-50 p-3 rounded-lg">
                         <div className="text-lg font-bold text-amber-700">
-                          {opportunityProspects.filter(p => (p.score || 0) > 75).length}
+                          {opportunityProspects.filter(p => (p.score || 0) >= 70).length}
                         </div>
                         <div className="text-sm text-amber-600">Hot Leads</div>
                       </div>
@@ -1045,7 +1045,7 @@ END:VCALENDAR`;
                           {opportunityProspects.filter(p => {
                             const budget = p.budget || p.prixEstime || 0;
                             const commission = budget * (p.tauxHonoraires || 0.04);
-                            return budget >= 300000 || commission >= 10000;
+                            return budget >= 400000 || commission >= 12000;
                           }).length}
                         </div>
                         <div className="text-sm text-green-600">Forte Valeur</div>
