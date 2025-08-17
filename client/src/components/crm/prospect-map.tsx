@@ -111,8 +111,48 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
     return probabilities[status] || 0;
   };
 
-  // Geocoding function using Nominatim (free OpenStreetMap service)
+  // Cache for geocoded locations
+  const geocodeCache = new Map<string, {lat: number, lng: number}>();
+
+  // Fallback coordinates for common French cities/postal codes
+  const getCoordinatesFromPostalCode = (codePostal: string, ville: string): {lat: number, lng: number} | null => {
+    const postalPrefix = codePostal.substring(0, 2);
+    const fallbackCoordinates: Record<string, {lat: number, lng: number}> = {
+      '75': { lat: 48.8566, lng: 2.3522 }, // Paris
+      '69': { lat: 45.7640, lng: 4.8357 }, // Lyon
+      '13': { lat: 43.2965, lng: 5.3698 }, // Marseille
+      '33': { lat: 44.8378, lng: -0.5792 }, // Bordeaux
+      '06': { lat: 43.7102, lng: 7.2620 }, // Nice
+      '31': { lat: 43.6047, lng: 1.4442 }, // Toulouse
+      '67': { lat: 48.5734, lng: 7.7521 }, // Strasbourg
+      '59': { lat: 50.6292, lng: 3.0573 }, // Lille
+      '44': { lat: 47.2184, lng: -1.5536 }, // Nantes
+      '35': { lat: 48.1173, lng: -1.6778 }, // Rennes
+      '34': { lat: 43.6110, lng: 3.8767 }, // Montpellier
+      '78': { lat: 48.8014, lng: 2.1301 }, // Yvelines
+      '92': { lat: 48.8909, lng: 2.2368 }, // Hauts-de-Seine
+      '94': { lat: 48.7901, lng: 2.4555 }, // Val-de-Marne
+    };
+
+    return fallbackCoordinates[postalPrefix] || null;
+  };
+
+  // Geocoding function using fallback first, then API
   const geocodePostalCode = async (codePostal: string, ville: string): Promise<{lat: number, lng: number} | null> => {
+    const cacheKey = `${codePostal}-${ville}`;
+    
+    // Check cache first
+    if (geocodeCache.has(cacheKey)) {
+      return geocodeCache.get(cacheKey)!;
+    }
+
+    // Try fallback coordinates first
+    const fallbackCoords = getCoordinatesFromPostalCode(codePostal, ville);
+    if (fallbackCoords) {
+      geocodeCache.set(cacheKey, fallbackCoords);
+      return fallbackCoords;
+    }
+
     try {
       const query = `${codePostal} ${ville}, France`;
       const response = await fetch(
@@ -128,10 +168,12 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
       
       const results = await response.json();
       if (results.length > 0) {
-        return {
+        const coords = {
           lat: parseFloat(results[0].lat),
           lng: parseFloat(results[0].lon)
         };
+        geocodeCache.set(cacheKey, coords);
+        return coords;
       }
       return null;
     } catch (error) {
@@ -148,23 +190,30 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
 
       const prospectsWithLocation: GeocodedProspect[] = [];
       
-      for (const prospect of prospects) {
-        if (prospect.codePostal && prospect.ville) {
-          const coordinates = await geocodePostalCode(prospect.codePostal, prospect.ville);
-          if (coordinates) {
-            prospectsWithLocation.push({
-              ...prospect,
-              lat: coordinates.lat,
-              lng: coordinates.lng
-            });
-          } else {
-            prospectsWithLocation.push(prospect);
+      // Process prospects in batches to speed up loading
+      const batchSize = 5;
+      for (let i = 0; i < prospects.length; i += batchSize) {
+        const batch = prospects.slice(i, i + batchSize);
+        
+        const batchPromises = batch.map(async (prospect) => {
+          if (prospect.codePostal && prospect.ville) {
+            const coordinates = await geocodePostalCode(prospect.codePostal, prospect.ville);
+            if (coordinates) {
+              return {
+                ...prospect,
+                lat: coordinates.lat,
+                lng: coordinates.lng
+              };
+            }
           }
-          // Small delay to be respectful to the free API
-          await new Promise(resolve => setTimeout(resolve, 200));
-        } else {
-          prospectsWithLocation.push(prospect);
-        }
+          return prospect;
+        });
+
+        const batchResults = await Promise.all(batchPromises);
+        prospectsWithLocation.push(...batchResults);
+        
+        // Short delay between batches
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
       setGeocodedProspects(prospectsWithLocation);
@@ -174,6 +223,7 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
     if (prospects.length > 0) {
       geocodeProspects();
     } else {
+      setGeocodedProspects([]);
       setLoading(false);
     }
   }, [prospects]);
@@ -253,7 +303,10 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => onEdit(prospect)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(prospect);
+                          }}
                           className="flex-1"
                         >
                           Voir

@@ -426,7 +426,11 @@ export default function MobileCRMLayout({
               prospects={prospects}
               onEdit={(prospect: Prospect) => {
                 setEditingProspect(prospect);
-                setShowEditPopup(true);
+                setActiveView('dashboard');
+                setActiveTab('prospects');
+                setTimeout(() => {
+                  setShowEditPopup(true);
+                }, 100);
               }}
               onCall={onCall}
               onSMS={onWhatsApp}
