@@ -290,6 +290,52 @@ export default function CrmDashboard() {
     return filtered;
   }, [enhancedProspects, searchQuery, typeFilter, statusFilter, minBudget, maxBudget, showCallToday, showReadyToSell, showHotLeads, showDueToday, sortBy, sortOrder]);
 
+  // Opportunities filtering - prospects with high value or imminent appointments
+  const opportunityProspects = useMemo(() => {
+    return enhancedProspects.filter(prospect => {
+      // Exclude already won or lost prospects
+      if (["Gagné", "Perdu", "Pas de réponse"].includes(prospect.statut || "")) {
+        return false;
+      }
+
+      // High value prospects (budget >= 300k EUR or estimated commission >= 10k EUR)
+      const budget = prospect.budget || prospect.prixEstime || 0;
+      const commission = budget * (prospect.tauxHonoraires || 0.04);
+      const isHighValue = budget >= 300000 || commission >= 10000;
+
+      // Hot leads (score > 75)
+      const isHotLead = (prospect.score || 0) > 75;
+
+      // Advanced stage prospects
+      const isAdvancedStage = ["Qualifié", "RDV fixé", "Mandat signé", "Mandate Pending", "En négociation"].includes(prospect.statut || "");
+
+      // Imminent appointments (next 7 days)
+      const hasImminentAction = (() => {
+        if (!prospect.prochaineAction) return false;
+        const actionDate = new Date(prospect.prochaineAction);
+        const now = new Date();
+        const daysDiff = Math.ceil((actionDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        return daysDiff >= 0 && daysDiff <= 7;
+      })();
+
+      // Ready to sell (all qualification criteria met)
+      const isQualified = isReadyToSell(prospect);
+
+      return isHighValue || isHotLead || isAdvancedStage || hasImminentAction || isQualified;
+    }).sort((a, b) => {
+      // Sort by priority: Hot leads first, then by value, then by score
+      const aHot = isHotLead(a) ? 1 : 0;
+      const bHot = isHotLead(b) ? 1 : 0;
+      if (aHot !== bHot) return bHot - aHot;
+
+      const aValue = (a.budget || a.prixEstime || 0) * (a.tauxHonoraires || 0.04);
+      const bValue = (b.budget || b.prixEstime || 0) * (b.tauxHonoraires || 0.04);
+      if (aValue !== bValue) return bValue - aValue;
+
+      return (b.score || 0) - (a.score || 0);
+    });
+  }, [enhancedProspects]);
+
   // Enhanced CRM functions
   const handleOutcome = (prospectId: string, outcomeKey: string) => {
     const outcome = OUTCOMES[outcomeKey as keyof typeof OUTCOMES];
@@ -969,27 +1015,74 @@ END:VCALENDAR`;
           <TabsContent value="opportunites">
             <Card>
               <CardHeader>
-                <CardTitle>Opportunités Prioritaires</CardTitle>
+                <CardTitle>Opportunités Prioritaires ({opportunityProspects.length})</CardTitle>
                 <CardDescription>
-                  Prospects avec forte valeur attendue ou RDV imminent
+                  Prospects avec forte valeur attendue, hot leads, stages avancés ou RDV imminent
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {filteredProspects.length === 0 ? (
+                {opportunityProspects.length === 0 ? (
                   <div className="text-center py-8">
                     <Info className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                    <p className="text-gray-600">Aucune opportunité selon les critères</p>
+                    <p className="text-gray-600">Aucune opportunité prioritaire trouvée</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Les critères incluent: valeur élevée (&gt;300k€), hot leads (score &gt;75), 
+                      stages avancés, ou actions dans les 7 prochains jours
+                    </p>
                   </div>
                 ) : (
-                  <ProspectTable 
-                    prospects={filteredProspects}
-                    onEdit={(prospect) => {
-                      setSelectedProspect(prospect);
-                      setShowProspectForm(true);
-                    }}
-                    onDelete={(id) => deleteProspectMutation.mutate(id)}
-                    compact
-                  />
+                  <div className="space-y-4">
+                    {/* Opportunity Stats */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-amber-50 p-3 rounded-lg">
+                        <div className="text-lg font-bold text-amber-700">
+                          {opportunityProspects.filter(p => (p.score || 0) > 75).length}
+                        </div>
+                        <div className="text-sm text-amber-600">Hot Leads</div>
+                      </div>
+                      <div className="bg-green-50 p-3 rounded-lg">
+                        <div className="text-lg font-bold text-green-700">
+                          {opportunityProspects.filter(p => {
+                            const budget = p.budget || p.prixEstime || 0;
+                            const commission = budget * (p.tauxHonoraires || 0.04);
+                            return budget >= 300000 || commission >= 10000;
+                          }).length}
+                        </div>
+                        <div className="text-sm text-green-600">Forte Valeur</div>
+                      </div>
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <div className="text-lg font-bold text-blue-700">
+                          {opportunityProspects.filter(p => 
+                            ["Qualifié", "RDV fixé", "Mandat signé", "Mandate Pending"].includes(p.statut || "")
+                          ).length}
+                        </div>
+                        <div className="text-sm text-blue-600">Stage Avancé</div>
+                      </div>
+                      <div className="bg-purple-50 p-3 rounded-lg">
+                        <div className="text-lg font-bold text-purple-700">
+                          {opportunityProspects.filter(p => {
+                            if (!p.prochaineAction) return false;
+                            const actionDate = new Date(p.prochaineAction);
+                            const now = new Date();
+                            const daysDiff = Math.ceil((actionDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                            return daysDiff >= 0 && daysDiff <= 7;
+                          }).length}
+                        </div>
+                        <div className="text-sm text-purple-600">Action 7j</div>
+                      </div>
+                    </div>
+
+                    {/* Opportunity Table */}
+                    <ProspectTable 
+                      prospects={opportunityProspects}
+                      onEdit={(prospect) => {
+                        setSelectedProspect(prospect);
+                        setShowProspectForm(true);
+                      }}
+                      onDelete={(id) => deleteProspectMutation.mutate(id)}
+                      compact
+                    />
+                  </div>
                 )}
               </CardContent>
             </Card>
