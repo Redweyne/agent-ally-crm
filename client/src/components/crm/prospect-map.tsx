@@ -114,11 +114,64 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
   // Cache for geocoded locations
   const geocodeCache = new Map<string, {lat: number, lng: number}>();
 
-  // Fallback coordinates for common French cities/postal codes
+  // Enhanced fallback coordinates for French cities and postal codes
   const getCoordinatesFromPostalCode = (codePostal: string, ville: string): {lat: number, lng: number} | null => {
     const postalPrefix = codePostal.substring(0, 2);
+    
+    // Specific city coordinates first
+    const cityCoordinates: Record<string, {lat: number, lng: number}> = {
+      // Hauts-de-Seine (92)
+      'neuilly-sur-seine': { lat: 48.8846, lng: 2.2698 },
+      'boulogne-billancourt': { lat: 48.8359, lng: 2.2424 },
+      'saint-cloud': { lat: 48.8426, lng: 2.2093 },
+      'levallois-perret': { lat: 48.8976, lng: 2.2873 },
+      'courbevoie': { lat: 48.8973, lng: 2.2573 },
+      'issy-les-moulineaux': { lat: 48.8244, lng: 2.2734 },
+      'puteaux': { lat: 48.8837, lng: 2.2386 },
+      'rueil-malmaison': { lat: 48.8773, lng: 2.1870 },
+      'asnières-sur-seine': { lat: 48.9147, lng: 2.2874 },
+      'colombes': { lat: 48.9226, lng: 2.2581 },
+      
+      // Val-de-Marne (94)
+      'vincennes': { lat: 48.8476, lng: 2.4339 },
+      
+      // Paris areas
+      'paris': { lat: 48.8566, lng: 2.3522 },
+      'paris 15ème': { lat: 48.8420, lng: 2.2990 },
+      
+      // Yvelines (78)
+      'versailles': { lat: 48.8014, lng: 2.1301 },
+      'meudon': { lat: 48.8135, lng: 2.2361 },
+      'sèvres': { lat: 48.8205, lng: 2.2050 },
+      'garches': { lat: 48.8425, lng: 2.1861 },
+      'le vésinet': { lat: 48.8943, lng: 2.1317 },
+      'sartrouville': { lat: 48.9384, lng: 2.1590 },
+      'montesson': { lat: 48.9098, lng: 2.1519 },
+      'chatou': { lat: 48.8904, lng: 2.1584 },
+      'houilles': { lat: 48.9259, lng: 2.1898 },
+      'croissy-sur-seine': { lat: 48.8788, lng: 2.1374 },
+      'carrières-sur-seine': { lat: 48.9098, lng: 2.1840 },
+      
+      // Hauts-de-Seine suburbs
+      'antony': { lat: 48.7537, lng: 2.2998 },
+    };
+    
+    // Try city-specific coordinates first
+    const normalizedCity = ville.toLowerCase().trim();
+    if (cityCoordinates[normalizedCity]) {
+      return cityCoordinates[normalizedCity];
+    }
+    
+    // Fallback to departement coordinates
     const fallbackCoordinates: Record<string, {lat: number, lng: number}> = {
-      '75': { lat: 48.8566, lng: 2.3522 }, // Paris
+      '75': { lat: 48.8566, lng: 2.3522 }, // Paris center
+      '92': { lat: 48.8909, lng: 2.2368 }, // Hauts-de-Seine
+      '93': { lat: 48.9356, lng: 2.3539 }, // Seine-Saint-Denis  
+      '94': { lat: 48.7901, lng: 2.4555 }, // Val-de-Marne
+      '95': { lat: 49.0370, lng: 2.0781 }, // Val-d'Oise
+      '78': { lat: 48.8014, lng: 2.1301 }, // Yvelines
+      '91': { lat: 48.6322, lng: 2.2500 }, // Essonne
+      '77': { lat: 48.5734, lng: 2.6609 }, // Seine-et-Marne
       '69': { lat: 45.7640, lng: 4.8357 }, // Lyon
       '13': { lat: 43.2965, lng: 5.3698 }, // Marseille
       '33': { lat: 44.8378, lng: -0.5792 }, // Bordeaux
@@ -129,9 +182,6 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
       '44': { lat: 47.2184, lng: -1.5536 }, // Nantes
       '35': { lat: 48.1173, lng: -1.6778 }, // Rennes
       '34': { lat: 43.6110, lng: 3.8767 }, // Montpellier
-      '78': { lat: 48.8014, lng: 2.1301 }, // Yvelines
-      '92': { lat: 48.8909, lng: 2.2368 }, // Hauts-de-Seine
-      '94': { lat: 48.7901, lng: 2.4555 }, // Val-de-Marne
     };
 
     return fallbackCoordinates[postalPrefix] || null;
@@ -199,12 +249,17 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
           if (prospect.codePostal && prospect.ville) {
             const coordinates = await geocodePostalCode(prospect.codePostal, prospect.ville);
             if (coordinates) {
+              console.log(`✅ Geocoded ${prospect.nomComplet}: ${prospect.ville} ${prospect.codePostal} -> ${coordinates.lat}, ${coordinates.lng}`);
               return {
                 ...prospect,
                 lat: coordinates.lat,
                 lng: coordinates.lng
               };
+            } else {
+              console.warn(`❌ Failed to geocode ${prospect.nomComplet}: ${prospect.ville} ${prospect.codePostal}`);
             }
+          } else {
+            console.warn(`⚠️  Missing postal code or city for ${prospect.nomComplet}: ville="${prospect.ville}" postal="${prospect.codePostal}"`);
           }
           return prospect;
         });
@@ -348,6 +403,7 @@ export default function ProspectMap({ prospects, onEdit, onCall, onSMS }: Prospe
               <div>
                 <p className="text-sm font-medium">Sur la carte</p>
                 <p className="text-2xl font-bold text-green-600">{prospectsWithCoordinates.length}</p>
+                <p className="text-xs text-gray-500">/ {prospects.length} total</p>
               </div>
             </div>
           </CardContent>
