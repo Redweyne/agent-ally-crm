@@ -10,6 +10,7 @@ import {
 import MobileExpressMode from '@/components/crm/mobile-express-mode';
 import QuickActionsFAB from '@/components/crm/quick-actions-fab';
 import VoiceNotes from '@/components/crm/voice-notes';
+import MobileProspectForm from '@/components/crm/mobile-prospect-form';
 
 import type { Prospect } from '@shared/schema';
 
@@ -24,6 +25,8 @@ interface MobileCRMLayoutProps {
   onWhatsApp: (prospect: Prospect) => void;
   onScheduleRDV: (prospect: Prospect) => void;
   onCreateProspect: () => void;
+  onEditProspect?: (prospect: Prospect) => void;
+  onSaveProspect?: (prospect: any) => void;
 }
 
 export default function MobileCRMLayout({
@@ -36,13 +39,17 @@ export default function MobileCRMLayout({
   onCall,
   onWhatsApp,
   onScheduleRDV,
-  onCreateProspect
+  onCreateProspect,
+  onEditProspect,
+  onSaveProspect
 }: MobileCRMLayoutProps) {
   const [activeView, setActiveView] = useState<'dashboard' | 'express' | 'list'>(() => {
     return (sessionStorage.getItem('mobile-view') as 'dashboard' | 'express' | 'list') || 'dashboard';
   });
   const [showMenu, setShowMenu] = useState(false);
   const [showVoiceNotes, setShowVoiceNotes] = useState(false);
+  const [showProspectForm, setShowProspectForm] = useState(false);
+  const [editingProspect, setEditingProspect] = useState<Prospect | null>(null);
 
   // Persist view state
   React.useEffect(() => {
@@ -538,19 +545,11 @@ export default function MobileCRMLayout({
           <Button
             variant="ghost"
             size="sm"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('Mobile "Nouveau" button clicked');
-              if (typeof onCreateProspect === 'function') {
-                onCreateProspect();
-                console.log('onCreateProspect called successfully');
-              } else {
-                console.error('onCreateProspect is not a function:', onCreateProspect);
-              }
+            onClick={() => {
+              setEditingProspect(null);
+              setShowProspectForm(true);
             }}
-            className="flex-1 max-w-none mx-1 flex-col h-auto py-2 hover:bg-primary-100 active:bg-primary-200 transition-colors"
-            data-testid="mobile-button-nouveau"
+            className="flex-1 max-w-none mx-1 flex-col h-auto py-2"
             title="Créer un nouveau prospect"
           >
             <Plus className="h-4 w-4 mb-1" />
@@ -592,6 +591,25 @@ export default function MobileCRMLayout({
             placeholder="Dictez vos notes de prospection..."
           />
         </div>
+      )}
+
+      {/* Prospect Form Modal */}
+      {showProspectForm && (
+        <MobileProspectForm
+          prospect={editingProspect}
+          mode={editingProspect ? 'edit' : 'create'}
+          onSave={(prospectData) => {
+            if (onSaveProspect) {
+              onSaveProspect(prospectData);
+            }
+            setShowProspectForm(false);
+            setEditingProspect(null);
+          }}
+          onCancel={() => {
+            setShowProspectForm(false);
+            setEditingProspect(null);
+          }}
+        />
       )}
     </div>
   );

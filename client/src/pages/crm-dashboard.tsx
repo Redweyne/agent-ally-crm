@@ -659,6 +659,24 @@ END:VCALENDAR`;
           setSelectedProspect(prospect);
         }}
         onCreateProspect={() => setShowProspectForm(true)}
+        onEditProspect={(prospect) => {
+          setSelectedProspect(prospect);
+          setShowProspectForm(true);
+        }}
+        onSaveProspect={(prospectData) => {
+          if (prospectData.id && prospectData.id !== '') {
+            // Update existing prospect
+            updateProspectMutation.mutate(prospectData);
+          } else {
+            // Create new prospect
+            const newProspectData = {
+              ...prospectData,
+              agentId: user?.id,
+              id: undefined // Let the server generate the ID
+            };
+            createProspectMutation.mutate(newProspectData);
+          }
+        }}
       />
     );
   }

@@ -6,7 +6,8 @@ import {
   MessageSquare, 
   Calendar, 
   User, 
-  Crown
+  Crown,
+  Edit
 } from "lucide-react";
 import HotLeadBadge from "./hot-lead-badge";
 import SwipeProspectCard from "./swipe-prospect-card";
