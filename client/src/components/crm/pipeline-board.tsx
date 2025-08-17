@@ -78,7 +78,7 @@ export default function PipelineBoard({ prospects, onUpdateStatus }: PipelineBoa
   const createSMSLink = (phone: string) => `sms:${phone?.replace(/\s+/g, "")}`;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4" data-testid="pipeline-board">
+    <div className="flex flex-col space-y-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 md:gap-3 lg:gap-4 md:space-y-0" data-testid="pipeline-board">
       {STATUSES.map((status) => (
         <div key={status} className={`rounded-xl p-3 sm:p-4 min-h-[400px] sm:min-h-[500px] ${STATUS_COLORS[status]}`}>
           <div className="flex items-center justify-between mb-4">

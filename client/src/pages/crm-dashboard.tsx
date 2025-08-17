@@ -31,6 +31,7 @@ import ProspectTable from "@/components/crm/prospect-table";
 import PipelineBoard from "@/components/crm/pipeline-board";
 import ProspectForm from "@/components/crm/prospect-form";
 import MobileFilterDrawer from "@/components/crm/mobile-filter-drawer";
+import MobileProspectCards from "@/components/crm/mobile-prospect-cards";
 import DemoBanner from "@/components/crm/demo-banner";
 import ROICalculator from "@/components/crm/roi-calculator";
 import ContactTimeline from "@/components/crm/contact-timeline";
@@ -1346,22 +1347,34 @@ END:VCALENDAR`;
                 </Card>
               </div>
 
-              {/* Prospects Table */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Liste des prospects</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ProspectTable 
-                    prospects={filteredProspects}
-                    onEdit={(prospect) => {
-                      setSelectedProspect(prospect);
-                      setShowProspectForm(true);
-                    }}
-                    onDelete={(id) => deleteProspectMutation.mutate(id)}
-                  />
-                </CardContent>
-              </Card>
+              {/* Mobile Cards (< sm) and Desktop Table (>= sm) */}
+              <div className="block sm:hidden">
+                <MobileProspectCards
+                  prospects={filteredProspects}
+                  onEdit={(prospect) => {
+                    setSelectedProspect(prospect);
+                    setShowProspectForm(true);
+                  }}
+                  onDelete={(id) => deleteProspectMutation.mutate(id)}
+                />
+              </div>
+              <div className="hidden sm:block">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Liste des prospects</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ProspectTable 
+                      prospects={filteredProspects}
+                      onEdit={(prospect) => {
+                        setSelectedProspect(prospect);
+                        setShowProspectForm(true);
+                      }}
+                      onDelete={(id) => deleteProspectMutation.mutate(id)}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
 

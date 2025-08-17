@@ -6,14 +6,17 @@ Redweyne is a customer relationship management (CRM) system designed specificall
 
 The CRM has been significantly enhanced with business-focused features to maximize agent productivity and revenue tracking:
 
-### Latest Updates (August 16, 2025)
-- **PWA Implementation**: Full Progressive Web App functionality with offline support, app installation, and native-like experience
-- **Enhanced Download System**: 
-  - Added "Télécharger" button in navigation with platform selection dialog
-  - Created dedicated download section below hero with beautiful cards for Windows, Android, iOS
-  - Smart PWA installation with automatic install attempt followed by detailed platform-specific instructions
-  - Service Worker for offline functionality and app caching
-- **New Operator Account**: Created dedicated Redweyne operator account (Redweyne / Aa55337278**) with operator privileges
+### Latest Updates (August 17, 2025)
+- **Complete Mobile-First Optimization**: Implemented comprehensive mobile UX for one-handed smartphone use without pinch-zoom
+  - Mobile prospect cards with 44px+ touch targets replacing tables on small screens
+  - Mobile filter drawer consolidating all search/filter controls into single accessible button
+  - Pipeline board with vertical stacking on mobile and enhanced touch targets
+  - Enhanced mobile CSS with proper touch targets, form inputs, and safe area support
+  - Responsive breakpoints: mobile cards (<sm), desktop table (≥sm)
+- **Migration Completion**: Successfully migrated multi-role CRM from Replit Agent to standard environment
+  - PostgreSQL database with demo data (admin/demo123, alice.martin/demo123, ben.leroy/demo123)  
+  - All Node.js dependencies resolved and working properly
+  - Authentication system and automation rules functioning correctly
 
 ### Core Business Features
 - **Demo Data & Authentication**: Fixed demo accounts (admin/demo123, agent1/demo123, agent2/demo123) with realistic prospect data
