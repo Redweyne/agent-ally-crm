@@ -298,13 +298,13 @@ export default function CrmDashboard() {
         return false;
       }
 
-      // High value prospects (budget >= 400k EUR or estimated commission >= 12k EUR)
+      // High value prospects (budget >= 300k EUR or estimated commission >= 9k EUR)
       const budget = prospect.budget || prospect.prixEstime || 0;
       const commission = budget * (prospect.tauxHonoraires || 0.04);
-      const isHighValue = budget >= 400000 || commission >= 12000;
+      const isHighValue = budget >= 300000 || commission >= 9000;
 
-      // Hot leads (score > 50 since most prospects have exactly 50)
-      const isHotLead = (prospect.score || 0) > 50;
+      // Good scoring prospects (score > 55)
+      const hasGoodScore = (prospect.score || 0) > 55;
 
       // Advanced stage prospects
       const isAdvancedStage = ["Qualifié", "RDV fixé", "Mandat signé", "Mandate Pending", "En négociation"].includes(prospect.statut || "");
@@ -321,18 +321,25 @@ export default function CrmDashboard() {
       // Ready to sell (all qualification criteria met)
       const isQualified = isReadyToSell(prospect);
 
-      return isHighValue || isHotLead || isAdvancedStage || hasImminentAction || isQualified;
+      // Hot leads from database flag
+      const isMarkedHotLead = prospect.isHotLead || false;
+
+      return isHighValue || hasGoodScore || isAdvancedStage || hasImminentAction || isQualified || isMarkedHotLead;
     }).sort((a, b) => {
-      // Sort by priority: Hot leads first, then by value, then by score
+      // Sort by priority: Hot leads first, then by score, then by value
       const aHot = isHotLead(a) ? 1 : 0;
       const bHot = isHotLead(b) ? 1 : 0;
       if (aHot !== bHot) return bHot - aHot;
 
+      // Sort by score descending
+      const scoreA = a.score || 0;
+      const scoreB = b.score || 0;
+      if (scoreA !== scoreB) return scoreB - scoreA;
+
+      // Then by value
       const aValue = (a.budget || a.prixEstime || 0) * (a.tauxHonoraires || 0.04);
       const bValue = (b.budget || b.prixEstime || 0) * (b.tauxHonoraires || 0.04);
-      if (aValue !== bValue) return bValue - aValue;
-
-      return (b.score || 0) - (a.score || 0);
+      return bValue - aValue;
     });
   }, [enhancedProspects]);
 
